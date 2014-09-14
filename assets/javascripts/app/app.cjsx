@@ -1,6 +1,7 @@
 define ['react'], (React) ->
 
   Point = React.createClass
+    displayName: 'Point'
     render: ->
       style =
         left: @props.x
@@ -11,12 +12,19 @@ define ['react'], (React) ->
 
   KNN = React.createClass
     displayName: 'KNN'
+    componentWillMount: ->
+      @setState points: @generatePoints 10, 600, 300
+
+    generatePoints: (number, maxX, maxY) ->
+      for i in [0...number]
+        x: Math.random()*maxX
+        y: Math.random()*maxY
+        type: if Math.random() > 0.5 then 1 else 2
+
     render: ->
       <div className='knn'>
-        <Point type=1 x=100 y=200 />
-        <Point type=1 x=200 y=50 />
-        <Point type=2 x=400 y=300 />
-        <Point type=2 x=500 y=700 />
+        { for point in @state.points
+          <Point type=1 x={point.x} y={point.y} type={point.type} /> }
       </div>
 
   App = React.createClass
