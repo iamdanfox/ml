@@ -10,7 +10,8 @@ exports.config = {
     "live-reload",
     "bower",
     "coffeescript",
-    "less"
+    "cjsx",
+    "less",
   ],
   "server": {
     "views": {

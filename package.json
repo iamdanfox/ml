@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "mimosa-coffeescript": "*",
-    "mimosa-less": "*"
+    "mimosa-less": "*",
+    "mimosa-cjsx": "git://github.com/mtscout6/mimosa-cjsx.git"
   }
 }
