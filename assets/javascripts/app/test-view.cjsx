@@ -1,6 +1,5 @@
 define ['react'], (React) ->
 
-
   TestView = React.createClass
     render: ->
       <div>
