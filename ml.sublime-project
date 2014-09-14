@@ -4,6 +4,9 @@
       "path": "/Users/danfox/ml/assets/javascripts",
       "folder_exclude_patterns": [
         "vendor"
+      ],
+      "file_exclude_patterns": [
+        "*.js"
       ]
     },
     {

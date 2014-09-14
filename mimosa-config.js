@@ -18,5 +18,6 @@ exports.config = {
       "compileWith": "html",
       "extension": "html"
     }
-  }
+  },
+  onePager: true
 }
