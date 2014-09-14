@@ -1,0 +1,23 @@
+{
+  "folders": [
+    {
+      "path": "/Users/danfox/ml/assets/javascripts",
+      "folder_exclude_patterns": [
+        "vendor"
+      ]
+    },
+    {
+      "path": "/Users/danfox/ml/assets/stylesheets"
+    },
+    {
+      "path": "/Users/danfox/ml",
+      "folder_exclude_patterns": [
+        ".mimosa",
+        "node_modules"
+      ],
+      "file_exclude_patterns": [
+        "makefile"
+      ]
+    }
+  ]
+}
