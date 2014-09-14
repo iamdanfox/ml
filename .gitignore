@@ -52,3 +52,7 @@ what
 .tmproj
 nbproject
 Thumbs.db
+
+# ignore compiled versions of sources.
+assets/javascripts/*.js
+assets/javascripts/*/*.js

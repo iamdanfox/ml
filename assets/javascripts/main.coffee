@@ -2,10 +2,8 @@ require
   urlArgs: "b=#{(new Date()).getTime()}"
   paths:
     jquery: 'vendor/jquery/jquery'
-  , ['app/example-view', 'app/test-view']
-  , (ExampleView, TestView) ->
+    react: 'vendor/react/react'
+  , ['app/test-view', 'react']
+  , (TestView, React) ->
 
-    console.log 'main.coffee'
-
-    view = new TestView()
-    view.render('body')
+    React.renderComponent new TestView(), document.documentElement

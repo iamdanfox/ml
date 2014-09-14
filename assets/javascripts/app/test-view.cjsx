@@ -1,10 +1,10 @@
-define ['jquery'], ($) ->
+define ['react'], (React) ->
 
-  class TestView
 
-    render: (element) ->
-      console.log 'b', <div />
-      $(element).append "<div class='name'>TEST VIEW</div>"
-      $(element).append "<div class='styled'>And its all been styled (poorly) using less</div>"
+  TestView = React.createClass
+    render: ->
+      <div>
+        <h1>Dan is great</h1>
+      </div>
 
   TestView
