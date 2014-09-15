@@ -54,6 +54,13 @@ define ['react', 'underscore'], (React, _) ->
 
       return _.sortBy(@state.points, distTo)[0...@state.k]
 
+    @stateDependent: (states, component) ->
+      if @state.walkthroughState in states
+        if _.isFunction component
+          return component()
+        else
+          return component
+
     render: ->
       style =
         width: @props.maxX
@@ -61,7 +68,7 @@ define ['react', 'underscore'], (React, _) ->
 
       <div className='knn'>
       <svg style={style}>
-        { if @state.walkthroughState in ['LINES', 'CLASSIFY'] then do =>
+        { @stateDependent ['LINES', 'CLASSIFY'], =>
             newPoint = @state.newPoint
             kNearest = @getKNearest newPoint
             return <g>
@@ -72,23 +79,20 @@ define ['react', 'underscore'], (React, _) ->
         { for point in @state.points
           <Point type={point.type} x={point.x} y={point.y} /> }
 
-        { if @state.walkthroughState in ['NEW_POINT', 'LINES']
+        { @stateDependent ['LINES', 'CLASSIFY'], =>
             {x,y} = @state.newPoint
             <Point type='TYPE-NEW' x={x} y={y} /> }
 
-        { if @state.walkthroughState is 'CLASSIFY' then do =>
+        { @stateDependent ['CLASSIFY'], =>
             newPoint = @state.newPoint
             <Point type={@classifyPoint newPoint} x={newPoint.x} y={newPoint.y} /> }
 
 
 
       </svg>
-        { if @state.walkthroughState is 'START'
-            <button onClick={@addAPoint}>Add a point</button> }
-        { if @state.walkthroughState is 'NEW_POINT'
-          <button onClick={@addLines}>Show Lines</button> }
-        { if @state.walkthroughState is 'LINES'
-          <button onClick={@classify}>Classify</button> }
+        { @stateDependent ['START'],     <button onClick={@addAPoint}>Add a point</button> }
+        { @stateDependent ['NEW_POINT'], <button onClick={@addLines}>Show Lines</button> }
+        { @stateDependent ['LINES'],     <button onClick={@classify}>Classify</button> }
       </div>
 
   KNN
