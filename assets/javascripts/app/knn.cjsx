@@ -27,8 +27,10 @@ define ['react', 'underscore', 'jstat'], (React, _) ->
       points = []
       for clusterIndex in [0...@props.clusters]
         clusterSize = Math.floor (expectedNumber / @props.clusters)
-        clusterXDistribution = jStat.normal (30 + Math.random() * (@props.maxX-30)), 30
-        clusterYDistribution = jStat.normal (30 + Math.random() * (@props.maxY-30)), 30
+        clusterXCenter = jStat.uniform(30, @props.maxX - 30).sample()
+        clusterXDistribution = jStat.normal clusterXCenter, 30
+        clusterYCenter = jStat.uniform(30, @props.maxY - 30).sample()
+        clusterYDistribution = jStat.normal clusterYCenter, 30
         for i in [0...clusterSize]
           points.push
             x: clusterXDistribution.sample()
