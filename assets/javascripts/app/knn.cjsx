@@ -1,29 +1,41 @@
-define ['react', 'underscore'], (React, _) ->
+define ['react', 'underscore', 'jstat'], (React, _) ->
 
   Point = React.createClass
     displayName: 'Point'
     propTypes:
-      type: React.PropTypes.oneOf ['TYPE1', 'TYPE2', 'TYPE-NEW']
+      type: React.PropTypes.string.isRequired
 
     render: ->
       <circle className={'knn-point knn-' + @props.type} cx={@props.x} cy={@props.y} r=5></circle>
 
   KNN = React.createClass
     displayName: 'KNN'
+
+    propTypes:
+      clusters: React.PropTypes.number.isRequired
+      k: React.PropTypes.number.isRequired
+
     getInitialState: ->
-      k: 4
       points: []
       walkthroughState: 'START' # START -> NEW_POINT -> LINES -> CLASSIFY
       newPoint: null
 
     componentWillMount: ->
-      @setState points: @generatePoints 10
+      @setState points: @generatePoints 50
 
-    generatePoints: (number, maxX, maxY) ->
-      for i in [0...number]
-        x: Math.random() * @props.maxX
-        y: Math.random() * @props.maxY
-        type: if Math.random() > 0.5 then 'TYPE1' else 'TYPE2'
+    generatePoints: (expectedNumber) ->
+      points = []
+      for clusterIndex in [0...@props.clusters]
+        clusterSize = Math.floor (expectedNumber / @props.clusters)
+        clusterXDistribution = jStat.normal (30 + Math.random() * (@props.maxX-30)), 30
+        clusterYDistribution = jStat.normal (30 + Math.random() * (@props.maxY-30)), 30
+        for i in [0...clusterSize]
+          points.push
+            x: clusterXDistribution.sample()
+            y: clusterYDistribution.sample()
+            type: 'TYPE' + clusterIndex
+
+      return points
 
     addAPoint: ->
       @setState
@@ -52,9 +64,9 @@ define ['react', 'underscore'], (React, _) ->
       distTo = (point) ->
         Math.sqrt (newPoint.x-point.x)**2 + (newPoint.y-point.y)**2
 
-      return _.sortBy(@state.points, distTo)[0...@state.k]
+      return _.sortBy(@state.points, distTo)[0...@props.k]
 
-    @stateDependent: (states, component) ->
+    stateDependent: (states, component) ->
       if @state.walkthroughState in states
         if _.isFunction component
           return component()
@@ -79,7 +91,7 @@ define ['react', 'underscore'], (React, _) ->
         { for point in @state.points
           <Point type={point.type} x={point.x} y={point.y} /> }
 
-        { @stateDependent ['LINES', 'CLASSIFY'], =>
+        { @stateDependent ['NEW_POINT', 'LINES'], =>
             {x,y} = @state.newPoint
             <Point type='TYPE-NEW' x={x} y={y} /> }
 
