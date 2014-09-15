@@ -13,9 +13,8 @@ define ['react', 'underscore'], (React, _) ->
     getInitialState: ->
       k: 4
       points: []
-      walkthroughState:
-        id: 'START' # START -> NEW_POINT -> LINES -> CLASSIFY
-        parameters: {}
+      walkthroughState: 'START' # START -> NEW_POINT -> LINES -> CLASSIFY
+      newPoint: null
 
     componentWillMount: ->
       @setState points: @generatePoints 10
@@ -28,23 +27,18 @@ define ['react', 'underscore'], (React, _) ->
 
     addAPoint: ->
       @setState
-        walkthroughState:
-          id: 'NEW_POINT'
-          parameters:
-            x: Math.random() * @props.maxX
-            y: Math.random() * @props.maxY
+        walkthroughState: 'NEW_POINT'
+        newPoint:
+          x: Math.random() * @props.maxX
+          y: Math.random() * @props.maxY
 
     addLines: ->
       @setState
-        walkthroughState:
-          id: 'LINES'
-          parameters: @state.walkthroughState.parameters
+        walkthroughState: 'LINES'
 
     classify: ->
       @setState
-        walkthroughState:
-          id: 'CLASSIFY'
-          parameters: @state.walkthroughState.parameters
+        walkthroughState: 'CLASSIFY'
 
     classifyPoint: (newPoint) ->
       groupedPointsObject = _.groupBy @getKNearest(newPoint), 'type'
@@ -67,8 +61,8 @@ define ['react', 'underscore'], (React, _) ->
 
       <div className='knn'>
       <svg style={style}>
-        { if @state.walkthroughState.id in ['LINES', 'CLASSIFY'] then do =>
-            newPoint = @state.walkthroughState.parameters
+        { if @state.walkthroughState in ['LINES', 'CLASSIFY'] then do =>
+            newPoint = @state.newPoint
             kNearest = @getKNearest newPoint
             return <g>
               { for point in kNearest
@@ -78,23 +72,22 @@ define ['react', 'underscore'], (React, _) ->
         { for point in @state.points
           <Point type={point.type} x={point.x} y={point.y} /> }
 
-        { if @state.walkthroughState.id in ['NEW_POINT', 'LINES']
-            {x,y} = @state.walkthroughState.parameters
+        { if @state.walkthroughState in ['NEW_POINT', 'LINES']
+            {x,y} = @state.newPoint
             <Point type='TYPE-NEW' x={x} y={y} /> }
 
-        { if @state.walkthroughState.id is 'CLASSIFY' then do =>
-            newPoint = @state.walkthroughState.parameters
-            type = @classifyPoint newPoint
-            <Point type={type} x={newPoint.x} y={newPoint.y} /> }
+        { if @state.walkthroughState is 'CLASSIFY' then do =>
+            newPoint = @state.newPoint
+            <Point type={@classifyPoint newPoint} x={newPoint.x} y={newPoint.y} /> }
 
 
 
       </svg>
-        { if @state.walkthroughState.id is 'START'
+        { if @state.walkthroughState is 'START'
             <button onClick={@addAPoint}>Add a point</button> }
-        { if @state.walkthroughState.id is 'NEW_POINT'
+        { if @state.walkthroughState is 'NEW_POINT'
           <button onClick={@addLines}>Show Lines</button> }
-        { if @state.walkthroughState.id is 'LINES'
+        { if @state.walkthroughState is 'LINES'
           <button onClick={@classify}>Classify</button> }
       </div>
 
