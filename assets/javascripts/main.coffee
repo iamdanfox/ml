@@ -3,6 +3,7 @@ require
   paths:
     react: 'vendor/react/react'
     underscore: 'vendor/underscore/underscore'
+    jstat: 'vendor/jstat/jstat'
   , ['app/app', 'react']
   , (App, React) ->
 
