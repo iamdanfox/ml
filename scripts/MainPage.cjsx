@@ -1,7 +1,6 @@
 React = require 'react'
 
-# genPoints = for i in [0..80]
-#   { x: Math.random(), y: Math.random() }
+allLines =  require('./lines.json').map center(dim)
 
 
 module.exports = MainPage = React.createClass
@@ -26,6 +25,7 @@ module.exports = MainPage = React.createClass
       <h1>Hard visualisation</h1>
       <p><a href="https://docs.google.com/document/d/1a93Snwyk2De1WCbcvVH24oXq3HFlw3Z03Gx_u_6Xowg/edit#">Google Doc</a></p>
 
+      <h2>Main vis</h2>
       <svg style={background:'#e0e0e0', width:dim, height:dim}>
         <g transform={"translate("+dim/2+" "+dim/2+") scale(1 -1)"}>
           <path d={xAxis} strokeWidth="3" stroke="#d0d0d0" />
@@ -37,9 +37,16 @@ module.exports = MainPage = React.createClass
         </g>
       </svg>
 
-      <div className='three-d'>
-        OBJECTIVE FUNCTION linked to lines
-      </div>
+      <svg style={background: '#222', width: dim, height: dim}>
+        <g transform={"translate("+dim/2+" "+dim/2+")  scale(1 -1) "}>
+          { allLines
+              .filter (p) => lineEq(p, @state.hoveredLine)
+              .map (p) => <circle key={p.x} cx={p.x} cy={p.y} r="3" fill="red" /> }
+          { allLines
+              .filter (p) => not lineEq(p, @state.hoveredLine)
+              .map (p) => <circle key={p.x} cx={p.x} cy={p.y} r="3" fill="white" /> }
+        </g>
+      </svg>
     </div>
 
 
@@ -65,9 +72,7 @@ Lines = React.createClass
         onMouseOver={=> @props.selectLine(w)} />
 
     <g>
-    { require('./lines.json')
-        .map center(dim)
-        .map makeLine }
+    { allLines.map makeLine }
     </g>
 
 
@@ -86,3 +91,6 @@ rot90 = ({x,y}) ->
 
 dotProduct = ({x:x1,y:y1}, {x:x2,y:y2}) -> x1*x2 + y1*y2
 
+scale = (sf) -> ({x,y}) ->
+  x: x*sf
+  y: y*sf
