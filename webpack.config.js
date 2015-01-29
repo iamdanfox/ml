@@ -22,8 +22,9 @@ module.exports = {
       { test: /\.cjsx$/, loaders: ['react-hot', 'coffee-loader', 'cjsx-loader']},
       { test: /\.coffee$/, loaders: ['react-hot', 'coffee-loader'] },
       { test: /\.jsx$/, loaders: ['react-hot', 'jsx'] },
-      { test: /\.less$/, loader: 'style-loader!css-loader!less-loader' }, // use ! to chain loaders
-      { test: /\.css$/, loaders: ['style-loader','css-loader'] },
+      { test: /\.less$/, loader: ['style-loader', 'css-loader', 'less-loader'] },
+      { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
+      { test: /\.json$/, loaders: ['json-loader'] },
       {test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192'} // inline base64 URLs for <=8k images, direct URLs for the rest
     ]
   }
