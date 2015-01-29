@@ -1,13 +1,8 @@
 {
-  "name": "react-tutorial",
+  "name": "react-hot",
   "version": "0.0.0",
-  "description": "Code from the React tutorial.",
   "main": "server.js",
   "dependencies": {
-    "body-parser": "^1.6.6",
-    "cors": "^2.4.1",
-    "express": "^4.8.6",
-    "jquery": "^1.11.1",
     "react": "^0.11.0"
   },
   "devDependencies": {
@@ -29,20 +24,5 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/reactjs/react-tutorial.git"
-  },
-  "keywords": [
-    "react",
-    "tutorial",
-    "comment",
-    "example"
-  ],
-  "author": "petehunt",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/reactjs/react-tutorial/issues"
-  },
-  "homepage": "https://github.com/reactjs/react-tutorial"
+  "license": "MIT"
 }
