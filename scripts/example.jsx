@@ -3,9 +3,9 @@
 var Test = require('./Test'),
     React = require('react');
 
-window.React = React;
+window.React = React; // ensures the debugger works
 
-React.renderComponent(
+React.render(
   <Test />,
-  document.getElementById('content')
+  document.body
 );
