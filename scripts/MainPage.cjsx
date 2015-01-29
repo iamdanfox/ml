@@ -1,5 +1,9 @@
 React = require 'react'
 
+# genPoints = for i in [0..80]
+#   { x: Math.random(), y: Math.random() }
+
+
 module.exports = MainPage = React.createClass
   displayName: 'MainPage'
 
@@ -12,7 +16,8 @@ module.exports = MainPage = React.createClass
   render: ->
     dim = 400
 
-    allPoints = require('./points.json').map center(dim)
+
+    # console.log JSON.stringify allPoints
 
     yAxis = "M#{ 0 } #{ dim } L#{ 0 } #{ -dim }"
     xAxis = "M#{ -dim } #{ 0 } L#{ dim } #{ 0 }"
@@ -27,16 +32,8 @@ module.exports = MainPage = React.createClass
           <path d={yAxis} strokeWidth="3" stroke="#d0d0d0" />
 
           <Lines dim={dim} selectLine={@selectLine} hoveredLine={@state.hoveredLine} />
-          { if @state.hoveredLine?
-              <g>
-                <Points points={allPoints.filter (p) =>
-                  console.log p, @state.hoveredLine, dotProduct(p, @state.hoveredLine)
-                  dotProduct(p, @state.hoveredLine) > 0} color="red" />
-                <Points points={allPoints.filter (p) => dotProduct(p, @state.hoveredLine) <= 0} color="blue" />
-              </g>
-            else
-              <Points points={allPoints} color="black" />
-            }
+          <Points points={require './class0points.json'} color="red" />
+          <Points points={require './class1points.json'} color="blue" />
         </g>
       </svg>
 
