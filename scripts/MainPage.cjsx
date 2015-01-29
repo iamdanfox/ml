@@ -3,6 +3,12 @@ React = require 'react'
 module.exports = MainPage = React.createClass
   displayName: 'MainPage'
 
+  getInitialState: ->
+    hoveredLine: null
+
+  selectLine: (line) ->
+    @setState hoveredLine: line
+
   render: ->
     dim = 400
 
@@ -15,10 +21,10 @@ module.exports = MainPage = React.createClass
 
       <svg style={background:'#e0e0e0', width:dim, height:dim}>
         <g transform={"translate("+dim/2+" "+dim/2+") scale(1 -1)"}>
-          <Points dim={dim} />
           <path d={xAxis} strokeWidth="3" stroke="#d0d0d0" />
           <path d={yAxis} strokeWidth="3" stroke="#d0d0d0" />
-          <Lines dim={dim} />
+          <Points dim={dim} />
+          <Lines dim={dim} selectLine={@selectLine} hoveredLine={@state.hoveredLine} />
         </g>
       </svg>
 
@@ -30,38 +36,48 @@ module.exports = MainPage = React.createClass
 
 Points = React.createClass
   render: ->
-    center = ({x,y}) => {
-      x: (x - 0.5) * @props.dim
-      y: (y - 0.5) * @props.dim
-    }
-
     <g>
     { require('./points.json')
-        .map center
+        .map center(@props.dim)
         .map (p) -> <circle key={p.x} cx={p.x} cy={p.y} r="3" fill="red" /> }
     </g>
 
 
 Lines = React.createClass
+
   render: ->
     dim = @props.dim
 
-    center = ({x,y}) -> {
-      x: (x - 0.5) * dim
-      y: (y - 0.5) * dim
-    }
-
-    # counter clockwise rotation of a vector, by 90 degrees
-    rot90 = ({x,y}) -> {x: -y, y: x}
-
-    # the argument vector is in the direction of the line
-    makeLine = ({x,y}) ->
+    # the argument vector is in the normal to the line
+    makeLine = (w) =>
+      {x,y} = rot90 w
       # this doesn't bother to constrain the lines exactly, preferring to just overshoot the DIM,DIM viewport
-      <path d="M #{-x*dim} #{-y*dim} L #{x*dim} #{y*dim}" strokeWidth="1.5" stroke="rgba(30,30,30,0.3)" />
+      <path d="M #{-x*dim} #{-y*dim} L #{x*dim} #{y*dim}"
+        strokeWidth="1.5"
+        stroke={if lineEq(w, @props.hoveredLine) then "rgba(30,30,30,0.7)" else "rgba(30,30,30,0.3)"}
+        onMouseOver={=> @props.selectLine(w)} />
 
     <g>
     { require('./lines.json')
-        .map center
-        .map rot90
+        .map center(dim)
         .map makeLine }
     </g>
+
+
+
+lineEq = (p1, p2) ->
+  (p1? and p2?) and (p1.x is p2.x) and (p1.y is p2.y)
+
+center = (dim) -> ({x,y}) ->
+  x: (x - 0.5) * dim
+  y: (y - 0.5) * dim
+
+# counter clockwise rotation of a vector, by 90 degrees
+rot90 = ({x,y}) ->
+  x: -y
+  y: x
+
+dotProduct = ({x1,y1}, {x2,y2}) ->
+  x: x1*x2
+  y: y1*y2
+
