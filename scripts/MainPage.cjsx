@@ -12,6 +12,8 @@ module.exports = MainPage = React.createClass
   render: ->
     dim = 400
 
+    allPoints = require('./points.json').map center(dim)
+
     yAxis = "M#{ 0 } #{ dim } L#{ 0 } #{ -dim }"
     xAxis = "M#{ -dim } #{ 0 } L#{ dim } #{ 0 }"
 
@@ -23,8 +25,18 @@ module.exports = MainPage = React.createClass
         <g transform={"translate("+dim/2+" "+dim/2+") scale(1 -1)"}>
           <path d={xAxis} strokeWidth="3" stroke="#d0d0d0" />
           <path d={yAxis} strokeWidth="3" stroke="#d0d0d0" />
-          <Points dim={dim} />
+
           <Lines dim={dim} selectLine={@selectLine} hoveredLine={@state.hoveredLine} />
+          { if @state.hoveredLine?
+              <g>
+                <Points points={allPoints.filter (p) =>
+                  console.log p, @state.hoveredLine, dotProduct(p, @state.hoveredLine)
+                  dotProduct(p, @state.hoveredLine) > 0} color="red" />
+                <Points points={allPoints.filter (p) => dotProduct(p, @state.hoveredLine) <= 0} color="blue" />
+              </g>
+            else
+              <Points points={allPoints} color="black" />
+            }
         </g>
       </svg>
 
@@ -37,9 +49,7 @@ module.exports = MainPage = React.createClass
 Points = React.createClass
   render: ->
     <g>
-    { require('./points.json')
-        .map center(@props.dim)
-        .map (p) -> <circle key={p.x} cx={p.x} cy={p.y} r="3" fill="red" /> }
+      {@props.points.map (p) => <circle key={p.x} cx={p.x} cy={p.y} r="3" fill={@props.color} /> }
     </g>
 
 
@@ -77,7 +87,5 @@ rot90 = ({x,y}) ->
   x: -y
   y: x
 
-dotProduct = ({x1,y1}, {x2,y2}) ->
-  x: x1*x2
-  y: y1*y2
+dotProduct = ({x:x1,y:y1}, {x:x2,y:y2}) -> x1*x2 + y1*y2
 
