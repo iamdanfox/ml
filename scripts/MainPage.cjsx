@@ -5,6 +5,8 @@ AllPoints = require './AllPoints.cjsx'
 ObjectiveFunctionVis = require './ObjectiveFunctionVis.cjsx'
 
 
+require './Surface.js'
+
 DIM = 400
 
 module.exports = MainPage = React.createClass
@@ -67,7 +69,6 @@ module.exports = MainPage = React.createClass
       <DataSlider color="blue" fullData={require('../data/class1points.json')} cutoff={@state.cutoffs[1]} updateCutoff={@updateCutoff(1)} />
 
     </div>
-
 
 DataSlider = React.createClass
   displayName: 'DataSlider'
