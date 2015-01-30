@@ -53,5 +53,27 @@ module.exports = MainPage = React.createClass
         highlightW={@highlightW}
         highlightedW={@state.highlightedW}
         clearHighlightedW={@clearHighlightedW} />
+
+      <DataSlider color="red" fullData={pointClasses[0]} />
+      <DataSlider color="blue" fullData={pointClasses[1]} />
+
     </div>
 
+
+DataSlider = React.createClass
+  displayName: 'DataSlider'
+
+  propTypes:
+    fullData: React.PropTypes.array.isRequired
+    color: React.PropTypes.string.isRequired
+    # updateSelection: React.PropTypes.func.isRequired
+
+  render: ->
+    <svg style={width: DIM, height: 20, background: '#e0e0e0', display: 'block', margin: '10 0'}>
+      { @props.fullData.map ({x,y}) =>
+          angleRadians = Math.atan(y/x)
+          angleNormalized = angleRadians/Math.PI
+          i = angleNormalized * DIM + 0.5* DIM
+          # console.assert 0 < i < DIM
+          <path d="M #{i} 0 L #{i} 20" strokeWidth="1" stroke={@props.color} /> }
+    </svg>
