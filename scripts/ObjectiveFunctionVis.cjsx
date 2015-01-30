@@ -2,6 +2,14 @@ React = require 'react'
 {rot90, lineEq, scale, dotProduct, sizeSquared} = require './VectorUtils.cjsx'
 
 
+num = 14
+
+
+grid = [0..num].map (x) -> for y in [0..num]
+  x: x/num - 0.5
+  y: y/num - 0.5
+flatGrid = Array.prototype.concat.apply [], grid
+
 module.exports = ObjectiveFunctionVis = React.createClass
   displayName: 'ObjectiveFunctionVis'
 
@@ -10,15 +18,16 @@ module.exports = ObjectiveFunctionVis = React.createClass
 
     <svg style={background: '#222', width: dim, height: dim}>
       <g transform={"translate("+dim/2+" "+dim/2+")  scale(1 -1) "}>
-        { require('../data/lines.json')
+        { flatGrid  # require('../data/lines.json')
+            .filter (w) -> not lineEq(w, {x:0,y:0})
             .map (w) =>
               w2 = scale(dim)(w)
-              if lineEq(w, @props.hoveredLine)
-                lso = leastSquaresObjective(w)
-                console.log lso
-                <circle key={w2.x} cx={w2.x} cy={w2.y} r="3" fill="red" />
-              else
-                <circle key={w2.x} cx={w2.x} cy={w2.y} r="3" fill="white" /> }
+              lso = leastSquaresObjective(w)
+              console.assert not isNaN(lso)
+
+              radius = 10 - 0.7*Math.log(lso+1) # errors are roughly ~1132257, so log makes them reasonable.
+
+              <circle cx={w2.x} cy={w2.y} r={radius} fill="white" /> }
       </g>
     </svg>
 
@@ -26,17 +35,15 @@ module.exports = ObjectiveFunctionVis = React.createClass
 
 # for every misclassified point, find the distance squared to the separating line
 leastSquaresObjective = (w) ->
-  errorSquared = 0
   rot90w = rot90 w
-  for point in missclassifiedPoints w
-    errorSquared += findError(rot90w, point)
-
-  errorSquared
+  misclassifiedPoints(w)
+    .map (point) -> findError(rot90w, point)
+    .reduce ((e1, e2) -> e1 + e2), 0
 
 class0points = require '../data/class0points.json'
 class1points = require '../data/class1points.json'
 
-missclassifiedPoints = (w) ->
+misclassifiedPoints = (w) ->
   as = class0points.filter (p) -> dotProduct(p, w) <= 0
   bs = class1points.filter (p) -> dotProduct(p, w) > 0
   return as.concat(bs)
