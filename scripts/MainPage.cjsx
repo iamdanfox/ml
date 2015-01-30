@@ -1,6 +1,63 @@
 React = require 'react'
 
-allLines =  require('./lines.json').map center(dim)
+dim = 400
+
+lineEq = (p1, p2) ->
+  (p1? and p2?) and (p1.x is p2.x) and (p1.y is p2.y)
+
+center = (dim) -> ({x,y}) ->
+  x: (x - 0.5) * dim
+  y: (y - 0.5) * dim
+
+# counter clockwise rotation of a vector, by 90 degrees
+rot90 = ({x,y}) ->
+  x: -y
+  y: x
+
+dotProduct = ({x:x1,y:y1}, {x:x2,y:y2}) -> x1*x2 + y1*y2
+
+scale = (sf) -> ({x,y}) ->
+  x: x*sf
+  y: y*sf
+
+sizeSquared = ({x,y}) -> x*2 + y*2
+
+allLines = require('./lines.json').map center(dim)
+class0points = require './class0points.json'
+class1points = require './class1points.json'
+
+
+# for every misclassified point, find the distance squared to the separating line
+leastSquaresObjective = (w) ->
+  errorSquared = 0
+  rot90w = rot90 w
+  for point in missclassifiedPoints w
+    errorSquared += findError(rot90w, point)
+
+  errorSquared
+
+missclassifiedPoints = (w) ->
+  as = class0points.filter (p) -> dotProduct(p, w) <= 0
+  bs = class1points.filter (p) -> dotProduct(p, w) > 0
+  return as.concat(bs)
+
+# returns the square of the distance to rot90w's line
+findError = (rot90w, point) ->
+  # consider a triangle made of the vector `point`, the line `rot90w` and the distance `d`.
+  # let `theta` be the angle at the origin
+  # trigonometry: d = |point|*sin(theta)
+  # we desire d^2
+  #           d^2 = |point|^2 * sin^2(theta)
+  # trignometric identity
+  #           d^2 = |point|^2 * (1 - cos^2(theta))
+  # we can find `cos(theta)` using the dot product
+  #           d^2 = |point|^2 * (1 - (rot90w . point)^2/(|rot90w|*|point|)^2 )
+  # eliminating factors of |point|^2
+  #           d^2 = |point|^2 - (rot90w . point)^2 / |rot90w|^2
+
+  dp = dotProduct rot90w, point
+  console.log dp * dp
+  return sizeSquared(point) - ( (dp * dp) / sizeSquared(rot90w) )
 
 
 module.exports = MainPage = React.createClass
@@ -13,9 +70,6 @@ module.exports = MainPage = React.createClass
     @setState hoveredLine: line
 
   render: ->
-    dim = 400
-
-
     # console.log JSON.stringify allPoints
 
     yAxis = "M#{ 0 } #{ dim } L#{ 0 } #{ -dim }"
@@ -40,17 +94,21 @@ module.exports = MainPage = React.createClass
       <svg style={background: '#222', width: dim, height: dim}>
         <g transform={"translate("+dim/2+" "+dim/2+")  scale(1 -1) "}>
           { allLines
-              .filter (p) => lineEq(p, @state.hoveredLine)
-              .map (p) => <circle key={p.x} cx={p.x} cy={p.y} r="3" fill="red" /> }
-          { allLines
-              .filter (p) => not lineEq(p, @state.hoveredLine)
-              .map (p) => <circle key={p.x} cx={p.x} cy={p.y} r="3" fill="white" /> }
+              .map (w) =>
+                if lineEq(w, @state.hoveredLine)
+                  console.log leastSquaresObjective(w)
+
+                  <circle key={w.x} cx={w.x} cy={w.y} r="3" fill="red" />
+                else
+                  <circle key={w.x} cx={w.x} cy={w.y} r="3" fill="white" /> }
         </g>
       </svg>
     </div>
 
 
 Points = React.createClass
+  displayName: 'Points'
+
   render: ->
     <g>
       {@props.points.map (p) => <circle key={p.x} cx={p.x} cy={p.y} r="3" fill={@props.color} /> }
@@ -58,6 +116,7 @@ Points = React.createClass
 
 
 Lines = React.createClass
+  displayName: 'Lines'
 
   render: ->
     dim = @props.dim
@@ -75,22 +134,3 @@ Lines = React.createClass
     { allLines.map makeLine }
     </g>
 
-
-
-lineEq = (p1, p2) ->
-  (p1? and p2?) and (p1.x is p2.x) and (p1.y is p2.y)
-
-center = (dim) -> ({x,y}) ->
-  x: (x - 0.5) * dim
-  y: (y - 0.5) * dim
-
-# counter clockwise rotation of a vector, by 90 degrees
-rot90 = ({x,y}) ->
-  x: -y
-  y: x
-
-dotProduct = ({x:x1,y:y1}, {x:x2,y:y2}) -> x1*x2 + y1*y2
-
-scale = (sf) -> ({x,y}) ->
-  x: x*sf
-  y: y*sf
