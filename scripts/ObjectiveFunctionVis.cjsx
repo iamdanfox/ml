@@ -21,14 +21,13 @@ module.exports = ObjectiveFunctionVis = React.createClass
   render: ->
     dim = @props.dim
 
-    num = 14
+    num = 24
     stepSize = dim/num * Math.sqrt(2)
     grid = [0..num].map (x) -> for y in [0..num]
       x: x - num/2
       y: y - num/2
     flatGridSmall = Array.prototype.concat.apply [], grid
     flatGrid = flatGridSmall.map scale(stepSize)
-
 
     if @props.highlightedW? # lineEq highlighted and origin ... different vector representations!
       [x,y] = @props.highlightedW
@@ -41,10 +40,13 @@ module.exports = ObjectiveFunctionVis = React.createClass
         .map ({x,y}) -> add( scale(x)(unitW) )( scale(y)(perp) )
         .map add(offset)
 
+    inbounds = ({x,y}) -> (-dim/2 -10 < x < dim/2 + 10) and (-dim/2 -10 < y < dim/2 + 10)
+
     <svg style={background: '#222', width: dim, height: dim} onMouseMove={@mouseMove} onMouseLeave={@clearHighlightedW} ref='svg'>
       <g transform={"translate("+dim/2+" "+dim/2+")  scale(1 -1) "}>
         { flatGrid  # require('../data/lines.json')
             .filter (w) -> not lineEq(w, {x:0,y:0})
+            .filter inbounds
             .map (w) =>
               lso = leastSquaresObjective(w, @props.pointClasses)
               console.assert not isNaN(lso)
