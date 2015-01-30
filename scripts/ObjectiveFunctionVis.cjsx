@@ -2,21 +2,25 @@ React = require 'react'
 {rot90, lineEq, scale, dotProduct, sizeSquared} = require './VectorUtils.cjsx'
 
 
-num = 14
-
-
-grid = [0..num].map (x) -> for y in [0..num]
-  x: x/num - 0.5
-  y: y/num - 0.5
-flatGrid = Array.prototype.concat.apply [], grid
-
 module.exports = ObjectiveFunctionVis = React.createClass
   displayName: 'ObjectiveFunctionVis'
+
+  getInitialState: ->
+    highlightW: null
+
+  mouseMove: (e) ->
+    {left, top} = @refs.svg.getDOMNode().getBoundingClientRect()
+    x = e.pageX - left
+    y = @props.dim - (e.pageY - top)
+    @setState highlightW: [x - @props.dim/2, y - @props.dim/2]
+
+  clearMousePosition: ->
+    @setState highlightW: null
 
   render: ->
     dim = @props.dim
 
-    <svg style={background: '#222', width: dim, height: dim}>
+    <svg style={background: '#222', width: dim, height: dim} onMouseMove={@mouseMove} onMouseLeave={@clearMousePosition} ref='svg'>
       <g transform={"translate("+dim/2+" "+dim/2+")  scale(1 -1) "}>
         { flatGrid  # require('../data/lines.json')
             .filter (w) -> not lineEq(w, {x:0,y:0})
@@ -25,12 +29,29 @@ module.exports = ObjectiveFunctionVis = React.createClass
               lso = leastSquaresObjective(w)
               console.assert not isNaN(lso)
 
-              radius = 10 - 0.7*Math.log(lso+1) # errors are roughly ~1132257, so log makes them reasonable.
+              <circle cx={w2.x} cy={w2.y} r={projectErrorToRadius lso} fill="white" /> }
 
-              <circle cx={w2.x} cy={w2.y} r={radius} fill="white" /> }
+        { if @state.highlightW?
+            [x,y] = @state.highlightW
+            semiRed = "rgba(255,0,0,0.4)"
+            lso = leastSquaresObjective({x,y})
+            <g>
+              <path d="M 0 0 L #{x} #{y}"
+              strokeWidth="1.5"
+              stroke={semiRed} />
+              <circle cx={x} cy={y} r={projectErrorToRadius lso} fill={semiRed} />
+            </g> }
       </g>
     </svg>
 
+projectErrorToRadius = (error) -> 10 - 0.7*Math.log(error+1) # errors are roughly ~1132257, so log makes them reasonable.
+
+
+num = 14
+grid = [0..num].map (x) -> for y in [0..num]
+  x: x/num - 0.5
+  y: y/num - 0.5
+flatGrid = Array.prototype.concat.apply [], grid
 
 
 # for every misclassified point, find the distance squared to the separating line
