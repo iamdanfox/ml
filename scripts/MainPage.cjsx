@@ -5,10 +5,6 @@ dim = 400
 lineEq = (p1, p2) ->
   (p1? and p2?) and (p1.x is p2.x) and (p1.y is p2.y)
 
-center = ({x,y}) ->
-  x: (x - 0.5)
-  y: (y - 0.5)
-
 # counter clockwise rotation of a vector, by 90 degrees
 rot90 = ({x,y}) ->
   x: -y
@@ -24,9 +20,6 @@ sizeSquared = ({x,y}) -> x*2 + y*2
 
 
 
-allLines = require('./lines.json')
-              .map center
-              .map scale(dim)
 class0points = require './class0points.json'
 class1points = require './class1points.json'
 
@@ -97,14 +90,14 @@ module.exports = MainPage = React.createClass
 
       <svg style={background: '#222', width: dim, height: dim}>
         <g transform={"translate("+dim/2+" "+dim/2+")  scale(1 -1) "}>
-          { allLines
+          { require('./lines.json')
               .map (w) =>
+                w2 = scale(dim)(w)
                 if lineEq(w, @state.hoveredLine)
-                  console.log leastSquaresObjective(w)
-
-                  <circle key={w.x} cx={w.x} cy={w.y} r="3" fill="red" />
+                  # console.log leastSquaresObjective(w)
+                  <circle key={w2.x} cx={w2.x} cy={w2.y} r="3" fill="red" />
                 else
-                  <circle key={w.x} cx={w.x} cy={w.y} r="3" fill="white" /> }
+                  <circle key={w2.x} cx={w2.x} cy={w2.y} r="3" fill="white" /> }
         </g>
       </svg>
     </div>
@@ -133,28 +126,26 @@ Lines = React.createClass
     edges = [top, right, bottom, left]
 
     # the argument vector is in the normal to the line
-    makeLine = (w) =>
-      {x,y} = v = rot90 w # v is now the direction of the line
-
-      # we construct vectors for the edge of the viewport, then intersection test them.
-      # this yields the lambda that we need to multiply v by to reach the edge.
-      intersections = edges.map ([p1,p2]) -> lambdaGamma([0,0], [x,y], p1, p2)
-        .filter (lg) ->
-          if lg?
-            [lambda, gamma] = lg
-            return 0 < lambda and (0 < gamma <= 1) # not conventional intersection
-          else
-            return false
-      [lambda,gamma] = intersections[0]
-      boundaryPoint = scale(lambda)(v)
-
-      <path d="M #{-boundaryPoint.x} #{-boundaryPoint.y} L #{boundaryPoint.x} #{boundaryPoint.y}"
-        strokeWidth="1.5"
-        stroke={if lineEq(w, @props.hoveredLine) then "rgba(30,30,30,0.7)" else "rgba(30,30,30,0.3)"}
-        onMouseOver={=> @props.selectLine(w)} />
-
     <g>
-    { require('./lines.json').map(center).map makeLine }
+    { require('./lines.json').map (w) =>
+        {x,y} = v = rot90 w # v is now the direction of the line
+
+        # we construct vectors for the edge of the viewport, then intersection test them.
+        # this yields the lambda that we need to multiply v by to reach the edge.
+        intersections = edges.map ([p1,p2]) -> lambdaGamma([0,0], [x,y], p1, p2)
+          .filter (lg) ->
+            if lg?
+              [lambda, gamma] = lg
+              return 0 < lambda and (0 < gamma <= 1) # not conventional intersection
+            else
+              return false
+        [lambda,gamma] = intersections[0]
+        boundaryPoint = scale(lambda)(v)
+
+        <path key={x+""+y} d="M #{-boundaryPoint.x} #{-boundaryPoint.y} L #{boundaryPoint.x} #{boundaryPoint.y}"
+          strokeWidth="1.5"
+          stroke={if lineEq(w, @props.hoveredLine) then "rgba(30,30,30,0.7)" else "rgba(30,30,30,0.3)"}
+          onMouseOver={=> @props.selectLine(w)} /> }
     </g>
 
 
@@ -169,13 +160,10 @@ lambdaGamma = ([a,b],[c,d],[p,q],[r,s]) ->
     gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det
     return [lambda, gamma]
 
-validLambdaGamma = (lg) ->
-  if lg?
+# each p needs to be a 2-element array:[x,y]
+intersects = (p1,p2,p3,p4) ->
+  if (lg = lambdaGamma(p1,p2,p3,p4))?
     [lambda, gamma] = lg
     return (0 < lambda <= 1) and (0 < gamma <= 1)
   else
     return false
-
-# each p needs to be a 2-element array:[x,y]
-intersects = (p1,p2,p3,p4) ->
-  validLambdaGamma lambdaGamma(p1,p2,p3,p4)
