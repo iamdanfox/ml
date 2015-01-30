@@ -5,6 +5,10 @@ React = require 'react'
 module.exports = ObjectiveFunctionVis = React.createClass
   displayName: 'ObjectiveFunctionVis'
 
+  propTypes:
+    dim: React.PropTypes.number.isRequired
+    pointClasses: React.PropTypes.array.isRequired
+
   mouseMove: (e) ->
     {left, top} = @refs.svg.getDOMNode().getBoundingClientRect()
     x = e.pageX - left
@@ -23,7 +27,7 @@ module.exports = ObjectiveFunctionVis = React.createClass
             .filter (w) -> not lineEq(w, {x:0,y:0})
             .map (w) =>
               w2 = scale(dim)(w)
-              lso = leastSquaresObjective(w)
+              lso = leastSquaresObjective(w, @props.pointClasses)
               console.assert not isNaN(lso)
 
               <circle cx={w2.x} cy={w2.y} r={projectErrorToRadius lso} fill="white" /> }
@@ -31,7 +35,7 @@ module.exports = ObjectiveFunctionVis = React.createClass
         { if @props.highlightedW?
             [x,y] = @props.highlightedW
             semiRed = "rgba(255,0,0,0.4)"
-            lso = leastSquaresObjective({x,y})
+            lso = leastSquaresObjective({x,y}, @props.pointClasses)
             <g>
               <path d="M 0 0 L #{x} #{y}"
               strokeWidth="1.5"
@@ -52,16 +56,13 @@ flatGrid = Array.prototype.concat.apply [], grid
 
 
 # for every misclassified point, find the distance squared to the separating line
-leastSquaresObjective = (w) ->
+leastSquaresObjective = (w, pointClasses) ->
   rot90w = rot90 w
-  misclassifiedPoints(w)
+  misclassifiedPoints(w, pointClasses)
     .map (point) -> findError(rot90w, point)
     .reduce ((e1, e2) -> e1 + e2), 0
 
-class0points = require '../data/class0points.json'
-class1points = require '../data/class1points.json'
-
-misclassifiedPoints = (w) ->
+misclassifiedPoints = (w, [class0points, class1points]) ->
   as = class0points.filter (p) -> dotProduct(p, w) <= 0
   bs = class1points.filter (p) -> dotProduct(p, w) > 0
   return as.concat(bs)

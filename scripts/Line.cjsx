@@ -7,10 +7,11 @@ module.exports = Line = React.createClass
   displayName: 'Line'
 
   propTypes:
-    w: React.PropTypes.shape
-      x: React.PropTypes.number
-      y: React.PropTypes.number
-    dim: React.PropTypes.number
+    w: React.PropTypes.shape(
+      x: React.PropTypes.number.isRequired
+      y: React.PropTypes.number.isRequired
+    ).isRequired
+    dim: React.PropTypes.number.isRequired
 
   render: ->
     dim = @props.dim
