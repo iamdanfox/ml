@@ -5,22 +5,19 @@ React = require 'react'
 module.exports = ObjectiveFunctionVis = React.createClass
   displayName: 'ObjectiveFunctionVis'
 
-  getInitialState: ->
-    highlightW: null
-
   mouseMove: (e) ->
     {left, top} = @refs.svg.getDOMNode().getBoundingClientRect()
     x = e.pageX - left
     y = @props.dim - (e.pageY - top)
-    @setState highlightW: [x - @props.dim/2, y - @props.dim/2]
+    @props.highlightW x - @props.dim/2, y - @props.dim/2
 
-  clearMousePosition: ->
-    @setState highlightW: null
+  clearHighlightedW: ->
+    @props.clearHighlightedW()
 
   render: ->
     dim = @props.dim
 
-    <svg style={background: '#222', width: dim, height: dim} onMouseMove={@mouseMove} onMouseLeave={@clearMousePosition} ref='svg'>
+    <svg style={background: '#222', width: dim, height: dim} onMouseMove={@mouseMove} onMouseLeave={@clearHighlightedW} ref='svg'>
       <g transform={"translate("+dim/2+" "+dim/2+")  scale(1 -1) "}>
         { flatGrid  # require('../data/lines.json')
             .filter (w) -> not lineEq(w, {x:0,y:0})
@@ -31,8 +28,8 @@ module.exports = ObjectiveFunctionVis = React.createClass
 
               <circle cx={w2.x} cy={w2.y} r={projectErrorToRadius lso} fill="white" /> }
 
-        { if @state.highlightW?
-            [x,y] = @state.highlightW
+        { if @props.highlightedW?
+            [x,y] = @props.highlightedW
             semiRed = "rgba(255,0,0,0.4)"
             lso = leastSquaresObjective({x,y})
             <g>
