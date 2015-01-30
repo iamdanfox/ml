@@ -5,8 +5,6 @@ AllPoints = require './AllPoints.cjsx'
 ObjectiveFunctionVis = require './ObjectiveFunctionVis.cjsx'
 
 
-require './Surface.js'
-
 DIM = 400
 
 module.exports = MainPage = React.createClass
@@ -68,7 +66,31 @@ module.exports = MainPage = React.createClass
       <DataSlider color="red" fullData={require('../data/class0points.json')} cutoff={@state.cutoffs[0]} updateCutoff={@updateCutoff(0)} />
       <DataSlider color="blue" fullData={require('../data/class1points.json')} cutoff={@state.cutoffs[1]} updateCutoff={@updateCutoff(1)} />
 
+      <Surface />
+
     </div>
+
+
+
+makeSurface = require './Surface.js'
+
+Surface = React.createClass
+
+  shouldComponentUpdate: (nextProps, nextState) ->
+    # TODO check whether the data has changed and hence whether the objective plot should be re-calculated!
+    false
+    #If shouldComponentUpdate returns false, then render() will be completely skipped until the next state change. (In addition, componentWillUpdate and componentDidUpdate will not be called.)
+
+  componentWillReceiveProps: (nextProps) ->
+    # do mutations!
+
+  componentDidMount: ->
+    makeSurface(@refs.surface.getDOMNode())
+
+  render: ->
+    <div ref="surface"></div>
+
+
 
 DataSlider = React.createClass
   displayName: 'DataSlider'
