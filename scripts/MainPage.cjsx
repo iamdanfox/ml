@@ -68,12 +68,26 @@ DataSlider = React.createClass
     color: React.PropTypes.string.isRequired
     # updateSelection: React.PropTypes.func.isRequired
 
+  getInitialState: ->
+    cutOff: 1
+
+  mouseMove: (e) ->
+    @setState cutOff: (e.pageX - @refs.svg.getDOMNode().getBoundingClientRect().left) / DIM
+
   render: ->
-    <svg style={width: DIM, height: 20, background: '#e0e0e0', display: 'block', margin: '10 0'}>
-      { @props.fullData.map ({x,y}) =>
-          angleRadians = Math.atan(y/x)
-          angleNormalized = angleRadians/Math.PI
-          i = angleNormalized * DIM + 0.5* DIM
-          # console.assert 0 < i < DIM
-          <path d="M #{i} 0 L #{i} 20" strokeWidth="1" stroke={@props.color} /> }
+    height = 34
+    <svg style={width: DIM, height: height, background: '#e0e0e0', display: 'block', margin: '10 0'}
+      ref='svg' onMouseMove={@mouseMove}>
+      <g>
+        <rect x="0" y="0" height={height} width={@state.cutOff * DIM} style={fill:'#ccc'} />
+      </g>
+      <g>
+      { @props.fullData
+          .map project
+          .map (i) => <path d="M #{i*DIM} 0 L #{i*DIM} #{height}" strokeWidth="1" stroke={@props.color} /> }
+          </g>
     </svg>
+
+project = ({x,y}) ->
+  angleRadians = Math.atan(y/x)
+  return angleRadians/Math.PI + 0.5
