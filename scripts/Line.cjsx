@@ -14,28 +14,32 @@ module.exports = Line = React.createClass
     dim: React.PropTypes.number.isRequired
 
   render: ->
-    dim = @props.dim
+    if lineEq({x:0,y:0}, @props.w)
+      boundaryPoint =
+        x: 0
+        y: 0
+    else
+      dim = @props.dim
+      top = [ [-dim/2, dim/2], [dim/2, dim/2] ]
+      right = [ [dim/2, dim/2], [dim/2, -dim/2] ]
+      bottom = [ [dim/2, -dim/2], [-dim/2, -dim/2] ]
+      left = [ [-dim/2, -dim/2], [-dim/2, dim/2] ]
 
-    top = [ [-dim/2, dim/2], [dim/2, dim/2] ]
-    right = [ [dim/2, dim/2], [dim/2, -dim/2] ]
-    bottom = [ [dim/2, -dim/2], [-dim/2, -dim/2] ]
-    left = [ [-dim/2, -dim/2], [-dim/2, dim/2] ]
+      edges = [top, right, bottom, left]
 
-    edges = [top, right, bottom, left]
+      {x,y} = v = rot90 @props.w # v is now the direction of the line
 
-    {x,y} = v = rot90 @props.w # v is now the direction of the line
-
-    # we construct vectors for the edge of the viewport, then intersection test them.
-    # this yields the lambda that we need to multiply v by to reach the edge.
-    intersections = edges.map ([p1,p2]) -> lambdaGamma([0,0], [x,y], p1, p2)
-      .filter (lg) ->
-        if lg?
-          [lambda, gamma] = lg
-          return 0 < lambda and (0 < gamma <= 1) # not conventional intersection
-        else
-          return false
-    [lambda,gamma] = intersections[0]
-    boundaryPoint = scale(lambda)(v)
+      # we construct vectors for the edge of the viewport, then intersection test them.
+      # this yields the lambda that we need to multiply v by to reach the edge.
+      intersections = edges.map ([p1,p2]) -> lambdaGamma([0,0], [x,y], p1, p2)
+        .filter (lg) ->
+          if lg?
+            [lambda, gamma] = lg
+            return 0 < lambda and (0 < gamma <= 1) # not conventional intersection
+          else
+            return false
+      [lambda,gamma] = intersections[0]
+      boundaryPoint = scale(lambda)(v)
 
     <path d="M #{-boundaryPoint.x} #{-boundaryPoint.y} L #{boundaryPoint.x} #{boundaryPoint.y}"
       strokeWidth="1.5"

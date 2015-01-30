@@ -12,6 +12,7 @@ module.exports = MainPage = React.createClass
 
   getInitialState: ->
     highlightedW: null
+    cutoffs: [1, 1]
 
   mouseMove: (e) ->
     {left, top} = @refs.svg.getDOMNode().getBoundingClientRect()
@@ -23,10 +24,18 @@ module.exports = MainPage = React.createClass
     @setState highlightedW: [x,y]
 
   clearHighlightedW: ->
-    @setState highlightedW: null
+    # @setState highlightedW: null
+
+  updateCutoff: (i) -> (newCutoff) =>
+    newCutoffs = @state.cutoffs.slice(0) # clone
+    newCutoffs[i] = newCutoff
+    @setState
+      cutoffs: newCutoffs
 
   render: ->
-    pointClasses = [require('../data/class0points.json'), require('../data/class1points.json')]
+    pointClasses = [ require('../data/class0points.json'), require('../data/class1points.json') ]
+    for i,pointClass of pointClasses
+      pointClasses[i] = pointClass.filter (p) => project(p) < @state.cutoffs[i] # for want of a zip function!
 
     <div className='main-page'>
       <svg style={background:'#e0e0e0', width:DIM, height:DIM} ref='svg' onMouseMove={@mouseMove} onMouseLeave={@clearHighlightedW} >
@@ -54,8 +63,8 @@ module.exports = MainPage = React.createClass
         highlightedW={@state.highlightedW}
         clearHighlightedW={@clearHighlightedW} />
 
-      <DataSlider color="red" fullData={pointClasses[0]} />
-      <DataSlider color="blue" fullData={pointClasses[1]} />
+      <DataSlider color="red" fullData={require('../data/class0points.json')} cutoff={@state.cutoffs[0]} updateCutoff={@updateCutoff(0)} />
+      <DataSlider color="blue" fullData={require('../data/class1points.json')} cutoff={@state.cutoffs[1]} updateCutoff={@updateCutoff(1)} />
 
     </div>
 
@@ -66,28 +75,24 @@ DataSlider = React.createClass
   propTypes:
     fullData: React.PropTypes.array.isRequired
     color: React.PropTypes.string.isRequired
-    # updateSelection: React.PropTypes.func.isRequired
-
-  getInitialState: ->
-    cutOff: 1
+    cutoff: React.PropTypes.number.isRequired
+    updateCutoff: React.PropTypes.func.isRequired
 
   mouseMove: (e) ->
-    @setState cutOff: (e.pageX - @refs.svg.getDOMNode().getBoundingClientRect().left) / DIM
+    newCutoff = (e.pageX - @refs.svg.getDOMNode().getBoundingClientRect().left) / DIM
+    @props.updateCutoff newCutoff
 
   render: ->
     height = 34
     <svg style={width: DIM, height: height, background: '#e0e0e0', display: 'block', margin: '10 0'}
       ref='svg' onMouseMove={@mouseMove}>
-      <g>
-        <rect x="0" y="0" height={height} width={@state.cutOff * DIM} style={fill:'#ccc'} />
-      </g>
-      <g>
+      <rect x="0" y="0" height={height} width={@props.cutoff * DIM} style={fill:'#ccc'} />
       { @props.fullData
           .map project
-          .map (i) => <path d="M #{i*DIM} 0 L #{i*DIM} #{height}" strokeWidth="1" stroke={@props.color} /> }
-          </g>
+          .map (i) => <path d="M #{i*DIM} 0 L #{i*DIM} #{height}" strokeWidth="1"
+            stroke={@props.color} style={opacity: if i < @props.cutoff then 1 else 0.1} /> }
     </svg>
 
 project = ({x,y}) ->
   angleRadians = Math.atan(y/x)
-  return angleRadians/Math.PI + 0.5
+  return (angleRadians/Math.PI + 0.7) % 1

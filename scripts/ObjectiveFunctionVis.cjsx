@@ -1,5 +1,5 @@
 React = require 'react'
-{rot90, lineEq, scale, dotProduct, sizeSquared} = require './VectorUtils.cjsx'
+{rot90, lineEq, scale, dotProduct, sizeSquared, add} = require './VectorUtils.cjsx'
 
 
 module.exports = ObjectiveFunctionVis = React.createClass
@@ -21,21 +21,40 @@ module.exports = ObjectiveFunctionVis = React.createClass
   render: ->
     dim = @props.dim
 
+    num = 14
+    stepSize = dim/num * Math.sqrt(2)
+    grid = [0..num].map (x) -> for y in [0..num]
+      x: x - num/2
+      y: y - num/2
+    flatGridSmall = Array.prototype.concat.apply [], grid
+    flatGrid = flatGridSmall.map scale(stepSize)
+
+
+    if @props.highlightedW? # lineEq highlighted and origin ... different vector representations!
+      [x,y] = @props.highlightedW
+      w = {x,y}
+      lengthW = Math.sqrt(sizeSquared(w))
+      unitW = scale(1/lengthW)(w)
+      perp = rot90 unitW
+      offset = scale(lengthW % stepSize)(unitW)
+      flatGrid = flatGrid
+        .map ({x,y}) -> add( scale(x)(unitW) )( scale(y)(perp) )
+        .map add(offset)
+
     <svg style={background: '#222', width: dim, height: dim} onMouseMove={@mouseMove} onMouseLeave={@clearHighlightedW} ref='svg'>
       <g transform={"translate("+dim/2+" "+dim/2+")  scale(1 -1) "}>
         { flatGrid  # require('../data/lines.json')
             .filter (w) -> not lineEq(w, {x:0,y:0})
             .map (w) =>
-              w2 = scale(dim)(w)
               lso = leastSquaresObjective(w, @props.pointClasses)
               console.assert not isNaN(lso)
-
-              <circle cx={w2.x} cy={w2.y} r={projectErrorToRadius lso} fill="white" /> }
+              <circle key={w.x+" "+w.y} cx={w.x} cy={w.y} r={projectErrorToRadius lso} fill="white" /> }
 
         { if @props.highlightedW?
             [x,y] = @props.highlightedW
             semiRed = "rgba(255,0,0,0.4)"
             lso = leastSquaresObjective({x,y}, @props.pointClasses)
+            # console.assert not isNaN lso #THIS IS FAILING
             <g>
               <path d="M 0 0 L #{x} #{y}"
               strokeWidth="1.5"
@@ -47,12 +66,6 @@ module.exports = ObjectiveFunctionVis = React.createClass
 
 projectErrorToRadius = (error) -> 10 - 0.7*Math.log(error+1) # errors are roughly ~1132257, so log makes them reasonable.
 
-
-num = 14
-grid = [0..num].map (x) -> for y in [0..num]
-  x: x/num - 0.5
-  y: y/num - 0.5
-flatGrid = Array.prototype.concat.apply [], grid
 
 
 # for every misclassified point, find the distance squared to the separating line

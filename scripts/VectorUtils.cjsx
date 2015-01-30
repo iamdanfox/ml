@@ -14,3 +14,7 @@ module.exports =
     y: y*sf
 
   sizeSquared: ({x,y}) -> x*x + y*y
+
+  add: (a) -> (b) ->
+    x: a.x + b.x
+    y: a.y + b.y
