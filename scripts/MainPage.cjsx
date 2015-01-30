@@ -16,9 +16,7 @@ scale = (sf) -> ({x,y}) ->
   x: x*sf
   y: y*sf
 
-sizeSquared = ({x,y}) -> x*2 + y*2
-
-
+sizeSquared = ({x,y}) -> x*x + y*y
 
 class0points = require './class0points.json'
 class1points = require './class1points.json'
@@ -53,7 +51,6 @@ findError = (rot90w, point) ->
   #           d^2 = |point|^2 - (rot90w . point)^2 / |rot90w|^2
 
   dp = dotProduct rot90w, point
-  console.log dp * dp
   return sizeSquared(point) - ( (dp * dp) / sizeSquared(rot90w) )
 
 
@@ -94,7 +91,8 @@ module.exports = MainPage = React.createClass
               .map (w) =>
                 w2 = scale(dim)(w)
                 if lineEq(w, @state.hoveredLine)
-                  # console.log leastSquaresObjective(w)
+                  lso = leastSquaresObjective(w)
+                  console.log lso
                   <circle key={w2.x} cx={w2.x} cy={w2.y} r="3" fill="red" />
                 else
                   <circle key={w2.x} cx={w2.x} cy={w2.y} r="3" fill="white" /> }
