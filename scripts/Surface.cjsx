@@ -7,9 +7,6 @@ THREE = require 'three'
 graphMaterial = new THREE.MeshBasicMaterial
   side: THREE.DoubleSide
   vertexColors: THREE.FaceColors
-  color: null
-
-console.log graphMaterial
 
 sphereGeometry = new THREE.SphereGeometry(3, 32, 32)
 sphereMaterial = new THREE.MeshLambertMaterial();
@@ -33,7 +30,7 @@ module.exports = Surface = React.createClass
 
     @renderer = new THREE.WebGLRenderer({antialias:true} )
     @renderer.setSize( @props.dim, @props.dim );
-    @renderer.setClearColor( 0x333333, 1 );
+    @renderer.setClearColor( 0x111111, 1 );
 
     @addGraphMesh(@props)
 
@@ -56,12 +53,6 @@ module.exports = Surface = React.createClass
     @renderer?.render(@scene, @camera)
 
   addGraphMesh: (props) ->
-    # cartesianMeshFun = (i,j) =>
-    #   x = (i - 0.5) * props.dim
-    #   y = (j - 0.5) * props.dim
-    #   lso = leastSquaresObjective({x,y}, props.pointClasses)
-    #   return new THREE.Vector3(x, y, projectErrorForGraph lso);
-
     polarMeshFun = (i,j) =>
       theta = i * 2 * Math.PI
       r = Math.pow(2, 0.7* j) - 1 # this ensures there are lots of samples near the origin.
@@ -74,20 +65,23 @@ module.exports = Surface = React.createClass
 
     @graph = new THREE.Mesh( graphGeometry, graphMaterial )
 
-
     graphGeometry.computeBoundingBox();
     zMin = graphGeometry.boundingBox.min.z;
     zMax = graphGeometry.boundingBox.max.z;
     zRange = zMax - zMin;
 
-    red = new THREE.Color( 0xff00ff )
+    hue = 0.54
+    sat = 0.8
+    project = (z) -> 0.07 + 0.93*Math.pow(z, 2)
 
     faceIndices = [ 'a', 'b', 'c']
     for face in graphGeometry.faces
       totalZ = faceIndices
         .map (x) -> graphGeometry.vertices[face[x]].z
         .reduce ((a,b) -> a + b), 0
-      face.color.setHSL( (totalZ - 3*zMin) / (3*zRange) , 0.5, 0.5)
+      normalizedZ = (totalZ - 3*zMin) / (3*zRange)
+
+      face.color.setHSL( hue, sat, project(normalizedZ))
 
     @scene.add( @graph )
 
