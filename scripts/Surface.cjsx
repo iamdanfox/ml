@@ -124,14 +124,13 @@ module.exports = Surface = React.createClass
         plane = new THREE.Plane(new THREE.Vector3(0,0,1), -@state.mouseDownPoint.z)
         raycaster = @raycast(@state.mouseDownCamera, e)
         cursorPoint = raycaster.ray.intersectPlane(plane)
-        angle = (point) -> Math.atan(point.y/point.x)
-        deltaAngle = angle(cursorPoint) - angle(@state.mouseDownPoint)
-
-        fudge = if deltaAngle < 0 then Math.PI else 0
-
-        console.log deltaAngle, fudge
-        @setState
-          angle: @state.startAngle - (deltaAngle + fudge)
+        if cursorPoint?
+          angle = (point) -> Math.atan(point.y/point.x)
+          fudge = if (cursorPoint.x>0 and @state.mouseDownPoint.x<=0) or (cursorPoint.x<=0 and @state.mouseDownPoint.x>0) then Math.PI else 0
+          deltaAngle = angle(cursorPoint) - fudge - angle(@state.mouseDownPoint)
+          newAngle = @state.startAngle - deltaAngle
+          @setState
+            angle: newAngle
       else
         deltax = e.clientX - @state.downClientX
         angle = (deltax/@props.dim) * 2 * Math.PI
