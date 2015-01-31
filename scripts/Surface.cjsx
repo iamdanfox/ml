@@ -42,7 +42,7 @@ module.exports = Surface = React.createClass
     @camera.position.z = 180
 
     @refs.container.getDOMNode().appendChild(@renderer.domElement)
-    @raycaster = new THREE.Raycaster();
+
     @doRender()
 
   doRender: ->
@@ -102,29 +102,36 @@ module.exports = Surface = React.createClass
   componentWillUpdate: (nextProps, nextState) ->
     @doRender()
 
-  mm: (e) ->
-    if @state.down?
-      deltax = e.clientX - @state.down
+  mouseDown: (e) ->
+     @setState
+      downClientX: e.clientX
+      startAngle: @state.angle
+
+  mouseMove: (e) ->
+    if @state.downClientX?
+      deltax = e.clientX - @state.downClientX
       angle = (deltax/@props.dim) * 2 * Math.PI
 
       @setState
         angle: @state.startAngle - angle
     else
       #raycaster mode
-      {left, top} = @refs.container.getDOMNode().getBoundingClientRect()
-      x = 2 * (e.clientX - left) / @props.dim - 1
-      y = - 2 * (e.clientY - top) / @props.dim + 1
-
-      @raycaster.set( @camera.position, @camera );
-      @raycaster.ray.direction.set(x, y, 0.5).unproject(@camera).sub(@camera.position).normalize()
-
-      intersections = @raycaster.intersectObject(@graph)
+      intersections = @raycast(e).intersectObject(@graph)
       if intersections.length > 0
         {x,y} = intersections[0].point
         @props.highlightW x, y
 
+  raycast: (e) ->
+    {left, top} = @refs.container.getDOMNode().getBoundingClientRect()
+    x = 2 * (e.clientX - left) / @props.dim - 1
+    y = - 2 * (e.clientY - top) / @props.dim + 1
+    raycaster = new THREE.Raycaster();
+    raycaster.set( @camera.position, @camera );
+    raycaster.ray.direction.set(x, y, 0.5).unproject(@camera).sub(@camera.position).normalize()
+    return raycaster
+
   render: ->
     <div ref='container' style={display:'inline-block'}
-     onMouseDown={(e)=> @setState down:e.clientX, startAngle:@state.angle }
-     onMouseUp={=> @setState down:null}
-     onMouseMove={@mm}></div>
+     onMouseDown={@mouseDown}
+     onMouseUp={=> @setState downClientX:null}
+     onMouseMove={@mouseMove}></div>
