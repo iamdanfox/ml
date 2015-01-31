@@ -4,7 +4,7 @@ module.exports =
 
   projectErrorToRadius: (error) -> 10 - 0.7*Math.log(error+1) # errors are roughly ~1132257, so log makes them reasonable.
 
-  projectErrorForGraph: (error) -> 100 - 70* Math.log(error+1)
+  projectErrorForGraph: (error) -> 10 - 0.7* Math.log(error+1)
 
   # for every misclassified point, find the distance squared to the separating line
   leastSquaresObjective: (w, pointClasses) ->
