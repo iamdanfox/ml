@@ -93,17 +93,13 @@ module.exports = Surface = React.createClass
       x = 2 * (e.clientX - left) / @props.dim - 1
       y = - 2 * (e.clientY - top) / @props.dim + 1
 
-              # this.ray.direction.set( coords.x, coords.y, 0.5 ).unproject( camera ).sub( camera.position ).normalize();
-
-
       @raycaster.set( @camera.position, @camera );
       @raycaster.ray.direction.set(x, y, 0.5).unproject(@camera).sub(@camera.position).normalize()
 
-      console.log @scene.children, @raycaster.intersectObjects( @scene.children )
-        # console.log 'a'
-        # intersect.object.material.color = new THREE.Color( 0xff0000 )
-
-      @doRender()
+      intersections = @raycaster.intersectObject(@graph)
+      if intersections.length > 0
+        {x,y} = intersections[0].point
+        @props.highlightW x, y
 
   render: ->
     <div ref='container' style={display:'inline-block'}

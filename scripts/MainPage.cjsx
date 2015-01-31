@@ -56,7 +56,7 @@ module.exports = MainPage = React.createClass
         </g>
       </svg>
 
-      <Surface dim={DIM} highlightedW={@state.highlightedW} pointClasses={pointClasses} highlightedW={@state.highlightedW} />
+      <Surface dim={DIM} highlightedW={@state.highlightedW} pointClasses={pointClasses} highlightedW={@state.highlightedW} highlightW={@highlightW} />
 
       <DataSlider color="red" fullData={require('../data/class0points.json')} cutoff={@state.cutoffs[0]} updateCutoff={@updateCutoff(0)} />
       <DataSlider color="blue" fullData={require('../data/class1points.json')} cutoff={@state.cutoffs[1]} updateCutoff={@updateCutoff(1)} />
