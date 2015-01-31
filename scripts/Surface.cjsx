@@ -1,5 +1,6 @@
 React = require 'react'
 THREE = require 'three'
+OrbitControls = require('three-orbit-controls')(THREE)
 {projectErrorForGraph, leastSquaresObjective} = require './leastSquares.cjsx'
 
 
@@ -23,8 +24,17 @@ module.exports = Surface = React.createClass
     @scene = new THREE.Scene()
     @camera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 ) # Field of view, aspect ratio, near clip, far clip
 
+
     @renderer = new THREE.WebGLRenderer({antialias:true} )
     @renderer.setSize( @props.dim, @props.dim );
+
+    controls = new OrbitControls( @camera, @renderer.domElement );
+    controls.minDistance = 50
+    controls.maxDistance = 500
+    # controls.minAzimuthAngle = Math.PI / 4 # prevent going below x
+    # controls.maxAzimuthAngle = Math.PI / 4 # prevent going below x
+
+    controls.addEventListener( 'change', @doRender );
 
     @addGraphMesh(@props)
 
@@ -34,7 +44,7 @@ module.exports = Surface = React.createClass
     @updateSphere(@props)
     @scene.add( @sphere );
 
-    @camera.position.set(0,-300,350);
+    @camera.position.set(0,0,0);
     @camera.up = new THREE.Vector3( 0, 0, 1 );
     @camera.lookAt(@scene.position);
 
