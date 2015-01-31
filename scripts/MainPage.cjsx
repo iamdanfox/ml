@@ -67,7 +67,7 @@ module.exports = MainPage = React.createClass
       <DataSlider color="blue" fullData={require('../data/class1points.json')} cutoff={@state.cutoffs[1]} updateCutoff={@updateCutoff(1)} />
 
 
-      <Surface dim={DIM} highlightedW={@state.highlightedW} />
+      <Surface dim={DIM} highlightedW={@state.highlightedW} pointClasses={pointClasses} />
     </div>
 
 
