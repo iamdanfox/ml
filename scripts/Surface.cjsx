@@ -31,10 +31,13 @@ module.exports = Surface = React.createClass
     controls = new OrbitControls( @camera, @renderer.domElement );
     controls.minDistance = 50
     controls.maxDistance = 500
-    # controls.minAzimuthAngle = Math.PI / 4 # prevent going below x
-    # controls.maxAzimuthAngle = Math.PI / 4 # prevent going below x
+    controls.minPolarAngle = Math.PI/4
+    controls.maxPolarAngle = Math.PI/4
 
     controls.addEventListener( 'change', @doRender );
+    controls.addEventListener( 'change', ->
+      console.log controls.getAzimuthalAngle(), controls.getPolarAngle()
+    );
 
     @addGraphMesh(@props)
 
@@ -44,7 +47,7 @@ module.exports = Surface = React.createClass
     @updateSphere(@props)
     @scene.add( @sphere );
 
-    @camera.position.set(0,0,0);
+    @camera.position.set(0,-300,300);
     @camera.up = new THREE.Vector3( 0, 0, 1 );
     @camera.lookAt(@scene.position);
 
