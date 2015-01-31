@@ -12,7 +12,8 @@ num = 48
 module.exports = Surface = React.createClass
 
   getInitialState: ->
-    rotation: 0
+    angle: 0
+    down: null
 
   scene: null
   camera: null
@@ -34,21 +35,18 @@ module.exports = Surface = React.createClass
     @updateSphere(@props)
     @scene.add( @sphere );
 
-    @camera.position.set(0,-300,350);
     @camera.up = new THREE.Vector3( 0, 0, 1 );
-    @camera.lookAt(@scene.position);
+    @camera.position.z = 180
 
     @refs.container.getDOMNode().appendChild(@renderer.domElement)
 
     @doRender()
 
   doRender: ->
-    # spin the world
-    # if @props.highlightedW?
-    #   [x,y] = @props.highlightedW
-    #   @graph.rotation.z = Math.atan(y/x) + (if x >= 0 then Math.PI else 0)
+    @camera.position.x = Math.cos(@state.angle) * 300
+    @camera.position.y = Math.sin(@state.angle) * 300
+    @camera.lookAt(@scene.position);
 
-    # draw onto box
     @renderer?.render(@scene, @camera)
 
   addGraphMesh: (props) ->
@@ -79,5 +77,17 @@ module.exports = Surface = React.createClass
   componentWillUpdate: (nextProps, nextState) ->
     @doRender()
 
+  mm: (e) ->
+    if @state.down?
+      # {left} = @refs.container.getDOMNode().getBoundingClientRect()
+      deltax = e.clientX - @state.down
+      angle = (deltax/@props.dim) * 2 * Math.PI
+
+      @setState
+        angle: @state.startAngle - angle
+
   render: ->
-    <div ref='container' style={display:'inline-block'}></div>
+    <div ref='container' style={display:'inline-block'}
+     onMouseDown={(e)=> @setState down:e.clientX, startAngle:@state.angle }
+     onMouseUp={=> @setState down:null}
+     onMouseMove={@mm}></div>
