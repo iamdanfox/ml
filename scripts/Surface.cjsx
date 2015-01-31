@@ -117,30 +117,34 @@ module.exports = Surface = React.createClass
 
   mouseMove: (e) ->
     if @state.downClientX?
-
-      if @state.mouseDownPoint?
-        plane = new THREE.Plane(new THREE.Vector3(0,0,1), -@state.mouseDownPoint.z)
-        raycaster = @raycast(@state.mouseDownCamera, e)
-        cursorPoint = raycaster.ray.intersectPlane(plane)
-        if cursorPoint?
-          angle = (point) -> Math.atan(point.y/point.x)
-          fudge = if (cursorPoint.x>0 and @state.mouseDownPoint.x<=0) or (cursorPoint.x<=0 and @state.mouseDownPoint.x>0) then Math.PI else 0
-          deltaAngle = angle(cursorPoint) - fudge - angle(@state.mouseDownPoint)
-          newAngle = @state.startAngle - deltaAngle
-          @setState
-            angle: newAngle
-      else
-        deltax = e.clientX - @state.downClientX
-        angle = (deltax/@props.dim) * 2 * Math.PI
-
-        @setState
-          angle: @state.startAngle - angle
+      @handleDrag(e)
     else
-      #raycaster mode
-      intersections = @raycast(@camera, e).intersectObject(@graph)
-      if intersections.length > 0
-        {x,y} = intersections[0].point
-        @props.highlightW x, y
+      @handleHover(e)
+
+  handleDrag: (e) ->
+    if @state.mouseDownPoint?
+      plane = new THREE.Plane(new THREE.Vector3(0,0,1), -@state.mouseDownPoint.z)
+      raycaster = @raycast(@state.mouseDownCamera, e)
+      cursorPoint = raycaster.ray.intersectPlane(plane)
+      if cursorPoint?
+        angle = (point) -> Math.atan(point.y/point.x)
+        fudge = if (cursorPoint.x>0 and @state.mouseDownPoint.x<=0) or (cursorPoint.x<=0 and @state.mouseDownPoint.x>0) then Math.PI else 0
+        deltaAngle = angle(cursorPoint) - fudge - angle(@state.mouseDownPoint)
+        newAngle = @state.startAngle - deltaAngle
+        @setState
+          angle: newAngle
+    else
+      deltax = e.clientX - @state.downClientX
+      angle = (deltax/@props.dim) * 2 * Math.PI
+
+      @setState
+        angle: @state.startAngle - angle
+
+  handleHover: (e) ->
+    intersections = @raycast(@camera, e).intersectObject(@graph)
+    if intersections.length > 0
+      {x,y} = intersections[0].point
+      @props.highlightW x, y
 
   raycast: (camera, e) ->
     {left, top} = @refs.container.getDOMNode().getBoundingClientRect()
