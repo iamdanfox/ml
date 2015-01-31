@@ -3,72 +3,75 @@ THREE = require 'three'
 {projectErrorForGraph, leastSquaresObjective} = require './leastSquares.cjsx'
 
 
-# graphMaterial = new THREE.MeshNormalMaterial
-graphMaterial = new THREE.MeshBasicMaterial
-  side: THREE.DoubleSide
-  vertexColors: THREE.FaceColors
-
-sphereGeometry = new THREE.SphereGeometry(3, 32, 32)
-sphereMaterial = new THREE.MeshLambertMaterial();
-
-num = 24
-
 module.exports = Surface = React.createClass
-
   getInitialState: ->
     angle: 0
-    down: null
-
-  scene: null
-  camera: null
-  renderer: null
-  graph: null
 
   componentDidMount: ->
     @scene = new THREE.Scene()
+
+    @updateGraphMesh(@props)
+
+    @initializeSphere()
+    @updateSpherePosition(@props)
+
+    @initializeCamera()
+    @updateCamera(@state)
+
+    renderer = new THREE.WebGLRenderer
+      antialias: true
+    renderer.setSize( @props.dim, @props.dim )
+    renderer.setClearColor( 0x111111, 1 )
+    @renderScene = -> renderer.render(@scene, @camera)
+    @renderScene()
+
+    @refs.container.getDOMNode().appendChild(renderer.domElement)
+
+  initializeCamera: ->
     @camera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 ) # Field of view, aspect ratio, near clip, far clip
-
-    @renderer = new THREE.WebGLRenderer({antialias:true} )
-    @renderer.setSize( @props.dim, @props.dim );
-    @renderer.setClearColor( 0x111111, 1 );
-
-    @addGraphMesh(@props)
-
-    @sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
-    @updateSphere(@props)
-    @scene.add( @sphere );
-
-    @camera.up = new THREE.Vector3( 0, 0, 1 );
+    @camera.up = new THREE.Vector3( 0, 0, 1 )
     @camera.position.z = 180
 
-    @refs.container.getDOMNode().appendChild(@renderer.domElement)
+  updateCamera: (state) ->
+    @camera.position.x = Math.cos(state.angle) * 300
+    @camera.position.y = Math.sin(state.angle) * 300
+    @camera.lookAt(new THREE.Vector3(0,0,0))
 
-    @doRender()
+  initializeSphere: ->
+    sphereGeometry = new THREE.SphereGeometry(3, 32, 32)
+    sphereMaterial = new THREE.MeshLambertMaterial()
+    @sphere = new THREE.Mesh( sphereGeometry, sphereMaterial )
+    @scene.add( @sphere )
 
-  doRender: ->
-    @camera.position.x = Math.cos(@state.angle) * 300
-    @camera.position.y = Math.sin(@state.angle) * 300
-    @camera.lookAt(@scene.position);
+  updateSpherePosition: (props) ->
+    if props.highlightedW?
+      [x,y] = props.highlightedW
+      lso = leastSquaresObjective({x,y}, props.pointClasses)
+      z = projectErrorForGraph lso
+      @sphere.position.set(x,y,z)
 
-    @renderer?.render(@scene, @camera)
+  updateGraphMesh: (props) ->
+    @scene.remove @graph
 
-  addGraphMesh: (props) ->
     polarMeshFun = (i,j) =>
       theta = i * 2 * Math.PI
       r = Math.pow(2, 0.7* j) - 1 # this ensures there are lots of samples near the origin.
       x = r * Math.cos(theta) * props.dim
       y = r * Math.sin(theta) * props.dim
       lso = leastSquaresObjective({x,y}, props.pointClasses)
-      return new THREE.Vector3(x, y, projectErrorForGraph lso);
+      return new THREE.Vector3(x, y, projectErrorForGraph lso)
 
-    graphGeometry = new THREE.ParametricGeometry( polarMeshFun, 8* num, 0.5* num, true );
-
+    RESOLUTION = 24
+    graphGeometry = new THREE.ParametricGeometry( polarMeshFun, 8* RESOLUTION, 0.5* RESOLUTION, true )
+    graphMaterial = new THREE.MeshBasicMaterial
+      side: THREE.DoubleSide
+      vertexColors: THREE.FaceColors
     @graph = new THREE.Mesh( graphGeometry, graphMaterial )
 
-    graphGeometry.computeBoundingBox();
-    zMin = graphGeometry.boundingBox.min.z;
-    zMax = graphGeometry.boundingBox.max.z;
-    zRange = zMax - zMin;
+    graphGeometry.computeBoundingBox()
+    zMin = graphGeometry.boundingBox.min.z
+    zMax = graphGeometry.boundingBox.max.z
+    zRange = zMax - zMin
 
     hue = 0.54
     sat = 0.8
@@ -85,22 +88,15 @@ module.exports = Surface = React.createClass
 
     @scene.add( @graph )
 
-  updateSphere: (props) ->
-    if props.highlightedW?
-      [x,y] = props.highlightedW
-      lso = leastSquaresObjective({x,y}, props.pointClasses)
-      z = projectErrorForGraph lso;
-      @sphere.position.set(x,y,z)
-
   componentWillReceiveProps: (nextProps) ->
     if (nextProps.pointClasses[0].length isnt @props.pointClasses[0].length) or (nextProps.pointClasses[1].length isnt @props.pointClasses[1].length)
-      @scene.remove @graph
-      @addGraphMesh(nextProps)
+      @updateGraphMesh(nextProps)
 
-    @updateSphere(nextProps)
+    @updateSpherePosition(nextProps)
 
   componentWillUpdate: (nextProps, nextState) ->
-    @doRender()
+    @updateCamera(nextState)
+    @renderScene()
 
   mouseDown: (e) ->
     intersections = @raycast(@camera, e).intersectObject(@graph)
@@ -108,14 +104,16 @@ module.exports = Surface = React.createClass
       @setState
         mouseDownCamera: @camera.clone()
         mouseDownPoint: intersections[0].point
-    else
-      @setState
-        mouseDownCamera: null
-        mouseDownPoint: null
 
     @setState
       downClientX: e.clientX
       startAngle: @state.angle
+
+  mouseUp: ->
+    @setState
+      downClientX: null
+      mouseDownCamera: null
+      mouseDownPoint: null
 
   mouseMove: (e) ->
     if @state.downClientX?
@@ -148,13 +146,13 @@ module.exports = Surface = React.createClass
     {left, top} = @refs.container.getDOMNode().getBoundingClientRect()
     x = 2 * (e.clientX - left) / @props.dim - 1
     y = - 2 * (e.clientY - top) / @props.dim + 1
-    raycaster = new THREE.Raycaster();
-    raycaster.set( camera.position, camera );
+    raycaster = new THREE.Raycaster()
+    raycaster.set( camera.position, camera )
     raycaster.ray.direction.set(x, y, 0.5).unproject(camera).sub(camera.position).normalize()
     return raycaster
 
   render: ->
     <div ref='container' style={display:'inline-block'}
      onMouseDown={@mouseDown}
-     onMouseUp={=> @setState downClientX:null}
+     onMouseUp={@mouseUp}
      onMouseMove={@mouseMove}></div>
