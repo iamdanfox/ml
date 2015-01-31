@@ -3,11 +3,18 @@ THREE = require 'three'
 {projectErrorForGraph, leastSquaresObjective} = require './leastSquares.cjsx'
 
 
-material = new THREE.MeshNormalMaterial
-  color: 0x00ff00
+# graphMaterial = new THREE.MeshNormalMaterial
+graphMaterial = new THREE.MeshBasicMaterial
   side: THREE.DoubleSide
+  vertexColors: THREE.FaceColors
+  color: null
 
-num = 48
+console.log graphMaterial
+
+sphereGeometry = new THREE.SphereGeometry(3, 32, 32)
+sphereMaterial = new THREE.MeshLambertMaterial();
+
+num = 24
 
 module.exports = Surface = React.createClass
 
@@ -26,12 +33,11 @@ module.exports = Surface = React.createClass
 
     @renderer = new THREE.WebGLRenderer({antialias:true} )
     @renderer.setSize( @props.dim, @props.dim );
+    @renderer.setClearColor( 0x333333, 1 );
 
     @addGraphMesh(@props)
 
-    geometry = new THREE.SphereGeometry(3, 32, 32)
-    basicMaterial = new THREE.MeshLambertMaterial( {color: 0xff0000} );
-    @sphere = new THREE.Mesh( geometry, basicMaterial );
+    @sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
     @updateSphere(@props)
     @scene.add( @sphere );
 
@@ -39,10 +45,7 @@ module.exports = Surface = React.createClass
     @camera.position.z = 180
 
     @refs.container.getDOMNode().appendChild(@renderer.domElement)
-
     @raycaster = new THREE.Raycaster();
-    @mouse = new THREE.Vector2();
-
     @doRender()
 
   doRender: ->
@@ -53,14 +56,39 @@ module.exports = Surface = React.createClass
     @renderer?.render(@scene, @camera)
 
   addGraphMesh: (props) ->
-    meshFunction = (i,j) =>
-      x = (i - 0.5) * props.dim
-      y = (j - 0.5) * props.dim
+    # cartesianMeshFun = (i,j) =>
+    #   x = (i - 0.5) * props.dim
+    #   y = (j - 0.5) * props.dim
+    #   lso = leastSquaresObjective({x,y}, props.pointClasses)
+    #   return new THREE.Vector3(x, y, projectErrorForGraph lso);
+
+    polarMeshFun = (i,j) =>
+      theta = i * 2 * Math.PI
+      r = Math.pow(2, 0.7* j) - 1 # this ensures there are lots of samples near the origin.
+      x = r * Math.cos(theta) * props.dim
+      y = r * Math.sin(theta) * props.dim
       lso = leastSquaresObjective({x,y}, props.pointClasses)
       return new THREE.Vector3(x, y, projectErrorForGraph lso);
-    graphGeometry = new THREE.ParametricGeometry( meshFunction, num, num, true );
 
-    @graph = new THREE.Mesh( graphGeometry, material )
+    graphGeometry = new THREE.ParametricGeometry( polarMeshFun, 8* num, 0.5* num, true );
+
+    @graph = new THREE.Mesh( graphGeometry, graphMaterial )
+
+
+    graphGeometry.computeBoundingBox();
+    zMin = graphGeometry.boundingBox.min.z;
+    zMax = graphGeometry.boundingBox.max.z;
+    zRange = zMax - zMin;
+
+    red = new THREE.Color( 0xff00ff )
+
+    faceIndices = [ 'a', 'b', 'c']
+    for face in graphGeometry.faces
+      totalZ = faceIndices
+        .map (x) -> graphGeometry.vertices[face[x]].z
+        .reduce ((a,b) -> a + b), 0
+      face.color.setHSL( (totalZ - 3*zMin) / (3*zRange) , 0.5, 0.5)
+
     @scene.add( @graph )
 
   updateSphere: (props) ->
