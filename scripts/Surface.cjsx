@@ -40,6 +40,9 @@ module.exports = Surface = React.createClass
 
     @refs.container.getDOMNode().appendChild(@renderer.domElement)
 
+    @raycaster = new THREE.Raycaster();
+    @mouse = new THREE.Vector2();
+
     @doRender()
 
   doRender: ->
@@ -79,12 +82,28 @@ module.exports = Surface = React.createClass
 
   mm: (e) ->
     if @state.down?
-      # {left} = @refs.container.getDOMNode().getBoundingClientRect()
       deltax = e.clientX - @state.down
       angle = (deltax/@props.dim) * 2 * Math.PI
 
       @setState
         angle: @state.startAngle - angle
+    else
+      #raycaster mode
+      {left, top} = @refs.container.getDOMNode().getBoundingClientRect()
+      x = 2 * (e.clientX - left) / @props.dim - 1
+      y = - 2 * (e.clientY - top) / @props.dim + 1
+
+              # this.ray.direction.set( coords.x, coords.y, 0.5 ).unproject( camera ).sub( camera.position ).normalize();
+
+
+      @raycaster.set( @camera.position, @camera );
+      @raycaster.ray.direction.set(x, y, 0.5).unproject(@camera).sub(@camera.position).normalize()
+
+      console.log @scene.children, @raycaster.intersectObjects( @scene.children )
+        # console.log 'a'
+        # intersect.object.material.color = new THREE.Color( 0xff0000 )
+
+      @doRender()
 
   render: ->
     <div ref='container' style={display:'inline-block'}
