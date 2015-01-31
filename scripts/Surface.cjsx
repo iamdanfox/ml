@@ -103,31 +103,55 @@ module.exports = Surface = React.createClass
     @doRender()
 
   mouseDown: (e) ->
-     @setState
+    intersections = @raycast(@camera, e).intersectObject(@graph)
+    if intersections.length > 0 # try to drag
+      @setState
+        mouseDownCamera: @camera.clone()
+        mouseDownPoint: intersections[0].point
+    else
+      @setState
+        mouseDownCamera: null
+        mouseDownPoint: null
+
+    @setState
       downClientX: e.clientX
       startAngle: @state.angle
 
   mouseMove: (e) ->
     if @state.downClientX?
-      deltax = e.clientX - @state.downClientX
-      angle = (deltax/@props.dim) * 2 * Math.PI
 
-      @setState
-        angle: @state.startAngle - angle
+      if @state.mouseDownPoint?
+        plane = new THREE.Plane(new THREE.Vector3(0,0,1), -@state.mouseDownPoint.z)
+        raycaster = @raycast(@state.mouseDownCamera, e)
+        cursorPoint = raycaster.ray.intersectPlane(plane)
+        angle = (point) -> Math.atan(point.y/point.x)
+        deltaAngle = angle(cursorPoint) - angle(@state.mouseDownPoint)
+
+        fudge = if deltaAngle < 0 then Math.PI else 0
+
+        console.log deltaAngle, fudge
+        @setState
+          angle: @state.startAngle - (deltaAngle + fudge)
+      else
+        deltax = e.clientX - @state.downClientX
+        angle = (deltax/@props.dim) * 2 * Math.PI
+
+        @setState
+          angle: @state.startAngle - angle
     else
       #raycaster mode
-      intersections = @raycast(e).intersectObject(@graph)
+      intersections = @raycast(@camera, e).intersectObject(@graph)
       if intersections.length > 0
         {x,y} = intersections[0].point
         @props.highlightW x, y
 
-  raycast: (e) ->
+  raycast: (camera, e) ->
     {left, top} = @refs.container.getDOMNode().getBoundingClientRect()
     x = 2 * (e.clientX - left) / @props.dim - 1
     y = - 2 * (e.clientY - top) / @props.dim + 1
     raycaster = new THREE.Raycaster();
-    raycaster.set( @camera.position, @camera );
-    raycaster.ray.direction.set(x, y, 0.5).unproject(@camera).sub(@camera.position).normalize()
+    raycaster.set( camera.position, camera );
+    raycaster.ray.direction.set(x, y, 0.5).unproject(camera).sub(camera.position).normalize()
     return raycaster
 
   render: ->
