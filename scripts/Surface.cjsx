@@ -7,7 +7,7 @@ material = new THREE.MeshNormalMaterial
   color: 0x00ff00
   side: THREE.DoubleSide
 
-num = 36
+num = 48
 
 module.exports = Surface = React.createClass
 
@@ -28,6 +28,12 @@ module.exports = Surface = React.createClass
 
     @addGraphMesh(@props)
 
+    geometry = new THREE.SphereGeometry(3, 32, 32)
+    basicMaterial = new THREE.MeshLambertMaterial( {color: 0xff0000} );
+    @sphere = new THREE.Mesh( geometry, basicMaterial );
+    @updateSphere(@props)
+    @scene.add( @sphere );
+
     @camera.position.set(0,-300,350);
     @camera.up = new THREE.Vector3( 0, 0, 1 );
     @camera.lookAt(@scene.position);
@@ -37,7 +43,6 @@ module.exports = Surface = React.createClass
     @doRender()
 
   doRender: ->
-
     # spin the world
     # if @props.highlightedW?
     #   [x,y] = @props.highlightedW
@@ -52,14 +57,24 @@ module.exports = Surface = React.createClass
       y = (j - 0.5) * props.dim
       lso = leastSquaresObjective({x,y}, props.pointClasses)
       return new THREE.Vector3(x, y, projectErrorForGraph lso);
-    @graphGeometry = new THREE.ParametricGeometry( meshFunction, num, num, true );
+    graphGeometry = new THREE.ParametricGeometry( meshFunction, num, num, true );
 
-    @graph = new THREE.Mesh( @graphGeometry, material )
+    @graph = new THREE.Mesh( graphGeometry, material )
     @scene.add( @graph )
 
+  updateSphere: (props) ->
+    if props.highlightedW?
+      [x,y] = props.highlightedW
+      lso = leastSquaresObjective({x,y}, props.pointClasses)
+      z = projectErrorForGraph lso;
+      @sphere.position.set(x,y,z)
+
   componentWillReceiveProps: (nextProps) ->
-    @scene.remove @graph
-    @addGraphMesh(nextProps)
+    if (nextProps.pointClasses[0].length isnt @props.pointClasses[0].length) or (nextProps.pointClasses[1].length isnt @props.pointClasses[1].length)
+      @scene.remove @graph
+      @addGraphMesh(nextProps)
+
+    @updateSphere(nextProps)
 
   componentWillUpdate: (nextProps, nextState) ->
     @doRender()
