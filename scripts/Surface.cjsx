@@ -9,10 +9,10 @@ module.exports = Surface = React.createClass
     #If shouldComponentUpdate returns false, then render() will be completely skipped until the next state change. (In addition, componentWillUpdate and componentDidUpdate will not be called.)
 
   componentWillReceiveProps: (nextProps) ->
-    # do mutations!
+    makeSurface(@refs.surface.getDOMNode(), nextProps.dim, nextProps.pointClasses)
 
   componentDidMount: ->
-    makeSurface(@refs.surface.getDOMNode())
+    makeSurface(@refs.surface.getDOMNode(), @props.dim, @props.pointClasses)
 
   render: ->
     <div ref="surface"></div>
