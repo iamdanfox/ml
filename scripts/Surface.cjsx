@@ -7,7 +7,7 @@ material = new THREE.MeshNormalMaterial
   color: 0x00ff00
   side: THREE.DoubleSide
 
-num = 24
+num = 36
 
 module.exports = Surface = React.createClass
 
@@ -26,18 +26,9 @@ module.exports = Surface = React.createClass
     @renderer = new THREE.WebGLRenderer({antialias:true} )
     @renderer.setSize( @props.dim, @props.dim );
 
-    meshFunction = (i,j) =>
-      x = (i - 0.5) * @props.dim
-      y = (j - 0.5) * @props.dim
-      lso = leastSquaresObjective({x,y}, @props.pointClasses)
-      return new THREE.Vector3(x, y, projectErrorForGraph lso);
+    @addGraphMesh(@props)
 
-    @graphGeometry = new THREE.ParametricGeometry( meshFunction, num, num, true );
-
-    @graph = new THREE.Mesh( @graphGeometry, material )
-    @scene.add( @graph )
-
-    @camera.position.set(200,200,200);
+    @camera.position.set(0,-300,350);
     @camera.up = new THREE.Vector3( 0, 0, 1 );
     @camera.lookAt(@scene.position);
 
@@ -45,35 +36,33 @@ module.exports = Surface = React.createClass
 
     @doRender()
 
-    console.log @graph
-
   doRender: ->
 
     # spin the world
-    if @props.highlightedW?
-      [x,y] = @props.highlightedW
-      @graph.rotation.z = Math.atan(y/x) + (if x > 0 then Math.PI else 0)
+    # if @props.highlightedW?
+    #   [x,y] = @props.highlightedW
+    #   @graph.rotation.z = Math.atan(y/x) + (if x >= 0 then Math.PI else 0)
 
     # draw onto box
     @renderer?.render(@scene, @camera)
 
-  componentWillReceiveProps: (nextProps) ->
-    if nextProps.pointClasses != @props.pointClasses
-      @scene.remove @graph
-      meshFunction = (i,j) =>
-        x = (i - 0.5) * @props.dim
-        y = (j - 0.5) * @props.dim
-        lso = leastSquaresObjective({x,y}, @props.pointClasses)
-        return new THREE.Vector3(x, y, projectErrorForGraph lso);
-      @graphGeometry = new THREE.ParametricGeometry( meshFunction, num, num, true );
-      @graph = new THREE.Mesh( @graphGeometry, material )
-      @scene.add( @graph )
-    else
-      console.log 'a'
+  addGraphMesh: (props) ->
+    meshFunction = (i,j) =>
+      x = (i - 0.5) * props.dim
+      y = (j - 0.5) * props.dim
+      lso = leastSquaresObjective({x,y}, props.pointClasses)
+      return new THREE.Vector3(x, y, projectErrorForGraph lso);
+    @graphGeometry = new THREE.ParametricGeometry( meshFunction, num, num, true );
 
+    @graph = new THREE.Mesh( @graphGeometry, material )
+    @scene.add( @graph )
+
+  componentWillReceiveProps: (nextProps) ->
+    @scene.remove @graph
+    @addGraphMesh(nextProps)
 
   componentWillUpdate: (nextProps, nextState) ->
     @doRender()
 
   render: ->
-    <div ref='container'></div>
+    <div ref='container' style={display:'inline-block'}></div>
