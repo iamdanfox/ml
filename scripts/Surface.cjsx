@@ -48,18 +48,6 @@ module.exports = Surface = React.createClass
     console.log @graph
 
   doRender: ->
-    @scene.remove @graph
-
-    meshFunction = (i,j) =>
-      x = (i - 0.5) * @props.dim
-      y = (j - 0.5) * @props.dim
-      lso = leastSquaresObjective({x,y}, @props.pointClasses)
-      return new THREE.Vector3(x, y, projectErrorForGraph lso);
-
-    @graphGeometry = new THREE.ParametricGeometry( meshFunction, num, num, true );
-
-    @graph = new THREE.Mesh( @graphGeometry, material )
-    @scene.add( @graph )
 
     # spin the world
     if @props.highlightedW?
@@ -68,6 +56,21 @@ module.exports = Surface = React.createClass
 
     # draw onto box
     @renderer?.render(@scene, @camera)
+
+  componentWillReceiveProps: (nextProps) ->
+    if nextProps.pointClasses != @props.pointClasses
+      @scene.remove @graph
+      meshFunction = (i,j) =>
+        x = (i - 0.5) * @props.dim
+        y = (j - 0.5) * @props.dim
+        lso = leastSquaresObjective({x,y}, @props.pointClasses)
+        return new THREE.Vector3(x, y, projectErrorForGraph lso);
+      @graphGeometry = new THREE.ParametricGeometry( meshFunction, num, num, true );
+      @graph = new THREE.Mesh( @graphGeometry, material )
+      @scene.add( @graph )
+    else
+      console.log 'a'
+
 
   componentWillUpdate: (nextProps, nextState) ->
     @doRender()
