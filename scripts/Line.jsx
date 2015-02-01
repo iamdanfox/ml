@@ -33,10 +33,10 @@ var Line = React.createClass({
 
   findBorderIntersection: function(v:{x:number;y:number}):?[number, number] {
     var dim = this.props.dim;
-    var top = [ [-dim/2, dim/2], [dim/2, dim/2] ];
-    var right = [ [dim/2, dim/2], [dim/2, -dim/2] ];
-    var bottom = [ [dim/2, -dim/2], [-dim/2, -dim/2] ];
-    var left = [ [-dim/2, -dim/2], [-dim/2, dim/2] ];
+    var top = [ [-dim / 2, dim / 2], [dim / 2, dim / 2] ];
+    var right = [ [dim / 2, dim / 2], [dim / 2, -dim / 2] ];
+    var bottom = [ [dim / 2, -dim / 2], [-dim / 2, -dim / 2] ];
+    var left = [ [-dim / 2, -dim / 2], [-dim / 2, dim / 2] ];
 
     // we construct vectors for the edge of the viewport, then intersection test them.
     // this yields the lambda that we need to multiply v by to reach the edge.
