@@ -39,8 +39,9 @@ var Line = React.createClass({
           if (typeof lg !== "undefined" && lg !== null) {
             var [lambda, gamma] = lg;
             return 0 < lambda && 0 < gamma && gamma <= 1; // not conventional intersection
-          } else
+          } else {
             return false;
+          }
         });
       var first = intersections[0];
       if (typeof first !== "undefined" && first !== null) {
@@ -69,9 +70,9 @@ function lambdaGamma (arg1, arg2, arg3, arg4) {
   var [r,s] = arg4;
 
   var det = (c - a) * (s - q) - (r - p) * (d - b);
-  if (det === 0)
+  if (det === 0) {
     return null; // colinear
-  else {
+  } else {
     var lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
     var gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
     return [lambda, gamma];

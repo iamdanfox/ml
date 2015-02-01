@@ -178,14 +178,16 @@ var Surface = React.createClass({
 
   mouseMove: function(e: React.SyntheticEvent):void {
     if (typeof this.state.mouseDownClientX !== "undefined" && this.state.mouseDownClientX !== null &&
-        typeof this.state.startAngle !== "undefined" && this.state.startAngle !== null)
+        typeof this.state.startAngle !== "undefined" && this.state.startAngle !== null) {
       if (typeof this.state.mouseDownPoint !== "undefined" && this.state.mouseDownPoint !== null &&
-          typeof this.state.mouseDownCamera !== "undefined" && this.state.mouseDownCamera !== null)
+          typeof this.state.mouseDownCamera !== "undefined" && this.state.mouseDownCamera !== null) {
         this.handleGraphDrag(e, this.state.startAngle, this.state.mouseDownPoint, this.state.mouseDownCamera);
-      else
+      } else {
         this.handleSpaceDrag(e, this.state.startAngle, this.state.mouseDownClientX);
-    else
+      }
+    } else {
       this.handleHover(e);
+    }
   },
 
   handleGraphDrag: function (e:React.SyntheticEvent, startAngle: number, mouseDownPoint: THREE.Vector3, mouseDownCamera: THREE.Camera): void {

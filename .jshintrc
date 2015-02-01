@@ -2,6 +2,8 @@
   "node": true,
   "strict": true,
   "quotmark": "double",
+  "indent": 2,
+  "curly": true,
   "globals": {
     "require": false,
     "module": true
