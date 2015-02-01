@@ -20,6 +20,9 @@ var camera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 ) // Field of view, a
 camera.up = new THREE.Vector3( 0, 0, 1 );
 camera.position.z = 180;
 
+var sphere = new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() )
+scene.add(sphere)
+
 
 var Surface = React.createClass({
   getInitialState: function ():State {
@@ -34,7 +37,6 @@ var Surface = React.createClass({
 //   componentDidMount: ->
 //     @updateGraphMesh(@props)
 
-//     @sphere = @initializeSphere()
 //     @updateSpherePosition(@props)
 
 //     @updateCamera(@state)
@@ -68,19 +70,14 @@ var Surface = React.createClass({
     camera.lookAt(new THREE.Vector3(0,0,0))
   },
 
-//   initializeSphere: ->
-//     sphereGeometry = new THREE.SphereGeometry(3, 32, 32)
-//     sphereMaterial = new THREE.MeshLambertMaterial()
-//     sphere = new THREE.Mesh( sphereGeometry, sphereMaterial )
-//     scene.add( sphere )
-//     return sphere
-
-//   updateSpherePosition: (props) ->
-//     if props.highlightedW?
-//       [x,y] = props.highlightedW
-//       lso = leastSquaresObjective({x,y}, props.pointClasses)
-//       z = projectErrorForGraph lso
-//       @sphere.position.set(x,y,z)
+  updateSpherePosition: function (props: Props): void {
+    if (props.highlightedW != null) {
+      var [x,y] = props.highlightedW
+      var lso = leastSquaresObjective({x:x,y:y}, props.pointClasses)
+      var z = projectErrorForGraph(lso)
+      sphere.position.set(x,y,z)
+    }
+  },
 
   updateGraphMesh: function (props:Props): void {
     scene.remove(graph)
