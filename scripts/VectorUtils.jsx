@@ -7,7 +7,9 @@ type P2 = {x: number; y: number};
 
 module.exports = {
   lineEq: function (p1:P2, p2:P2): boolean {
-    return (typeof p1 !== "undefined" && p1 !== null && typeof p2 !== "undefined" && p2 !== null) && (p1.x === p2.x) && (p1.y === p2.y);
+    return (typeof p1 !== "undefined" && p1 !== null &&
+      typeof p2 !== "undefined" && p2 !== null) &&
+      (p1.x === p2.x) && (p1.y === p2.y);
   },
 
   // counter clockwise rotation of a vector, by 90 degrees

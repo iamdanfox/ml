@@ -79,8 +79,8 @@ var Surface = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps: Props) {
-    if ((nextProps.pointClasses[0].length != this.props.pointClasses[0].length) ||
-      (nextProps.pointClasses[1].length != this.props.pointClasses[1].length)) {
+    if ((nextProps.pointClasses[0].length !== this.props.pointClasses[0].length) ||
+      (nextProps.pointClasses[1].length !== this.props.pointClasses[1].length)) {
         this.updateGraphMesh(nextProps);
     }
 

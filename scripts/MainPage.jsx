@@ -50,7 +50,7 @@ var MainPage = React.createClass({
   render: function():?ReactElement {
     var pointClasses = [ points.class0, points.class1 ];
     for (var i=0; i<pointClasses.length; i++) {
-      pointClasses[i] = pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]); // for want of a zip function!
+      pointClasses[i] = pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]);
     }
 
     var line;
@@ -65,9 +65,10 @@ var MainPage = React.createClass({
       line = false;
     }
 
+    var style = {background:"#e0e0e0", width:DIM, height:DIM};
     return (
       <div className="main-page">
-        <svg style={{background:"#e0e0e0", width:DIM, height:DIM}} ref="svg" onMouseMove={this.mouseMove} >
+        <svg style={style} ref="svg" onMouseMove={this.mouseMove}>
           <g transform={"translate("+DIM/2+" "+DIM/2+") scale(1 -1)"}>
             <Axes dim={DIM} />
             <AllPoints pointClasses={pointClasses} />
@@ -75,10 +76,13 @@ var MainPage = React.createClass({
           </g>
         </svg>
 
-        <Surface dim={DIM} pointClasses={pointClasses} highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
+        <Surface dim={DIM} pointClasses={pointClasses}
+          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
 
-        <DataSlider color="red" fullData={points.class0} cutoff={this.state.cutoffs[0]} updateCutoff={this.updateCutoff(0)} />
-        <DataSlider color="blue" fullData={points.class1} cutoff={this.state.cutoffs[1]} updateCutoff={this.updateCutoff(1)} />
+        <DataSlider color="red" fullData={points.class0}
+          cutoff={this.state.cutoffs[0]} updateCutoff={this.updateCutoff(0)} />
+        <DataSlider color="blue" fullData={points.class1}
+          cutoff={this.state.cutoffs[1]} updateCutoff={this.updateCutoff(1)} />
       </div>
     );
   }
