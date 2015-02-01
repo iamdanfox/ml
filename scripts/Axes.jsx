@@ -2,7 +2,7 @@
 var React = require('react');
 
 var Axes = React.createClass({
-  render: function(): any {
+  render: function(): ?ReactElement {
     var yAxis = `M${ 0 } ${ this.props.dim } L${ 0 } ${ -this.props.dim }`;
     var xAxis = `M${ -this.props.dim } ${ 0 } L${ this.props.dim } ${ 0 }`;
     return (

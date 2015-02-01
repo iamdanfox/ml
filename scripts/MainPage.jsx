@@ -16,14 +16,14 @@ var points = require('../data/points.js');
 
 
 var MainPage = React.createClass({
-  getInitialState: function():{highlightedW:?Array<number>;cutoffs:Array<number>} {
+  getInitialState: function():{highlightedW:?[number, number];cutoffs:[number, number]} {
     return {
       highlightedW: null,
       cutoffs: [1, 1]
     }
   },
 
-  mouseMove: function (e:any):void {
+  mouseMove: function (e: React.SyntheticElement):void {
     var {left:left, top:top} = this.refs.svg.getDOMNode().getBoundingClientRect()
     var x = e.pageX - left
     var y = DIM - (e.pageY - top)

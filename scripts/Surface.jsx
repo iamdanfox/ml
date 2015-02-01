@@ -18,9 +18,9 @@ type State = {
 }
 type Props = {
   dim:number;
-  pointClasses:any;
-  highlightedW:any;
-  highlightW: F<any,void>
+  pointClasses: [Array<P2>, Array<P2>];
+  highlightedW: ?[number, number];
+  highlightW: F<[number, number],void>
 }
 
 
@@ -51,7 +51,7 @@ var Surface = React.createClass({
   propTypes: {
     dim: React.PropTypes.number.isRequired,
     highlightW: React.PropTypes.func.isRequired,
-    highlightedW: React.PropTypes.array, // technically a tuple...
+    highlightedW: React.PropTypes.any, // technically a tuple...
     pointClasses: React.PropTypes.array.isRequired
   },
 
