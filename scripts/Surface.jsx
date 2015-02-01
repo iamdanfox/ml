@@ -67,6 +67,15 @@ var Surface = React.createClass({
 
     this.updateSpherePosition(this.props);
 
+    graph = new THREE.Mesh(
+      this.colourGraphGeometry(this.buildGraphGeometry(this.props)),
+      new THREE.MeshBasicMaterial({
+        side: THREE.DoubleSide,
+        vertexColors: THREE.FaceColors
+      })
+    );
+    scene.add( graph );
+
     this.updateCamera(this.state);
     renderer.setSize( this.props.dim, this.props.dim );
     this.refs.container.getDOMNode().appendChild(renderer.domElement);
@@ -105,15 +114,9 @@ var Surface = React.createClass({
   },
 
   updateGraphMesh: function(props: Props): void {
-    scene.remove(graph);
-    graph = new THREE.Mesh(
-      this.colourGraphGeometry(this.buildGraphGeometry(props)),
-      new THREE.MeshBasicMaterial({
-        side: THREE.DoubleSide,
-        vertexColors: THREE.FaceColors
-      })
-    );
-    scene.add( graph );
+    if (typeof graph !== "undefined" && graph !== null) {
+      graph.geometry = this.colourGraphGeometry(this.buildGraphGeometry(props));
+    }
   },
 
   buildGraphGeometry: function(props: Props): THREE.ParametricGeometry {

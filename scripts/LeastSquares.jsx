@@ -24,6 +24,28 @@ var findError = function(rot90w: P2, point: P2): number {
   return sizeSquared(point) - ( (dp * dp) / sizeSquared(rot90w) );
 };
 
+var class0error = function(w: P2, class0points: Array<P2>, rot90w: P2): number {
+  var error = 0;
+  for (var i = 0; i < class0points.length; i = i + 1) {
+    var p = class0points[i];
+    if (dotProduct(p, w) <= 0) {
+      error = error + findError(rot90w, p);
+    }
+  }
+  return error;
+};
+
+var class1error = function(w: P2, class1points: Array<P2>, rot90w: P2): number {
+  var error = 0;
+  for (var j = 0; j < class1points.length; j = j + 1) {
+    var q = class1points[j];
+    if (dotProduct(q, w) > 0) {
+      error = error + findError(rot90w, q);
+    }
+  }
+  return error;
+};
+
 module.exports = {
 
   projectErrorToRadius: function(error: number): number {
@@ -38,24 +60,7 @@ module.exports = {
   leastSquaresObjective: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
     var rot90w = rot90(w);
     var [class0points, class1points] = pointClasses;
-
-    var class0error = 0;
-    for (var i = 0; i < class0points.length; i = i + 1) {
-      var p = class0points[i];
-      if (dotProduct(p, w) <= 0) {
-        class0error = class0error + findError(rot90w, p);
-      }
-    }
-
-    var class1error = 0;
-    for (var i = 0; i < class1points.length; i = i + 1) {
-      var p = class1points[i];
-      if (dotProduct(p, w) > 0) {
-        class1error = class1error + findError(rot90w, p);
-      }
-    }
-
-    return class0error + class1error;
+    return class0error(w, class0points, rot90w) + class1error(w, class1points, rot90w);
   },
 };
 
