@@ -139,7 +139,9 @@ var Surface = React.createClass({
 
     for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
       var face = graphGeometry.faces[i];
-      var totalZ = graphGeometry.vertices[face.a].z + graphGeometry.vertices[face.b].z + graphGeometry.vertices[face.c].z;
+      var totalZ = graphGeometry.vertices[face.a].z +
+        graphGeometry.vertices[face.b].z +
+        graphGeometry.vertices[face.c].z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
       face.color.setHSL( 0.54, 0.8, colourCurve(normalizedZ));
     }
@@ -194,7 +196,8 @@ var Surface = React.createClass({
       var angle = function(point: P2): number {
         return Math.atan(point.y / point.x);
       };
-      var fudge = (cursorPoint.x > 0 && mouseDownPoint.x < 0) || (cursorPoint.x < 0 && mouseDownPoint.x > 0) ? Math.PI : 0;
+      var fudge = (cursorPoint.x > 0 && mouseDownPoint.x < 0) ||
+        (cursorPoint.x < 0 && mouseDownPoint.x > 0) ? Math.PI : 0;
       var deltaAngle = angle(cursorPoint) - fudge - angle(mouseDownPoint);
       this.setState({
         angle: startAngle - deltaAngle
