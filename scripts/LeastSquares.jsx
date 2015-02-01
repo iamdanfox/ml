@@ -1,17 +1,9 @@
 /* @flow */
 "use strict";
 
-type P2 = P2;
+type P2 = {x: number; y: number};
 
 var {rot90: rot90, dotProduct: dotProduct, sizeSquared: sizeSquared} = require("./VectorUtils.jsx");
-
-
-// var misclassifiedPoints = function(w: P2, pointClasses: [Array<P2>, Array<P2>]): Array<P2> {
-//   var [class0points, class1points] = pointClasses;
-//   var as = class0points.filter((p) => dotProduct(p, w) <= 0);
-//   var bs = class1points.filter((p) => dotProduct(p, w) > 0);
-//   return as.concat(bs);
-// };
 
 
 // returns the square of the distance to rot90w's line
@@ -47,13 +39,23 @@ module.exports = {
     var rot90w = rot90(w);
     var [class0points, class1points] = pointClasses;
 
-    var class0errors = class0points
-      .filter((p) => dotProduct(p, w) <= 0)
-      .map( (point) => findError(rot90w, point) );
-    var class1errors = class1points
-      .filter((p) => dotProduct(p, w) > 0)
-      .map( (point) => findError(rot90w, point) );
+    var class0error = 0;
+    for (var i = 0; i < class0points.length; i = i + 1) {
+      var p = class0points[i];
+      if (dotProduct(p, w) <= 0) {
+        class0error = class0error + findError(rot90w, p);
+      }
+    }
 
-    return class0errors.reduce( ((e1, e2) => e1 + e2), 0 ) + class1errors.reduce( ((e1, e2) => e1 + e2), 0 );
+    var class1error = 0;
+    for (var i = 0; i < class1points.length; i = i + 1) {
+      var p = class1points[i];
+      if (dotProduct(p, w) > 0) {
+        class1error = class1error + findError(rot90w, p);
+      }
+    }
+
+    return class0error + class1error;
   },
 };
+
