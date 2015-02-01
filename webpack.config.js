@@ -4,7 +4,7 @@ module.exports = {
   entry: [
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/dev-server',
-    './scripts/Entry.cjsx'
+    './scripts/Entry.jsx'
   ],
   output: {
     path: __dirname,
