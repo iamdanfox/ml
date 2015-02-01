@@ -1,3 +1,4 @@
+
 React = require 'react'
 {rot90, lineEq, scale, dotProduct, sizeSquared, add} = require './VectorUtils.jsx'
 

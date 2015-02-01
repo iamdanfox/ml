@@ -1,4 +1,5 @@
 /* @flow */
+"use strict";
 
 var React = require('react');
 var Line = require('./Line.jsx');
@@ -53,7 +54,7 @@ var MainPage = React.createClass({
     }
 
     var line;
-    if (this.state.highlightedW != null) {
+    if (typeof this.state.highlightedW !== "undefined" && this.state.highlightedW !== null) {
       var x = this.state.highlightedW[0];
       var y = this.state.highlightedW[1];
       line = (<g>

@@ -1,4 +1,5 @@
 /* @flow */
+"use strict";
 var React = require('react');
 var {rot90:rot90, lineEq:lineEq, scale:scale} = require('./VectorUtils.jsx');
 
@@ -37,14 +38,14 @@ var Line = React.createClass({
       var intersections = [top, right, bottom, left]
         .map((arg) => lambdaGamma([0,0], [x,y], arg[0], arg[1]))
         .filter( function(lg) {
-          if (lg != null) {
+          if (typeof lg !== "undefined" && lg !== null) {
             var [lambda, gamma] = lg;
             return 0 < lambda && 0 < gamma && gamma <= 1; // not conventional intersection
           } else
             return false;
         });
       var first = intersections[0];
-      if (first != null) {
+      if (typeof first !== "undefined" && first !== null) {
         var [lambda,gamma] = first;
         boundaryPoint = scale(lambda)(v);
       } else {

@@ -1,4 +1,6 @@
 /* @flow */
+"use strict";
+
 var React = require('react');
 var THREE = require('three');
 var {projectErrorForGraph: projectErrorForGraph,
@@ -86,7 +88,7 @@ var Surface = React.createClass({
   },
 
   componentWillUpdate: function(nextProps:Props, nextState?: State): void {
-    if (nextState != null) {
+    if (typeof nextState !== "undefined" && nextState !== null) {
       this.updateCamera(nextState);
     }
     renderScene();
@@ -99,7 +101,7 @@ var Surface = React.createClass({
   },
 
   updateSpherePosition: function (props: Props): void {
-    if (props.highlightedW != null) {
+    if (typeof props.highlightedW !== "undefined" && props.highlightedW !== null) {
       var [x,y] = props.highlightedW;
       var lso = leastSquaresObjective({x:x,y:y}, props.pointClasses);
       var z = projectErrorForGraph(lso);
@@ -175,8 +177,10 @@ var Surface = React.createClass({
   },
 
   mouseMove: function(e: React.SyntheticEvent):void {
-    if (this.state.mouseDownClientX != null && this.state.startAngle != null)
-      if (this.state.mouseDownPoint != null && this.state.mouseDownCamera != null)
+    if (typeof this.state.mouseDownClientX !== "undefined" && this.state.mouseDownClientX !== null &&
+        typeof this.state.startAngle !== "undefined" && this.state.startAngle !== null)
+      if (typeof this.state.mouseDownPoint !== "undefined" && this.state.mouseDownPoint !== null &&
+          typeof this.state.mouseDownCamera !== "undefined" && this.state.mouseDownCamera !== null)
         this.handleGraphDrag(e, this.state.startAngle, this.state.mouseDownPoint, this.state.mouseDownCamera);
       else
         this.handleSpaceDrag(e, this.state.startAngle, this.state.mouseDownClientX);
@@ -188,7 +192,7 @@ var Surface = React.createClass({
     var plane = new THREE.Plane(new THREE.Vector3(0,0,1), -mouseDownPoint.z);
     var raycaster = this.raycast(mouseDownCamera, e);
     var cursorPoint = raycaster.ray.intersectPlane(plane);
-    if (cursorPoint != null) {
+    if (typeof cursorPoint !== "undefined" && cursorPoint !== null) {
       var angle = function (point: P2):number {
         return Math.atan(point.y / point.x);
       };
