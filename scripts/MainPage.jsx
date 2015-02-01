@@ -9,7 +9,7 @@ var Surface = require('./Surface.jsx');
 
 var DIM = 400;
 
-
+type F<U, V> = (x:U) => V;
 type P2 = {x:number;y:number}
 
 var points = require('../data/points.js');
@@ -36,7 +36,7 @@ var MainPage = React.createClass({
     });
   },
 
-  updateCutoff: function (i:number): any {
+  updateCutoff: function (i:number): F<number, void> {
     return (newCutoff) => {
       var newCutoffs = this.state.cutoffs.slice(0) // clone
       newCutoffs[i] = newCutoff

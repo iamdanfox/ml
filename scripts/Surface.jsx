@@ -175,17 +175,17 @@ var Surface = React.createClass({
 
   mouseMove: function(e: React.SyntheticEvent):void {
     if (this.state.mouseDownClientX != null && this.state.startAngle != null)
-      if (this.state.mouseDownPoint != null)
-        this.handleGraphDrag(e, this.state.startAngle, this.state.mouseDownPoint)
+      if (this.state.mouseDownPoint != null && this.state.mouseDownCamera != null)
+        this.handleGraphDrag(e, this.state.startAngle, this.state.mouseDownPoint, this.state.mouseDownCamera)
       else
         this.handleSpaceDrag(e, this.state.startAngle, this.state.mouseDownClientX)
     else
       this.handleHover(e)
   },
 
-  handleGraphDrag: function (e:React.SyntheticEvent, startAngle: number, mouseDownPoint: THREE.Vector3): void {
+  handleGraphDrag: function (e:React.SyntheticEvent, startAngle: number, mouseDownPoint: THREE.Vector3, mouseDownCamera: THREE.Camera): void {
     var plane = new THREE.Plane(new THREE.Vector3(0,0,1), -mouseDownPoint.z)
-    var raycaster = this.raycast(this.state.mouseDownCamera, e)
+    var raycaster = this.raycast(mouseDownCamera, e)
     var cursorPoint = raycaster.ray.intersectPlane(plane)
     if (cursorPoint != null) {
       var angle = function (point: P2):number {
@@ -215,7 +215,7 @@ var Surface = React.createClass({
     }
   },
 
-  raycast: function (camera:any, e:React.SyntheticEvent): THREE.Raycaster {
+  raycast: function (camera: THREE.Camera, e:React.SyntheticEvent): THREE.Raycaster {
     var {left:left, top:top} = this.refs.container.getDOMNode().getBoundingClientRect()
     var x = 2 * (e.clientX - left) / this.props.dim - 1
     var y = - 2 * (e.clientY - top) / this.props.dim + 1
