@@ -20,14 +20,14 @@ var MainPage = React.createClass({
     return {
       highlightedW: null,
       cutoffs: [1, 1]
-    }
+    };
   },
 
   mouseMove: function (e: React.SyntheticElement):void {
-    var {left:left, top:top} = this.refs.svg.getDOMNode().getBoundingClientRect()
-    var x = e.pageX - left
-    var y = DIM - (e.pageY - top)
-    this.highlightW(x - DIM/2, y - DIM/2)
+    var {left:left, top:top} = this.refs.svg.getDOMNode().getBoundingClientRect();
+    var x = e.pageX - left;
+    var y = DIM - (e.pageY - top);
+    this.highlightW(x - DIM/2, y - DIM/2);
   },
 
   highlightW: function (x:number,y:number): void {
@@ -38,28 +38,28 @@ var MainPage = React.createClass({
 
   updateCutoff: function (i:number): F<number, void> {
     return (newCutoff) => {
-      var newCutoffs = this.state.cutoffs.slice(0) // clone
-      newCutoffs[i] = newCutoff
+      var newCutoffs = this.state.cutoffs.slice(0); // clone
+      newCutoffs[i] = newCutoff;
       this.setState({
         cutoffs: newCutoffs
-      })
-    }
+      });
+    };
   },
 
   render: function():?ReactElement {
-    var pointClasses = [ points.class0, points.class1 ]
+    var pointClasses = [ points.class0, points.class1 ];
     for (var i=0; i<pointClasses.length; i++) {
-      pointClasses[i] = pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]) // for want of a zip function!
+      pointClasses[i] = pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]); // for want of a zip function!
     }
 
     var line;
     if (this.state.highlightedW != null) {
-      var x = this.state.highlightedW[0]
-      var y = this.state.highlightedW[1]
+      var x = this.state.highlightedW[0];
+      var y = this.state.highlightedW[1];
       line = (<g>
         <path d={`M 0 0 L ${x} ${y}`} strokeWidth="1.5" stroke={"rgba(255,0,0,0.4)"} />
         <Line w={{x:x,y:y}} dim={DIM} />
-      </g>)
+      </g>);
     } else {
       line = false;
     }
@@ -79,9 +79,9 @@ var MainPage = React.createClass({
         <DataSlider color="red" fullData={points.class0} cutoff={this.state.cutoffs[0]} updateCutoff={this.updateCutoff(0)} />
         <DataSlider color="blue" fullData={points.class1} cutoff={this.state.cutoffs[1]} updateCutoff={this.updateCutoff(1)} />
       </div>
-    )
+    );
   }
-})
+});
 
 module.exports = MainPage;
 
@@ -95,8 +95,8 @@ var DataSlider = React.createClass({
   },
 
   mouseMove: function (e):void {
-    var newCutoff = (e.pageX - this.refs.svg.getDOMNode().getBoundingClientRect().left) / DIM
-    this.props.updateCutoff(newCutoff)
+    var newCutoff = (e.pageX - this.refs.svg.getDOMNode().getBoundingClientRect().left) / DIM;
+    this.props.updateCutoff(newCutoff);
   },
 
   render: function(): ?ReactElement {
@@ -112,11 +112,11 @@ var DataSlider = React.createClass({
       </svg>
     );
   }
-})
+});
 
 
 function project(arg): number {
   var {x:x,y:y} = arg;
-  var angleRadians = Math.atan(y/x)
-  return (angleRadians/Math.PI + 0.7) % 1
+  var angleRadians = Math.atan(y/x);
+  return (angleRadians/Math.PI + 0.7) % 1;
 }

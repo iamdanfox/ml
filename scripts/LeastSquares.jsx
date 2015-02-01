@@ -7,9 +7,9 @@ var {rot90:rot90, dotProduct:dotProduct, sizeSquared:sizeSquared} = require('./V
 
 var misclassifiedPoints = function(w: P2, pointClasses: [Array<P2>, Array<P2>]): Array<P2> {
   var [class0points, class1points] = pointClasses;
-  var as = class0points.filter((p) => dotProduct(p, w) <= 0)
+  var as = class0points.filter((p) => dotProduct(p, w) <= 0);
   var bs = class1points.filter((p) => dotProduct(p, w) > 0);
-  return as.concat(bs)
+  return as.concat(bs);
 }
 
 
@@ -28,7 +28,7 @@ var findError = function (rot90w: P2, point: P2): number {
   //           d^2 = |point|^2 - (rot90w . point)^2 / |rot90w|^2
 
   var dp:number = dotProduct(rot90w, point);
-  return sizeSquared(point) - ( (dp * dp) / sizeSquared(rot90w) )
+  return sizeSquared(point) - ( (dp * dp) / sizeSquared(rot90w) );
 }
 
 module.exports = {
