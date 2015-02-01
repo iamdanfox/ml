@@ -9,8 +9,19 @@ type F<U, V> = (x:U) => V;
 type P2 = {x: number; y: number};
 
 
-type State = {angle:number; mouseDownClientX: ?number; mouseDownCamera: ?THREE.Camera; mouseDownPoint: ?THREE.Vector3}
-type Props = {pointClasses:any; dim:number; highlightedW:any}
+type State = {
+  angle:number;
+  startAngle: ?number;
+  mouseDownClientX: ?number;
+  mouseDownCamera: ?THREE.Camera;
+  mouseDownPoint: ?THREE.Vector3
+}
+type Props = {
+  dim:number;
+  pointClasses:any;
+  highlightedW:any;
+  highlightW: F<any,void>
+}
 
 
 
@@ -24,45 +35,61 @@ var sphere = new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.Mes
 scene.add(sphere)
 
 
+
+var renderer = new THREE.WebGLRenderer({
+  antialias: true
+})
+
+renderer.setClearColor( 0x111111, 1 )
+var renderScene = function() {
+  renderer.render(scene, camera)
+}
+
+
+
 var Surface = React.createClass({
-  getInitialState: function ():State {
+  propTypes: {
+    dim: React.PropTypes.number.isRequired,
+    highlightW: React.PropTypes.func.isRequired,
+    highlightedW: React.PropTypes.array, // technically a tuple...
+    pointClasses: React.PropTypes.array.isRequired
+  },
+
+  getInitialState: function (): State {
     return {
       angle: 0,
+      startAngle: null,
       mouseDownClientX: null,
       mouseDownCamera: null,
       mouseDownPoint: null
     }
   },
 
-//   componentDidMount: ->
-//     @updateGraphMesh(@props)
+  componentDidMount: function() {
+    this.updateGraphMesh(this.props)
 
-//     @updateSpherePosition(@props)
+    this.updateSpherePosition(this.props)
 
-//     @updateCamera(@state)
+    this.updateCamera(this.state)
+    renderer.setSize( this.props.dim, this.props.dim )
+    this.refs.container.getDOMNode().appendChild(renderer.domElement)
+    renderScene()
+  },
 
-//     @initializeRenderer()
-//     @renderScene()
+  componentWillReceiveProps: function (nextProps: Props) {
+    if ((nextProps.pointClasses[0].length != this.props.pointClasses[0].length) ||
+      (nextProps.pointClasses[1].length != this.props.pointClasses[1].length)) {
+        this.updateGraphMesh(nextProps)
+    }
 
-//   componentWillReceiveProps: (nextProps) ->
-//     if (nextProps.pointClasses[0].length isnt @props.pointClasses[0].length) or
-//       (nextProps.pointClasses[1].length isnt @props.pointClasses[1].length)
-//         @updateGraphMesh(nextProps)
+    this.updateSpherePosition(nextProps)
+  },
 
-//     @updateSpherePosition(nextProps)
-
-//   componentWillUpdate: (nextProps, nextState) ->
-//     @updateCamera(nextState)
-//     @renderScene()
-
-//   initializeRenderer: ->
-//     renderer = new THREE.WebGLRenderer
-//       antialias: true
-//     renderer.setSize( @props.dim, @props.dim )
-//     renderer.setClearColor( 0x111111, 1 )
-//     @renderScene = -> renderer.render(scene, camera)
-//     @refs.container.getDOMNode().appendChild(renderer.domElement)
-
+  componentWillUpdate: function(nextProps:Props, nextState?: State): void {
+    if (nextState != null)
+      this.updateCamera(nextState)
+    renderScene()
+  },
 
   updateCamera: function (state: State): void {
     camera.position.x = Math.cos(state.angle) * 300
@@ -115,9 +142,10 @@ var Surface = React.createClass({
     var colourCurve = (z) => 0.07 + 0.93*Math.pow(z, 2)
 
     for (var i=0; i < graphGeometry.faces.length; i++) {
-      var totalZ = graphGeometry.vertices.a.z + graphGeometry.vertices.b.z + graphGeometry.vertices.c.z
+      var face = graphGeometry.faces[i]
+      var totalZ = graphGeometry.vertices[face.a].z + graphGeometry.vertices[face.b].z + graphGeometry.vertices[face.c].z
       var normalizedZ = (totalZ - 3*zMin) / (3*zRange)
-      graphGeometry[i].color.setHSL( hue, sat, colourCurve(normalizedZ))
+      face.color.setHSL( hue, sat, colourCurve(normalizedZ))
     }
     return graphGeometry
   },
@@ -139,22 +167,23 @@ var Surface = React.createClass({
   mouseUp: function(): void {
     this.setState({
       mouseDownClientX: null,
+      startAngle: null,
       mouseDownCamera: null,
       mouseDownPoint: null
     })
   },
 
   mouseMove: function(e: React.SyntheticEvent):void {
-    if (this.state.mouseDownClientX != null)
+    if (this.state.mouseDownClientX != null && this.state.startAngle != null)
       if (this.state.mouseDownPoint != null)
-        this.handleGraphDrag(e, this.state.mouseDownPoint)
+        this.handleGraphDrag(e, this.state.startAngle, this.state.mouseDownPoint)
       else
-        this.handleSpaceDrag(e, this.state.mouseDownClientX)
+        this.handleSpaceDrag(e, this.state.startAngle, this.state.mouseDownClientX)
     else
       this.handleHover(e)
   },
 
-  handleGraphDrag: function (e:React.SyntheticEvent, mouseDownPoint: THREE.Vector3): void { // TODO: change any to THREE.Vector3
+  handleGraphDrag: function (e:React.SyntheticEvent, startAngle: number, mouseDownPoint: THREE.Vector3): void {
     var plane = new THREE.Plane(new THREE.Vector3(0,0,1), -mouseDownPoint.z)
     var raycaster = this.raycast(this.state.mouseDownCamera, e)
     var cursorPoint = raycaster.ray.intersectPlane(plane)
@@ -165,16 +194,16 @@ var Surface = React.createClass({
       var fudge = (cursorPoint.x>0 && mouseDownPoint.x<=0) || (cursorPoint.x<=0 && mouseDownPoint.x>0) ? Math.PI : 0
       var deltaAngle = angle(cursorPoint) - fudge - angle(mouseDownPoint)
       this.setState({
-        angle: this.state.startAngle - deltaAngle
+        angle: startAngle - deltaAngle
       })
     }
   },
 
-  handleSpaceDrag: function (e: React.SyntheticEvent, mouseDownClientX: number): void {
+  handleSpaceDrag: function (e: React.SyntheticEvent, startAngle: number, mouseDownClientX: number): void {
     var deltaX = e.clientX - mouseDownClientX
     var deltaAngle = (deltaX/this.props.dim) * 2 * Math.PI
     this.setState({
-      angle: this.state.startAngle - deltaAngle
+      angle: startAngle - deltaAngle
     })
   },
 

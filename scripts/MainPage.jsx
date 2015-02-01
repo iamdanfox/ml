@@ -5,7 +5,7 @@ var Line = require('./Line.jsx');
 var Axes = require('./Axes.jsx');
 var AllPoints = require('./AllPoints.jsx');
 // var ObjectiveFunctionVis = require('./ObjectiveFunctionVis.cjsx');
-var Surface = require('./Surface.cjsx');
+var Surface = require('./Surface.jsx');
 
 var DIM = 400;
 
@@ -16,7 +16,7 @@ var points = require('../data/points.js');
 
 
 var MainPage = React.createClass({
-  getInitialState: function():{highlightedW:?{x: number; y: number};cutoffs:Array<number>} {
+  getInitialState: function():{highlightedW:?Array<number>;cutoffs:Array<number>} {
     return {
       highlightedW: null,
       cutoffs: [1, 1]
@@ -74,7 +74,7 @@ var MainPage = React.createClass({
           </g>
         </svg>
 
-        <Surface dim={DIM} highlightedW={this.state.highlightedW} pointClasses={pointClasses} highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
+        <Surface dim={DIM} pointClasses={pointClasses} highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
 
         <DataSlider color="red" fullData={points.class0} cutoff={this.state.cutoffs[0]} updateCutoff={this.updateCutoff(0)} />
         <DataSlider color="blue" fullData={points.class1} cutoff={this.state.cutoffs[1]} updateCutoff={this.updateCutoff(1)} />
