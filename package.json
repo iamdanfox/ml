@@ -12,6 +12,9 @@
     "coffee-script": "^1.8.0",
     "css-loader": "^0.9.0",
     "file-loader": "^0.8.1",
+    "gulp": "^3.8.10",
+    "gulp-jscs": "^1.4.0",
+    "gulp-react": "^2.0.0",
     "jsx-loader": "^0.12.2",
     "jsxhint": "^0.9.0",
     "less": "^2.3.1",
@@ -25,7 +28,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "lint": "node_modules/.bin/jsxhint --harmony scripts/*.jsx"
+    "lint": "./node_modules/.bin/jsxhint --harmony scripts/*.jsx",
+    "jscs": "./node_modules/.bin/gulp jscs"
   },
   "license": "MIT"
 }

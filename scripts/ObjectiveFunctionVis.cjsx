@@ -67,7 +67,7 @@ module.exports = ObjectiveFunctionVis = React.createClass
       </g>
     </svg>
 
-projectErrorToRadius = (error) -> 10 - 0.7*Math.log(error+1) # errors are roughly ~1132257, so log makes them reasonable.
+projectErrorToRadius = (error) -> 10 - 0.7* Math.log(error+1) # errors are roughly ~1132257, so log makes them reasonable.
 
 
 

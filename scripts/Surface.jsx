@@ -140,7 +140,7 @@ var Surface = React.createClass({
     var zMin = graphGeometry.boundingBox.min.z;
     var zRange = graphGeometry.boundingBox.max.z - zMin;
 
-    var colourCurve = (z) => 0.07 + 0.93*Math.pow(z, 2);
+    var colourCurve = (z) => 0.07 + 0.93* Math.pow(z, 2);
 
     for (var i=0; i < graphGeometry.faces.length; i = i + 1) {
       var face = graphGeometry.faces[i];

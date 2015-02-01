@@ -18,8 +18,8 @@ var points = require("../data/points.js");
 
 function project(arg): number {
   var {x:x,y:y} = arg;
-  var angleRadians = Math.atan(y/x);
-  return (angleRadians/Math.PI + 0.7) % 1;
+  var angleRadians = Math.atan(y / x);
+  return (angleRadians / Math.PI + 0.7) % 1;
 }
 
 
@@ -44,7 +44,7 @@ var DataSlider = React.createClass({
         <rect x="0" y="0" height={height} width={this.props.cutoff * DIM} style={{fill:"#ccc"}} />
         { this.props.fullData
             .map(project)
-            .map((i) => <path d={`M ${i*DIM} 0 L ${i*DIM} ${height}`} strokeWidth="1"
+            .map((i) => <path d={`M ${i * DIM} 0 L ${i * DIM} ${height}`} strokeWidth="1"
               stroke={this.props.color} style={{opacity: (i < this.props.cutoff) ? 1 : 0.1}} />) }
       </svg>
     );
@@ -64,7 +64,7 @@ var MainPage = React.createClass({
     var {left:left, top:top} = this.refs.svg.getDOMNode().getBoundingClientRect();
     var x = e.pageX - left;
     var y = DIM - (e.pageY - top);
-    this.highlightW(x - DIM/2, y - DIM/2);
+    this.highlightW(x - DIM / 2, y - DIM / 2);
   },
 
   highlightW: function (x:number,y:number): void {
@@ -98,7 +98,7 @@ var MainPage = React.createClass({
 
   render: function():?ReactElement {
     var pointClasses = [ points.class0, points.class1 ];
-    for (var i=0; i<pointClasses.length; i = i + 1) {
+    for (var i = 0; i < pointClasses.length; i = i + 1) {
       pointClasses[i] = pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]);
     }
 
@@ -106,7 +106,7 @@ var MainPage = React.createClass({
     return (
       <div className="main-page">
         <svg style={style} ref="svg" onMouseMove={this.mouseMove}>
-          <g transform={"translate("+DIM/2+" "+DIM/2+") scale(1 -1)"}>
+          <g transform={"translate(" + DIM / 2 + " " + DIM / 2 + ") scale(1 -1)"}>
             <Axes dim={DIM} />
             <AllPoints pointClasses={pointClasses} />
             { this.makeHyperplane() }
@@ -126,5 +126,3 @@ var MainPage = React.createClass({
 });
 
 module.exports = MainPage;
-
-

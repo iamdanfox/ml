@@ -24,15 +24,15 @@ module.exports = {
   dotProduct: function (a:P2,b:P2): number {
     var {x:x1,y:y1} = a;
     var {x:x2,y:y2} = b;
-    return x1*x2 + y1*y2;
+    return x1* x2 + y1* y2;
   },
 
   scale: function (sf:number):F<P2,P2> {
     return function (arg:P2):P2 {
       var {x:x, y:y} = arg;
       return {
-        x: x*sf,
-        y: y*sf
+        x: x * sf,
+        y: y * sf
       };
     };
   },
@@ -40,7 +40,7 @@ module.exports = {
   sizeSquared: function (arg: P2): number {
     var x = arg.x;
     var y = arg.y;
-    return x*x + y*y;
+    return x * x + y * y;
   },
 
   add: function (a: P2): F<P2,P2> {

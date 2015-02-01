@@ -35,7 +35,7 @@ var findError = function (rot90w: P2, point: P2): number {
 module.exports = {
 
   projectErrorToRadius: function (error: number): number {
-    return 10 - 0.7*Math.log(error+1); // errors are roughly ~1132257, so log makes them reasonable.
+    return 10 - 0.7* Math.log(error+1); // errors are roughly ~1132257, so log makes them reasonable.
   },
 
   projectErrorForGraph: function (error: number): number {
