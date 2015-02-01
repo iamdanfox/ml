@@ -5,7 +5,7 @@ var gulp = require('gulp'),
 
 
 gulp.task('watch', function() {
-    gulp.watch("scripts/*.jsx", ["lint", "jscs"]);
+    gulp.watch("scripts/*.jsx", ["jshint", "jscs"]);
 });
 
 
@@ -77,7 +77,7 @@ gulp.task('jscs', function() {
     }))
 });
 
-gulp.task('lint', function() {
+gulp.task('jshint', function() {
   return gulp.src('scripts/*.jsx')
     .pipe(react({
       stripTypes: true

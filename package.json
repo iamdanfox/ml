@@ -23,7 +23,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "jscs": "./node_modules/.bin/gulp jscs",
-    "lint": "./node_modules/.bin/gulp lint"
+    "jshint": "./node_modules/.bin/gulp jshint",
+    "watch": "./node_modules/.bin/gulp watch"
   },
   "license": "MIT"
 }
