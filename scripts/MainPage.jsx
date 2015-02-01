@@ -10,6 +10,11 @@ var Surface = require('./Surface.cjsx');
 var DIM = 400;
 
 
+type P2 = {x:number;y:number}
+
+var points = require('../data/points.js');
+
+
 var MainPage = React.createClass({
   getInitialState: function():{highlightedW:?{x: number; y: number};cutoffs:Array<number>} {
     return {
@@ -42,7 +47,7 @@ var MainPage = React.createClass({
   },
 
   render: function():?ReactElement {
-    var pointClasses = [ require('../data/class0points.json'), require('../data/class1points.json') ]
+    var pointClasses = [ points.class0, points.class1 ]
     for (var i=0; i<pointClasses.length; i++) {
       pointClasses[i] = pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]) // for want of a zip function!
     }
@@ -71,8 +76,8 @@ var MainPage = React.createClass({
 
         <Surface dim={DIM} highlightedW={this.state.highlightedW} pointClasses={pointClasses} highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
 
-        <DataSlider color="red" fullData={require('../data/class0points.json')} cutoff={this.state.cutoffs[0]} updateCutoff={this.updateCutoff(0)} />
-        <DataSlider color="blue" fullData={require('../data/class1points.json')} cutoff={this.state.cutoffs[1]} updateCutoff={this.updateCutoff(1)} />
+        <DataSlider color="red" fullData={points.class0} cutoff={this.state.cutoffs[0]} updateCutoff={this.updateCutoff(0)} />
+        <DataSlider color="blue" fullData={points.class1} cutoff={this.state.cutoffs[1]} updateCutoff={this.updateCutoff(1)} />
       </div>
     )
   }
