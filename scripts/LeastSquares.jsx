@@ -18,13 +18,13 @@ var misclassifiedPoints = function(w: P2, pointClasses: [Array<P2>, Array<P2>]):
 var findError = function (rot90w: P2, point: P2): number {
   // consider a triangle made of the vector `point`, the line `rot90w` and the distance `d`.
   // let `theta` be the angle at the origin
-  // trigonometry: d = |point|*sin(theta)
+  // trigonometry: d = |point| * sin(theta)
   // we desire d^2
   //           d^2 = |point|^2 * sin^2(theta)
   // trignometric identity
   //           d^2 = |point|^2 * (1 - cos^2(theta))
   // we can find `cos(theta)` using the dot product
-  //           d^2 = |point|^2 * (1 - (rot90w . point)^2/(|rot90w|*|point|)^2 )
+  //           d^2 = |point|^2 * (1 - (rot90w . point)^2/(|rot90w| * |point|)^2 )
   // eliminating factors of |point|^2
   //           d^2 = |point|^2 - (rot90w . point)^2 / |rot90w|^2
 
@@ -35,11 +35,11 @@ var findError = function (rot90w: P2, point: P2): number {
 module.exports = {
 
   projectErrorToRadius: function (error: number): number {
-    return 10 - 0.7* Math.log(error+1); // errors are roughly ~1132257, so log makes them reasonable.
+    return 10 - 0.7 * Math.log(error+1); // errors are roughly ~1132257, so log makes them reasonable.
   },
 
   projectErrorForGraph: function (error: number): number {
-    return 10 * (10 - 0.7* Math.log(error+1));
+    return 10 * (10 - 0.7 * Math.log(error+1));
   },
 
   // for every misclassified point, find the distance squared to the separating line

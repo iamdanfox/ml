@@ -24,7 +24,7 @@ module.exports = {
   dotProduct: function (a:P2,b:P2): number {
     var {x:x1,y:y1} = a;
     var {x:x2,y:y2} = b;
-    return x1* x2 + y1* y2;
+    return x1 * x2 + y1 * y2;
   },
 
   scale: function (sf:number):F<P2,P2> {

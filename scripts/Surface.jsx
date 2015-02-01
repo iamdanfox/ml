@@ -124,7 +124,7 @@ var Surface = React.createClass({
   buildGraphGeometry: function (props:Props): THREE.ParametricGeometry {
     var polarMeshFunction = function (i: number, j: number): THREE.Vector3 {
       var theta = i * 2 * Math.PI;
-      var r = Math.pow(2, 0.7* j) - 1; // this ensures there are lots of samples near the origin.
+      var r = Math.pow(2, 0.7 * j) - 1; // this ensures there are lots of samples near the origin.
       var x = r * Math.cos(theta) * props.dim;
       var y = r * Math.sin(theta) * props.dim;
       var lso = leastSquaresObjective({x,y}, props.pointClasses);
@@ -132,7 +132,7 @@ var Surface = React.createClass({
     };
 
     var RESOLUTION = 24;
-    return new THREE.ParametricGeometry( polarMeshFunction, 8* RESOLUTION, 0.5* RESOLUTION, true );
+    return new THREE.ParametricGeometry( polarMeshFunction, 8 * RESOLUTION, 0.5 * RESOLUTION, true );
   },
 
   colourGraphGeometry: function (graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
@@ -140,12 +140,12 @@ var Surface = React.createClass({
     var zMin = graphGeometry.boundingBox.min.z;
     var zRange = graphGeometry.boundingBox.max.z - zMin;
 
-    var colourCurve = (z) => 0.07 + 0.93* Math.pow(z, 2);
+    var colourCurve = (z) => 0.07 + 0.93 * Math.pow(z, 2);
 
-    for (var i=0; i < graphGeometry.faces.length; i = i + 1) {
+    for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
       var face = graphGeometry.faces[i];
       var totalZ = graphGeometry.vertices[face.a].z + graphGeometry.vertices[face.b].z + graphGeometry.vertices[face.c].z;
-      var normalizedZ = (totalZ - 3*zMin) / (3*zRange);
+      var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
       face.color.setHSL( 0.54, 0.8, colourCurve(normalizedZ));
     }
     return graphGeometry;
@@ -206,7 +206,7 @@ var Surface = React.createClass({
 
   handleSpaceDrag: function (e: React.SyntheticEvent, startAngle: number, mouseDownClientX: number): void {
     var deltaX = e.clientX - mouseDownClientX;
-    var deltaAngle = (deltaX/this.props.dim) * 2 * Math.PI;
+    var deltaAngle = (deltaX / this.props.dim) * 2 * Math.PI;
     this.setState({
       angle: startAngle - deltaAngle
     });
@@ -223,7 +223,7 @@ var Surface = React.createClass({
   raycast: function (camera: THREE.Camera, e:React.SyntheticEvent): THREE.Raycaster {
     var {left:left, top:top} = this.refs.container.getDOMNode().getBoundingClientRect();
     var x = 2 * (e.clientX - left) / this.props.dim - 1;
-    var y = - 2 * (e.clientY - top) / this.props.dim + 1;
+    var y = -2 * (e.clientY - top) / this.props.dim + 1;
     var raycaster = new THREE.Raycaster();
     raycaster.set( camera.position, camera );
     raycaster.ray.direction.set(x, y, 0.5).unproject(camera).sub(camera.position).normalize();
