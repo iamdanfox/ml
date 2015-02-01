@@ -18,7 +18,7 @@ module.exports = {
     var {x:x2,y:y2} = b;
     return x1*x2 + y1*y2;
   },
-  scale: function (sf:number):mixed {
+  scale: function (sf:number) {
     return function (arg:{x: number; y: number}):{x: number; y: number} {
       var {x:x, y:y} = arg
       return {
@@ -32,7 +32,7 @@ module.exports = {
     var y = arg.y;
     return x*x + y*y;
   },
-  add: function (a: {x: number; y: number}): mixed {
+  add: function (a: {x: number; y: number}) {
     return function (b): {x: number; y: number} {
       return {
         x: a.x + b.x,
