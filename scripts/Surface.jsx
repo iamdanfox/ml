@@ -44,6 +44,11 @@ var renderScene = function() {
 };
 
 
+var getZFromXY = function(props:Props, x: number, y: number): number {
+  var lso = leastSquaresObjective({x, y}, props.pointClasses);
+  return projectErrorForGraph(lso);
+};
+
 var Surface = React.createClass({
   propTypes: {
     dim: React.PropTypes.number.isRequired,
@@ -115,7 +120,12 @@ var Surface = React.createClass({
 
   updateGraphMesh: function(props: Props): void {
     if (typeof graph !== "undefined" && graph !== null) {
-      graph.geometry = this.colourGraphGeometry(this.buildGraphGeometry(props));
+      // graph.geometry = this.colourGraphGeometry(this.buildGraphGeometry(props));
+      for (var i = 0; i < graph.geometry.vertices.length; i = i + 1){
+        var v = graph.geometry.vertices[i];
+        v.z = getZFromXY(props, v.x, v.y);
+      }
+      graph.geometry.verticesNeedUpdate = true;
     }
   },
 
@@ -125,8 +135,7 @@ var Surface = React.createClass({
       var r = Math.pow(2, 0.7 * j) - 1; // this ensures there are lots of samples near the origin.
       var x = r * Math.cos(theta) * props.dim;
       var y = r * Math.sin(theta) * props.dim;
-      var lso = leastSquaresObjective({x, y}, props.pointClasses);
-      return new THREE.Vector3(x, y, projectErrorForGraph(lso));
+      return new THREE.Vector3(x, y, getZFromXY(props, x, y));
     };
 
     var RESOLUTION = 24;
