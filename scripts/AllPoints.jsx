@@ -4,6 +4,17 @@
 var React = require("react");
 
 
+var PointClass = React.createClass({
+  displayName: "PointClass",
+  render: function(): ?ReactElement {
+    return (<g>
+      { this.props.points
+          .map((p) => <circle key={p.x} cx={p.x} cy={p.y} r="3" fill={this.props.color} />) }
+    </g>);
+  }
+});
+
+
 var AllPoints = React.createClass({
   displayName: "AllPoints",
 
@@ -20,15 +31,5 @@ var AllPoints = React.createClass({
   }
 });
 
-
-var PointClass = React.createClass({
-  displayName: "PointClass",
-  render: function(): ?ReactElement {
-    return (<g>
-      { this.props.points
-          .map((p) => <circle key={p.x} cx={p.x} cy={p.y} r="3" fill={this.props.color} />) }
-    </g>);
-  }
-});
 
 module.exports = AllPoints;

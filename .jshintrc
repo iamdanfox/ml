@@ -5,8 +5,18 @@
   "indent": 2,
   "curly": true,
   "eqeqeq": true,
+  "unused": true,
+  "undef": true,
+  "nonew": true,
+  "nonbsp": true,
+  "noempty": true,
+  "noarg": true,
+  "newcap": true,
+  "latedef": true,
   "globals": {
     "require": false,
-    "module": true
+    "module": true,
+    "window": true,
+    "document": true
   }
 }

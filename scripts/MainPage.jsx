@@ -16,6 +16,42 @@ type P2 = {x:number;y:number}
 var points = require("../data/points.js");
 
 
+function project(arg): number {
+  var {x:x,y:y} = arg;
+  var angleRadians = Math.atan(y/x);
+  return (angleRadians/Math.PI + 0.7) % 1;
+}
+
+
+var DataSlider = React.createClass({
+  propTypes: {
+    fullData: React.PropTypes.array.isRequired,
+    color: React.PropTypes.string.isRequired,
+    cutoff: React.PropTypes.number.isRequired,
+    updateCutoff: React.PropTypes.func.isRequired
+  },
+
+  mouseMove: function (e):void {
+    var newCutoff = (e.pageX - this.refs.svg.getDOMNode().getBoundingClientRect().left) / DIM;
+    this.props.updateCutoff(newCutoff);
+  },
+
+  render: function(): ?ReactElement {
+    var height = 34;
+    return (
+      <svg style={{width: DIM, height: height, background: "#e0e0e0", display: "block", margin: "10 0"}}
+        ref="svg" onMouseMove={this.mouseMove}>
+        <rect x="0" y="0" height={height} width={this.props.cutoff * DIM} style={{fill:"#ccc"}} />
+        { this.props.fullData
+            .map(project)
+            .map((i) => <path d={`M ${i*DIM} 0 L ${i*DIM} ${height}`} strokeWidth="1"
+              stroke={this.props.color} style={{opacity: (i < this.props.cutoff) ? 1 : 0.1}} />) }
+      </svg>
+    );
+  }
+});
+
+
 var MainPage = React.createClass({
   getInitialState: function():{highlightedW:?[number, number];cutoffs:[number, number]} {
     return {
@@ -91,37 +127,3 @@ var MainPage = React.createClass({
 module.exports = MainPage;
 
 
-var DataSlider = React.createClass({
-  propTypes: {
-    fullData: React.PropTypes.array.isRequired,
-    color: React.PropTypes.string.isRequired,
-    cutoff: React.PropTypes.number.isRequired,
-    updateCutoff: React.PropTypes.func.isRequired
-  },
-
-  mouseMove: function (e):void {
-    var newCutoff = (e.pageX - this.refs.svg.getDOMNode().getBoundingClientRect().left) / DIM;
-    this.props.updateCutoff(newCutoff);
-  },
-
-  render: function(): ?ReactElement {
-    var height = 34;
-    return (
-      <svg style={{width: DIM, height: height, background: "#e0e0e0", display: "block", margin: "10 0"}}
-        ref="svg" onMouseMove={this.mouseMove}>
-        <rect x="0" y="0" height={height} width={this.props.cutoff * DIM} style={{fill:"#ccc"}} />
-        { this.props.fullData
-            .map(project)
-            .map((i) => <path d={`M ${i*DIM} 0 L ${i*DIM} ${height}`} strokeWidth="1"
-              stroke={this.props.color} style={{opacity: (i < this.props.cutoff) ? 1 : 0.1}} />) }
-      </svg>
-    );
-  }
-});
-
-
-function project(arg): number {
-  var {x:x,y:y} = arg;
-  var angleRadians = Math.atan(y/x);
-  return (angleRadians/Math.PI + 0.7) % 1;
-}

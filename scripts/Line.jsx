@@ -4,6 +4,23 @@ var React = require("react");
 var {rot90:rot90, lineEq:lineEq, scale:scale} = require("./VectorUtils.jsx");
 
 
+// my stackoverflow explanation: http://stackoverflow.com/a/24392281/1941552
+function lambdaGamma (arg1, arg2, arg3, arg4) {
+  var [a,b] = arg1;
+  var [c,d] = arg2;
+  var [p,q] = arg3;
+  var [r,s] = arg4;
+
+  var det = (c - a) * (s - q) - (r - p) * (d - b);
+  if (det === 0) {
+    return null; // colinear
+  } else {
+    var lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+    var gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+    return [lambda, gamma];
+  }
+}
+
 
 var Line = React.createClass({
   propTypes: {
@@ -45,7 +62,7 @@ var Line = React.createClass({
         });
       var first = intersections[0];
       if (typeof first !== "undefined" && first !== null) {
-        var [lambda,gamma] = first;
+        var [lambda,] = first;
         boundaryPoint = scale(lambda)(v);
       } else {
         throw new Error();
@@ -61,20 +78,3 @@ var Line = React.createClass({
 });
 
 module.exports = Line;
-
-// my stackoverflow explanation: http://stackoverflow.com/a/24392281/1941552
-function lambdaGamma (arg1, arg2, arg3, arg4) {
-  var [a,b] = arg1;
-  var [c,d] = arg2;
-  var [p,q] = arg3;
-  var [r,s] = arg4;
-
-  var det = (c - a) * (s - q) - (r - p) * (d - b);
-  if (det === 0) {
-    return null; // colinear
-  } else {
-    var lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
-    var gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
-    return [lambda, gamma];
-  }
-}
