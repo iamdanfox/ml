@@ -1,12 +1,16 @@
-
+/* @flow */
 var React = require('react');
 var THREE = require('three');
 var {projectErrorForGraph: projectErrorForGraph,
   leastSquaresObjective: leastSquaresObjective} = require('./LeastSquares.jsx');
 
 
+type F<U, V> = (x:U) => V;
+type P2 = {x: number; y: number};
+
+
 var Surface = React.createClass({
-  getInitialState: function ():{angle:number; mouseDownClientX: any; mouseDownCamera: any; mouseDownPoint: ?{x:number;y:number}} {
+  getInitialState: function ():{angle:number; mouseDownClientX: any; mouseDownCamera: any; mouseDownPoint: ?P2} {
     return {
       angle: 0,
       mouseDownClientX: null,
@@ -131,7 +135,7 @@ var Surface = React.createClass({
     })
   },
 
-  mouseMove: function(e:any):void {
+  mouseMove: function(e:React.SyntheticEvent):void {
     if (this.state.mouseDownClientX != null)
       if (this.state.mouseDownPoint != null)
         this.handleGraphDrag(e, this.state.mouseDownPoint)
@@ -141,16 +145,16 @@ var Surface = React.createClass({
       this.handleHover(e)
   },
 
-  handleGraphDrag: function (e:any, mouseDownPoint: any): void {
+  handleGraphDrag: function (e:React.SyntheticEvent, mouseDownPoint: any): void { // TODO: change any to THREE.Vector3
     var plane = new THREE.Plane(new THREE.Vector3(0,0,1), -mouseDownPoint.z)
     var raycaster = this.raycast(this.state.mouseDownCamera, e)
     var cursorPoint = raycaster.ray.intersectPlane(plane)
     if (cursorPoint != null) {
-      var angle = function (point: {x:number;y:number}):number {
+      var angle = function (point: P2):number {
         return Math.atan(point.y / point.x)
       }
       var fudge = (cursorPoint.x>0 && mouseDownPoint.x<=0) || (cursorPoint.x<=0 && mouseDownPoint.x>0) ? Math.PI : 0
-      var deltaAngle = angle(cursorPoint) - fudge - angle(this.state.mouseDownPoint)
+      var deltaAngle = angle(cursorPoint) - fudge - angle(mouseDownPoint)
       this.setState({
         angle: this.state.startAngle - deltaAngle
       })
@@ -163,26 +167,29 @@ var Surface = React.createClass({
 //     @setState
 //       angle: @state.startAngle - deltaAngle
 
-//   handleHover: (e) ->
-//     intersections = @raycast(@camera, e).intersectObject(@graph)
-//     if intersections.length > 0
-//       {x,y} = intersections[0].point
-//       @props.highlightW x, y
+  // handleHover: function (e:Event) {
+  //   var intersections = this.raycast(this.camera, e).intersectObject(this.graph)
+  //   if (intersections.length > 0) {
+  //     var {x:x,y:y} = intersections[0].point
+  //     this.props.highlightW(x, y)
+  //   }
+  // },
 
-//   raycast: (camera, e) ->
-//     {left, top} = @refs.container.getDOMNode().getBoundingClientRect()
-//     x = 2 * (e.clientX - left) / @props.dim - 1
-//     y = - 2 * (e.clientY - top) / @props.dim + 1
-//     raycaster = new THREE.Raycaster()
-//     raycaster.set( camera.position, camera )
-//     raycaster.ray.direction.set(x, y, 0.5).unproject(camera).sub(camera.position).normalize()
-//     return raycaster
+  raycast: function (camera:any, e:React.SyntheticEvent): THREE.Raycaster {
+    var {left:left, top:top} = this.refs.container.getDOMNode().getBoundingClientRect()
+    var x = 2 * (e.clientX - left) / this.props.dim - 1
+    var y = - 2 * (e.clientY - top) / this.props.dim + 1
+    var raycaster = new THREE.Raycaster()
+    raycaster.set( camera.position, camera )
+    raycaster.ray.direction.set(x, y, 0.5).unproject(camera).sub(camera.position).normalize()
+    return raycaster
+  }
 
 //   render: ->
 //     <div ref='container' style={display:'inline-block'}
-//       onMouseDown={@mouseDown}
-//       onMouseUp={@mouseUp}
-//       onMouseMove={@mouseMove}></div>
+//       onMouseDown={this.mouseDown}
+//       onMouseUp={this.mouseUp}
+//       onMouseMove={this.mouseMove}></div>
 })
 
 module.exports = Surface
