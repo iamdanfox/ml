@@ -1,4 +1,6 @@
 /* @flow */
+type F<U, V> = (x: U) => V;
+type P2 = {x: number; y: number};
 "use strict";
 
 var React = require("react");
@@ -7,24 +9,19 @@ var {projectErrorForGraph: projectErrorForGraph,
   leastSquaresObjective: leastSquaresObjective} = require("./LeastSquares.jsx");
 
 
-type F<U, V> = (x:U) => V;
-type P2 = {x: number; y: number};
-
-
 type State = {
-  angle:number;
+  angle: number;
   startAngle: ?number;
   mouseDownClientX: ?number;
   mouseDownCamera: ?THREE.Camera;
   mouseDownPoint: ?THREE.Vector3
 }
 type Props = {
-  dim:number;
+  dim: number;
   pointClasses: [Array<P2>, Array<P2>];
   highlightedW: ?[number, number];
-  highlightW: F<[number, number],void>
+  highlightW: F<[number, number], void>
 }
-
 
 
 var graph: THREE.Mesh = null;
@@ -37,7 +34,6 @@ var sphere = new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.Mes
 scene.add(sphere);
 
 
-
 var renderer = new THREE.WebGLRenderer({
   antialias: true
 });
@@ -46,7 +42,6 @@ renderer.setClearColor( 0x111111, 1 );
 var renderScene = function() {
   renderer.render(scene, camera);
 };
-
 
 
 var Surface = React.createClass({
@@ -81,13 +76,13 @@ var Surface = React.createClass({
   componentWillReceiveProps: function(nextProps: Props) {
     if ((nextProps.pointClasses[0].length !== this.props.pointClasses[0].length) ||
       (nextProps.pointClasses[1].length !== this.props.pointClasses[1].length)) {
-        this.updateGraphMesh(nextProps);
+      this.updateGraphMesh(nextProps);
     }
 
     this.updateSpherePosition(nextProps);
   },
 
-  componentWillUpdate: function(nextProps:Props, nextState?: State): void {
+  componentWillUpdate: function(nextProps: Props, nextState?: State): void {
     if (typeof nextState !== "undefined" && nextState !== null) {
       this.updateCamera(nextState);
     }
@@ -97,19 +92,19 @@ var Surface = React.createClass({
   updateCamera: function(state: State): void {
     camera.position.x = Math.cos(state.angle) * 300;
     camera.position.y = Math.sin(state.angle) * 300;
-    camera.lookAt(new THREE.Vector3(0,0,0));
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
   },
 
   updateSpherePosition: function(props: Props): void {
     if (typeof props.highlightedW !== "undefined" && props.highlightedW !== null) {
-      var [x,y] = props.highlightedW;
-      var lso = leastSquaresObjective({x:x,y:y}, props.pointClasses);
+      var [x, y] = props.highlightedW;
+      var lso = leastSquaresObjective({x: x, y: y}, props.pointClasses);
       var z = projectErrorForGraph(lso);
-      sphere.position.set(x,y,z);
+      sphere.position.set(x, y, z);
     }
   },
 
-  updateGraphMesh: function(props:Props): void {
+  updateGraphMesh: function(props: Props): void {
     scene.remove(graph);
     graph = new THREE.Mesh(
       this.colourGraphGeometry(this.buildGraphGeometry(props)),
@@ -121,13 +116,13 @@ var Surface = React.createClass({
     scene.add( graph );
   },
 
-  buildGraphGeometry: function(props:Props): THREE.ParametricGeometry {
+  buildGraphGeometry: function(props: Props): THREE.ParametricGeometry {
     var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var theta = i * 2 * Math.PI;
       var r = Math.pow(2, 0.7 * j) - 1; // this ensures there are lots of samples near the origin.
       var x = r * Math.cos(theta) * props.dim;
       var y = r * Math.sin(theta) * props.dim;
-      var lso = leastSquaresObjective({x,y}, props.pointClasses);
+      var lso = leastSquaresObjective({x, y}, props.pointClasses);
       return new THREE.Vector3(x, y, projectErrorForGraph(lso));
     };
 
@@ -174,7 +169,7 @@ var Surface = React.createClass({
     });
   },
 
-  mouseMove: function(e: React.SyntheticEvent):void {
+  mouseMove: function(e: React.SyntheticEvent): void {
     if (typeof this.state.mouseDownClientX !== "undefined" && this.state.mouseDownClientX !== null &&
         typeof this.state.startAngle !== "undefined" && this.state.startAngle !== null) {
       if (typeof this.state.mouseDownPoint !== "undefined" && this.state.mouseDownPoint !== null &&
@@ -188,15 +183,18 @@ var Surface = React.createClass({
     }
   },
 
-  handleGraphDrag: function(e:React.SyntheticEvent, startAngle: number, mouseDownPoint: THREE.Vector3, mouseDownCamera: THREE.Camera): void {
-    var plane = new THREE.Plane(new THREE.Vector3(0,0,1), -mouseDownPoint.z);
+  handleGraphDrag: function(e: React.SyntheticEvent,
+      startAngle: number,
+      mouseDownPoint: THREE.Vector3,
+      mouseDownCamera: THREE.Camera): void {
+    var plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -mouseDownPoint.z);
     var raycaster = this.raycast(mouseDownCamera, e);
     var cursorPoint = raycaster.ray.intersectPlane(plane);
     if (typeof cursorPoint !== "undefined" && cursorPoint !== null) {
-      var angle = function(point: P2):number {
+      var angle = function(point: P2): number {
         return Math.atan(point.y / point.x);
       };
-      var fudge = (cursorPoint.x>0 && mouseDownPoint.x<=0) || (cursorPoint.x<=0 && mouseDownPoint.x>0) ? Math.PI : 0;
+      var fudge = (cursorPoint.x > 0 && mouseDownPoint.x < 0) || (cursorPoint.x < 0 && mouseDownPoint.x > 0) ? Math.PI : 0;
       var deltaAngle = angle(cursorPoint) - fudge - angle(mouseDownPoint);
       this.setState({
         angle: startAngle - deltaAngle
@@ -215,13 +213,13 @@ var Surface = React.createClass({
   handleHover: function(e: React.SyntheticEvent): void {
     var intersections = this.raycast(camera, e).intersectObject(graph);
     if (intersections.length > 0) {
-      var {x:x,y:y} = intersections[0].point;
+      var {x: x, y: y} = intersections[0].point;
       this.props.highlightW(x, y);
     }
   },
 
-  raycast: function(camera: THREE.Camera, e:React.SyntheticEvent): THREE.Raycaster {
-    var {left:left, top:top} = this.refs.container.getDOMNode().getBoundingClientRect();
+  raycast: function(camera: THREE.Camera, e: React.SyntheticEvent): THREE.Raycaster {
+    var {left: left, top: top} = this.refs.container.getDOMNode().getBoundingClientRect();
     var x = 2 * (e.clientX - left) / this.props.dim - 1;
     var y = -2 * (e.clientY - top) / this.props.dim + 1;
     var raycaster = new THREE.Raycaster();
@@ -232,7 +230,7 @@ var Surface = React.createClass({
 
   render: function(): ?ReactElement {
     return (
-      <div ref="container" style={{display:"inline-block"}}
+      <div ref="container" style={{display: "inline-block"}}
         onMouseDown={this.mouseDown}
         onMouseUp={this.mouseUp}
         onMouseMove={this.mouseMove}></div>

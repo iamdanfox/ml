@@ -1,15 +1,15 @@
 /* @flow */
 "use strict";
 var React = require("react");
-var {rot90:rot90, lineEq:lineEq, scale:scale} = require("./VectorUtils.jsx");
+var {rot90: rot90, lineEq: lineEq, scale: scale} = require("./VectorUtils.jsx");
 
 
-// my stackoverflow explanation: http://stackoverflow.com/a/24392281/1941552
+// my stackoverflow explanation: http: //stackoverflow.com/a/24392281/1941552
 function lambdaGamma (arg1, arg2, arg3, arg4) {
-  var [a,b] = arg1;
-  var [c,d] = arg2;
-  var [p,q] = arg3;
-  var [r,s] = arg4;
+  var [a, b] = arg1;
+  var [c, d] = arg2;
+  var [p, q] = arg3;
+  var [r, s] = arg4;
 
   var det = (c - a) * (s - q) - (r - p) * (d - b);
   if (det === 0) {
@@ -31,7 +31,7 @@ var Line = React.createClass({
     dim: React.PropTypes.number.isRequired
   },
 
-  findBorderIntersection: function(v:{x:number;y:number}):?[number, number] {
+  findBorderIntersection: function(v: {x: number;y: number}): ?[number, number] {
     var dim = this.props.dim;
     var top = [[-dim / 2, dim / 2], [dim / 2, dim / 2]];
     var right = [[dim / 2, dim / 2], [dim / 2, -dim / 2]];
@@ -41,7 +41,7 @@ var Line = React.createClass({
     // we construct vectors for the edge of the viewport, then intersection test them.
     // this yields the lambda that we need to multiply v by to reach the edge.
     var intersections = [top, right, bottom, left]
-      .map((arg) => lambdaGamma([0,0], [v.x,v.y], arg[0], arg[1]))
+      .map((arg) => lambdaGamma([0, 0], [v.x, v.y], arg[0], arg[1]))
       .filter( function(lg) {
         if (typeof lg !== "undefined" && lg !== null) {
           var [lambda, gamma] = lg;
@@ -55,7 +55,7 @@ var Line = React.createClass({
 
   render: function(): ?ReactElement {
     var boundaryPoint;
-    if (lineEq({x:0,y:0}, this.props.w)) {
+    if (lineEq({x: 0, y: 0}, this.props.w)) {
       boundaryPoint = {
         x: 0,
         y: 0
@@ -64,7 +64,7 @@ var Line = React.createClass({
       var v = rot90(this.props.w); // v is now the direction of the line
       var first = this.findBorderIntersection(v);
       if (typeof first !== "undefined" && first !== null) {
-        var [lambda,] = first;
+        var lambda = first[0];
         boundaryPoint = scale(lambda)(v);
       } else {
         throw new Error();
@@ -74,7 +74,7 @@ var Line = React.createClass({
     return (
       <path d={`M ${-boundaryPoint.x} ${-boundaryPoint.y} L ${boundaryPoint.x} ${boundaryPoint.y}`}
         strokeWidth="1.5"
-        stroke="rgba(30,30,30,0.3)" />
+        stroke="rgba(30, 30, 30, 0.3)" />
     );
   }
 });

@@ -3,7 +3,7 @@
 
 type P2 = P2;
 
-var {rot90:rot90, dotProduct:dotProduct, sizeSquared:sizeSquared} = require("./VectorUtils.jsx");
+var {rot90: rot90, dotProduct: dotProduct, sizeSquared: sizeSquared} = require("./VectorUtils.jsx");
 
 
 var misclassifiedPoints = function(w: P2, pointClasses: [Array<P2>, Array<P2>]): Array<P2> {
@@ -28,7 +28,7 @@ var findError = function(rot90w: P2, point: P2): number {
   // eliminating factors of |point|^2
   //           d^2 = |point|^2 - (rot90w . point)^2 / |rot90w|^2
 
-  var dp:number = dotProduct(rot90w, point);
+  var dp: number = dotProduct(rot90w, point);
   return sizeSquared(point) - ( (dp * dp) / sizeSquared(rot90w) );
 };
 
@@ -43,7 +43,7 @@ module.exports = {
   },
 
   // for every misclassified point, find the distance squared to the separating line
-  leastSquaresObjective: function(w: P2, pointClasses: [Array<P2>,Array<P2>]): number {
+  leastSquaresObjective: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
     var rot90w = rot90(w);
     return misclassifiedPoints(w, pointClasses)
       .map( (point) => findError(rot90w, point) )

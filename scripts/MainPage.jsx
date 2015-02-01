@@ -10,14 +10,14 @@ var Surface = require("./Surface.jsx");
 
 var DIM = 400;
 
-type F<U, V> = (x:U) => V;
-type P2 = {x:number;y:number}
+type F<U, V> = (x: U) => V;
+type P2 = {x: number;y: number}
 
 var points = require("../data/points.js");
 
 
 function project(arg): number {
-  var {x:x,y:y} = arg;
+  var {x: x, y: y} = arg;
   var angleRadians = Math.atan(y / x);
   return (angleRadians / Math.PI + 0.7) % 1;
 }
@@ -31,7 +31,7 @@ var DataSlider = React.createClass({
     updateCutoff: React.PropTypes.func.isRequired
   },
 
-  mouseMove: function(e):void {
+  mouseMove: function(e): void {
     var newCutoff = (e.pageX - this.refs.svg.getDOMNode().getBoundingClientRect().left) / DIM;
     this.props.updateCutoff(newCutoff);
   },
@@ -41,7 +41,7 @@ var DataSlider = React.createClass({
     return (
       <svg style={{width: DIM, height: height, background: "#e0e0e0", display: "block", margin: "10 0"}}
         ref="svg" onMouseMove={this.mouseMove}>
-        <rect x="0" y="0" height={height} width={this.props.cutoff * DIM} style={{fill:"#ccc"}} />
+        <rect x="0" y="0" height={height} width={this.props.cutoff * DIM} style={{fill: "#ccc"}} />
         { this.props.fullData
             .map(project)
             .map((i) => <path d={`M ${i * DIM} 0 L ${i * DIM} ${height}`} strokeWidth="1"
@@ -53,27 +53,27 @@ var DataSlider = React.createClass({
 
 
 var MainPage = React.createClass({
-  getInitialState: function():{highlightedW:?[number, number];cutoffs:[number, number]} {
+  getInitialState: function(): {highlightedW: ?[number, number];cutoffs: [number, number]} {
     return {
       highlightedW: null,
       cutoffs: [1, 1]
     };
   },
 
-  mouseMove: function(e: React.SyntheticElement):void {
-    var {left:left, top:top} = this.refs.svg.getDOMNode().getBoundingClientRect();
+  mouseMove: function(e: React.SyntheticElement): void {
+    var {left: left, top: top} = this.refs.svg.getDOMNode().getBoundingClientRect();
     var x = e.pageX - left;
     var y = DIM - (e.pageY - top);
     this.highlightW(x - DIM / 2, y - DIM / 2);
   },
 
-  highlightW: function(x:number,y:number): void {
+  highlightW: function(x: number, y: number): void {
     this.setState({
-      highlightedW: [x,y]
+      highlightedW: [x, y]
     });
   },
 
-  updateCutoff: function(i:number): F<number, void> {
+  updateCutoff: function(i: number): F<number, void> {
     return (newCutoff) => {
       var newCutoffs = this.state.cutoffs.slice(0); // clone
       newCutoffs[i] = newCutoff;
@@ -83,26 +83,26 @@ var MainPage = React.createClass({
     };
   },
 
-  makeHyperplane: function():ReactElement | boolean {
+  makeHyperplane: function(): ReactElement | boolean {
     if (typeof this.state.highlightedW !== "undefined" && this.state.highlightedW !== null) {
       var x = this.state.highlightedW[0];
       var y = this.state.highlightedW[1];
       return (<g>
-        <path d={`M 0 0 L ${x} ${y}`} strokeWidth="1.5" stroke={"rgba(255,0,0,0.4)"} />
-        <Line w={{x:x,y:y}} dim={DIM} />
+        <path d={`M 0 0 L ${x} ${y}`} strokeWidth="1.5" stroke={"rgba(255, 0, 0, 0.4)"} />
+        <Line w={{x: x, y: y}} dim={DIM} />
       </g>);
     } else {
       return false;
     }
   },
 
-  render: function():?ReactElement {
+  render: function(): ?ReactElement {
     var pointClasses = [points.class0, points.class1];
     for (var i = 0; i < pointClasses.length; i = i + 1) {
       pointClasses[i] = pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]);
     }
 
-    var style = {background:"#e0e0e0", width:DIM, height:DIM};
+    var style = {background: "#e0e0e0", width: DIM, height: DIM};
     return (
       <div className="main-page">
         <svg style={style} ref="svg" onMouseMove={this.mouseMove}>
