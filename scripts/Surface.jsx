@@ -10,7 +10,7 @@ type P2 = {x: number; y: number};
 
 
 var Surface = React.createClass({
-  getInitialState: function ():{angle:number; mouseDownClientX: any; mouseDownCamera: any; mouseDownPoint: ?P2} {
+  getInitialState: function ():{angle:number; mouseDownClientX: ?number; mouseDownCamera: ?THREE.Camera; mouseDownPoint: ?THREE.Vector3} {
     return {
       angle: 0,
       mouseDownClientX: null,
@@ -116,16 +116,19 @@ var Surface = React.createClass({
 //       face.color.setHSL( hue, sat, colourCurve(normalizedZ))
 //     return graphGeometry
 
-//   mouseDown: (e) ->
-//     intersections = @raycast(@camera, e).intersectObject(@graph)
-//     if intersections.length > 0 # try to drag
-//       @setState
-//         mouseDownCamera: @camera.clone()
-//         mouseDownPoint: intersections[0].point
-
-//     @setState
-//       mouseDownClientX: e.clientX
-//       startAngle: @state.angle
+  mouseDown: function (e: React.SyntheticEvent): void {
+    var intersections = this.raycast(this.camera, e).intersectObject(this.graph)
+    if (intersections.length > 0){ // try to drag
+      this.setState({
+        mouseDownCamera: this.camera.clone(),
+        mouseDownPoint: intersections[0].point
+      })
+    }
+    this.setState({
+      mouseDownClientX: e.clientX,
+      startAngle: this.state.angle
+    })
+  },
 
   mouseUp: function(): void {
     this.setState({
@@ -135,17 +138,17 @@ var Surface = React.createClass({
     })
   },
 
-  mouseMove: function(e:React.SyntheticEvent):void {
+  mouseMove: function(e: React.SyntheticEvent):void {
     if (this.state.mouseDownClientX != null)
       if (this.state.mouseDownPoint != null)
         this.handleGraphDrag(e, this.state.mouseDownPoint)
       else
-        this.handleSpaceDrag(e)
+        this.handleSpaceDrag(e, this.state.mouseDownClientX)
     else
       this.handleHover(e)
   },
 
-  handleGraphDrag: function (e:React.SyntheticEvent, mouseDownPoint: any): void { // TODO: change any to THREE.Vector3
+  handleGraphDrag: function (e:React.SyntheticEvent, mouseDownPoint: THREE.Vector3): void { // TODO: change any to THREE.Vector3
     var plane = new THREE.Plane(new THREE.Vector3(0,0,1), -mouseDownPoint.z)
     var raycaster = this.raycast(this.state.mouseDownCamera, e)
     var cursorPoint = raycaster.ray.intersectPlane(plane)
@@ -161,19 +164,21 @@ var Surface = React.createClass({
     }
   },
 
-//   handleSpaceDrag: (e) ->
-//     deltaX = e.clientX - @state.mouseDownClientX
-//     deltaAngle = (deltaX/@props.dim) * 2 * Math.PI
-//     @setState
-//       angle: @state.startAngle - deltaAngle
+  handleSpaceDrag: function (e: React.SyntheticEvent, mouseDownClientX: number): void {
+    var deltaX = e.clientX - mouseDownClientX
+    var deltaAngle = (deltaX/this.props.dim) * 2 * Math.PI
+    this.setState({
+      angle: this.state.startAngle - deltaAngle
+    })
+  },
 
-  // handleHover: function (e:Event) {
-  //   var intersections = this.raycast(this.camera, e).intersectObject(this.graph)
-  //   if (intersections.length > 0) {
-  //     var {x:x,y:y} = intersections[0].point
-  //     this.props.highlightW(x, y)
-  //   }
-  // },
+  handleHover: function (e: React.SyntheticEvent): void {
+    var intersections = this.raycast(this.camera, e).intersectObject(this.graph)
+    if (intersections.length > 0) {
+      var {x:x,y:y} = intersections[0].point
+      this.props.highlightW(x, y)
+    }
+  },
 
   raycast: function (camera:any, e:React.SyntheticEvent): THREE.Raycaster {
     var {left:left, top:top} = this.refs.container.getDOMNode().getBoundingClientRect()
@@ -183,13 +188,16 @@ var Surface = React.createClass({
     raycaster.set( camera.position, camera )
     raycaster.ray.direction.set(x, y, 0.5).unproject(camera).sub(camera.position).normalize()
     return raycaster
-  }
+  },
 
-//   render: ->
-//     <div ref='container' style={display:'inline-block'}
-//       onMouseDown={this.mouseDown}
-//       onMouseUp={this.mouseUp}
-//       onMouseMove={this.mouseMove}></div>
+  render: function(): ?ReactElement {
+    return (
+      <div ref='container' style={{display:'inline-block'}}
+        onMouseDown={this.mouseDown}
+        onMouseUp={this.mouseUp}
+        onMouseMove={this.mouseMove}></div>
+    )
+  }
 })
 
 module.exports = Surface
