@@ -42,7 +42,7 @@ var renderer = new THREE.WebGLRenderer({
 
 renderer.setClearColor( 0x111111, 1 );
 var renderScene = function() {
-  renderer.render(scene, camera)
+  renderer.render(scene, camera);
 };
 
 
@@ -62,7 +62,7 @@ var Surface = React.createClass({
       mouseDownClientX: null,
       mouseDownCamera: null,
       mouseDownPoint: null
-    }
+    };
   },
 
   componentDidMount: function() {
@@ -86,8 +86,9 @@ var Surface = React.createClass({
   },
 
   componentWillUpdate: function(nextProps:Props, nextState?: State): void {
-    if (nextState != null)
+    if (nextState != null) {
       this.updateCamera(nextState);
+    }
     renderScene();
   },
 
@@ -126,7 +127,7 @@ var Surface = React.createClass({
       var y = r * Math.sin(theta) * props.dim;
       var lso = leastSquaresObjective({x,y}, props.pointClasses);
       return new THREE.Vector3(x, y, projectErrorForGraph(lso));
-    }
+    };
 
     var RESOLUTION = 24;
     return new THREE.ParametricGeometry( polarMeshFunction, 8* RESOLUTION, 0.5* RESOLUTION, true );
@@ -156,7 +157,7 @@ var Surface = React.createClass({
       this.setState({
         mouseDownCamera: camera.clone(),
         mouseDownPoint: intersections[0].point
-      })
+      });
     }
     this.setState({
       mouseDownClientX: e.clientX,
@@ -190,7 +191,7 @@ var Surface = React.createClass({
     if (cursorPoint != null) {
       var angle = function (point: P2):number {
         return Math.atan(point.y / point.x);
-      }
+      };
       var fudge = (cursorPoint.x>0 && mouseDownPoint.x<=0) || (cursorPoint.x<=0 && mouseDownPoint.x>0) ? Math.PI : 0;
       var deltaAngle = angle(cursorPoint) - fudge - angle(mouseDownPoint);
       this.setState({
