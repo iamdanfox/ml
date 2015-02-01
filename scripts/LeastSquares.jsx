@@ -10,7 +10,7 @@ var misclassifiedPoints = function(w: P2, pointClasses: [Array<P2>, Array<P2>]):
   var as = class0points.filter((p) => dotProduct(p, w) <= 0);
   var bs = class1points.filter((p) => dotProduct(p, w) > 0);
   return as.concat(bs);
-}
+};
 
 
 // returns the square of the distance to rot90w's line
@@ -29,12 +29,12 @@ var findError = function (rot90w: P2, point: P2): number {
 
   var dp:number = dotProduct(rot90w, point);
   return sizeSquared(point) - ( (dp * dp) / sizeSquared(rot90w) );
-}
+};
 
 module.exports = {
 
   projectErrorToRadius: function (error: number): number {
-    return 10 - 0.7*Math.log(error+1) // errors are roughly ~1132257, so log makes them reasonable.
+    return 10 - 0.7*Math.log(error+1); // errors are roughly ~1132257, so log makes them reasonable.
   },
 
   projectErrorForGraph: function (error: number): number {
@@ -46,10 +46,10 @@ module.exports = {
     var rot90w = rot90(w);
     return misclassifiedPoints(w, pointClasses)
       .map( (point) => findError(rot90w, point) )
-      .reduce( ((e1, e2) => e1 + e2), 0 )
+      .reduce( ((e1, e2) => e1 + e2), 0 );
   },
 
   misclassifiedPoints: misclassifiedPoints,
 
   findError: findError
-}
+};

@@ -12,6 +12,6 @@ var Axes = React.createClass({
       </g>
     );
   }
-})
+});
 
 module.exports = Axes;

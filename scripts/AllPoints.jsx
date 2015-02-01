@@ -16,7 +16,7 @@ var AllPoints = React.createClass({
       <PointClass points={class1} color="blue" />
     </g>);
   }
-})
+});
 
 
 var PointClass = React.createClass({
@@ -25,8 +25,8 @@ var PointClass = React.createClass({
     return (<g>
       { this.props.points
           .map((p) => <circle key={p.x} cx={p.x} cy={p.y} r="3" fill={this.props.color} />) }
-    </g>)
+    </g>);
   }
-})
+});
 
-module.exports = AllPoints
+module.exports = AllPoints;
