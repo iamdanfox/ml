@@ -142,7 +142,7 @@ var Surface = React.createClass({
 
     var colourCurve = (z) => 0.07 + 0.93*Math.pow(z, 2);
 
-    for (var i=0; i < graphGeometry.faces.length; i++) {
+    for (var i=0; i < graphGeometry.faces.length; i = i + 1) {
       var face = graphGeometry.faces[i];
       var totalZ = graphGeometry.vertices[face.a].z + graphGeometry.vertices[face.b].z + graphGeometry.vertices[face.c].z;
       var normalizedZ = (totalZ - 3*zMin) / (3*zRange);
