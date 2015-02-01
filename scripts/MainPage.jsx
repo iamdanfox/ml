@@ -97,7 +97,7 @@ var MainPage = React.createClass({
   },
 
   render: function():?ReactElement {
-    var pointClasses = [ points.class0, points.class1 ];
+    var pointClasses = [points.class0, points.class1];
     for (var i = 0; i < pointClasses.length; i = i + 1) {
       pointClasses[i] = pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]);
     }
