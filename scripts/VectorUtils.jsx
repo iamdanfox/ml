@@ -1,29 +1,25 @@
 /* @flow */
 
-declare class Point2 {
-  x: number;
-  y: number
-}
 
 module.exports = {
-  lineEq: function (p1:Point2, p2:Point2): boolean {
+  lineEq: function (p1:{x: number; y: number}, p2:{x: number; y: number}): boolean {
     return (p1 != null && p2 != null) && (p1.x === p2.x) && (p1.y === p2.y)
   },
   // counter clockwise rotation of a vector, by 90 degrees
-  rot90: function (arg: Point2): Point2 {
+  rot90: function (arg: {x: number; y: number}): {x: number; y: number} {
     var {x:x,y:y} = arg;
     return {
       x: -y,
       y: x
     }
   },
-  dotProduct: function (a:Point2,b:Point2):number {
+  dotProduct: function (a:{x: number; y: number},b:{x: number; y: number}): number {
     var {x:x1,y:y1} = a;
     var {x:x2,y:y2} = b;
     return x1*x2 + y1*y2;
   },
   scale: function (sf:number):mixed {
-    return function (arg:Point2):Point2 {
+    return function (arg:{x: number; y: number}):{x: number; y: number} {
       var {x:x, y:y} = arg
       return {
         x: x*sf,
@@ -31,13 +27,13 @@ module.exports = {
       }
     }
   },
-  sizeSquared: function (arg: Point2) {
+  sizeSquared: function (arg: {x: number; y: number}): number {
     var x = arg.x;
     var y = arg.y;
-    x*x + y*y
+    return x*x + y*y;
   },
-  add: function (a: Point2): mixed {
-    return function (b): Point2 {
+  add: function (a: {x: number; y: number}): mixed {
+    return function (b): {x: number; y: number} {
       return {
         x: a.x + b.x,
         y: a.y + b.y

@@ -1,6 +1,6 @@
 React = require 'react'
 THREE = require 'three'
-{projectErrorForGraph, leastSquaresObjective} = require './leastSquares.cjsx'
+{projectErrorForGraph, leastSquaresObjective} = require './LeastSquares.jsx'
 
 
 module.exports = Surface = React.createClass
