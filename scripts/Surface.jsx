@@ -140,15 +140,13 @@ var Surface = React.createClass({
     var zMin = graphGeometry.boundingBox.min.z;
     var zRange = graphGeometry.boundingBox.max.z - zMin;
 
-    var hue = 0.54;
-    var sat = 0.8;
     var colourCurve = (z) => 0.07 + 0.93*Math.pow(z, 2);
 
     for (var i=0; i < graphGeometry.faces.length; i++) {
       var face = graphGeometry.faces[i];
       var totalZ = graphGeometry.vertices[face.a].z + graphGeometry.vertices[face.b].z + graphGeometry.vertices[face.c].z;
       var normalizedZ = (totalZ - 3*zMin) / (3*zRange);
-      face.color.setHSL( hue, sat, colourCurve(normalizedZ));
+      face.color.setHSL( 0.54, 0.8, colourCurve(normalizedZ));
     }
     return graphGeometry;
   },

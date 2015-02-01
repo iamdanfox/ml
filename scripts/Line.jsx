@@ -31,6 +31,28 @@ var Line = React.createClass({
     dim: React.PropTypes.number.isRequired
   },
 
+  findBorderIntersection: function(v:{x:number;y:number}):?[number, number] {
+    var dim = this.props.dim;
+    var top = [ [-dim/2, dim/2], [dim/2, dim/2] ];
+    var right = [ [dim/2, dim/2], [dim/2, -dim/2] ];
+    var bottom = [ [dim/2, -dim/2], [-dim/2, -dim/2] ];
+    var left = [ [-dim/2, -dim/2], [-dim/2, dim/2] ];
+
+    // we construct vectors for the edge of the viewport, then intersection test them.
+    // this yields the lambda that we need to multiply v by to reach the edge.
+    var intersections = [top, right, bottom, left]
+      .map((arg) => lambdaGamma([0,0], [v.x,v.y], arg[0], arg[1]))
+      .filter( function(lg) {
+        if (typeof lg !== "undefined" && lg !== null) {
+          var [lambda, gamma] = lg;
+          return 0 < lambda && 0 < gamma && gamma <= 1; // not conventional intersection
+        } else {
+          return false;
+        }
+      });
+    return intersections[0];
+  },
+
   render: function(): ?ReactElement {
     var boundaryPoint;
     if (lineEq({x:0,y:0}, this.props.w)) {
@@ -39,28 +61,8 @@ var Line = React.createClass({
         y: 0
       };
     } else {
-      var dim = this.props.dim;
-      var top = [ [-dim/2, dim/2], [dim/2, dim/2] ];
-      var right = [ [dim/2, dim/2], [dim/2, -dim/2] ];
-      var bottom = [ [dim/2, -dim/2], [-dim/2, -dim/2] ];
-      var left = [ [-dim/2, -dim/2], [-dim/2, dim/2] ];
-
       var v = rot90(this.props.w); // v is now the direction of the line
-      var {x:x,y:y} = v;
-
-      // we construct vectors for the edge of the viewport, then intersection test them.
-      // this yields the lambda that we need to multiply v by to reach the edge.
-      var intersections = [top, right, bottom, left]
-        .map((arg) => lambdaGamma([0,0], [x,y], arg[0], arg[1]))
-        .filter( function(lg) {
-          if (typeof lg !== "undefined" && lg !== null) {
-            var [lambda, gamma] = lg;
-            return 0 < lambda && 0 < gamma && gamma <= 1; // not conventional intersection
-          } else {
-            return false;
-          }
-        });
-      var first = intersections[0];
+      var first = this.findBorderIntersection(v);
       if (typeof first !== "undefined" && first !== null) {
         var [lambda,] = first;
         boundaryPoint = scale(lambda)(v);

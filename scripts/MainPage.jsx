@@ -83,22 +83,23 @@ var MainPage = React.createClass({
     };
   },
 
-  render: function():?ReactElement {
-    var pointClasses = [ points.class0, points.class1 ];
-    for (var i=0; i<pointClasses.length; i++) {
-      pointClasses[i] = pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]);
-    }
-
-    var line;
+  makeHyperplane: function():ReactElement | boolean {
     if (typeof this.state.highlightedW !== "undefined" && this.state.highlightedW !== null) {
       var x = this.state.highlightedW[0];
       var y = this.state.highlightedW[1];
-      line = (<g>
+      return (<g>
         <path d={`M 0 0 L ${x} ${y}`} strokeWidth="1.5" stroke={"rgba(255,0,0,0.4)"} />
         <Line w={{x:x,y:y}} dim={DIM} />
       </g>);
     } else {
-      line = false;
+      return false;
+    }
+  },
+
+  render: function():?ReactElement {
+    var pointClasses = [ points.class0, points.class1 ];
+    for (var i=0; i<pointClasses.length; i++) {
+      pointClasses[i] = pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]);
     }
 
     var style = {background:"#e0e0e0", width:DIM, height:DIM};
@@ -108,7 +109,7 @@ var MainPage = React.createClass({
           <g transform={"translate("+DIM/2+" "+DIM/2+") scale(1 -1)"}>
             <Axes dim={DIM} />
             <AllPoints pointClasses={pointClasses} />
-            { line }
+            { this.makeHyperplane() }
           </g>
         </svg>
 

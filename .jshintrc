@@ -13,6 +13,12 @@
   "noarg": true,
   "newcap": true,
   "latedef": true,
+  "freeze": true,
+  "camelcase": false,
+  "bitwise": true,
+  "maxparams": 5,
+  "maxdepth": 3,
+  "maxstatements": 10,
   "globals": {
     "require": false,
     "module": true,
