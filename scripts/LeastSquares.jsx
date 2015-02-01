@@ -6,12 +6,12 @@ type P2 = P2;
 var {rot90: rot90, dotProduct: dotProduct, sizeSquared: sizeSquared} = require("./VectorUtils.jsx");
 
 
-var misclassifiedPoints = function(w: P2, pointClasses: [Array<P2>, Array<P2>]): Array<P2> {
-  var [class0points, class1points] = pointClasses;
-  var as = class0points.filter((p) => dotProduct(p, w) <= 0);
-  var bs = class1points.filter((p) => dotProduct(p, w) > 0);
-  return as.concat(bs);
-};
+// var misclassifiedPoints = function(w: P2, pointClasses: [Array<P2>, Array<P2>]): Array<P2> {
+//   var [class0points, class1points] = pointClasses;
+//   var as = class0points.filter((p) => dotProduct(p, w) <= 0);
+//   var bs = class1points.filter((p) => dotProduct(p, w) > 0);
+//   return as.concat(bs);
+// };
 
 
 // returns the square of the distance to rot90w's line
@@ -45,12 +45,15 @@ module.exports = {
   // for every misclassified point, find the distance squared to the separating line
   leastSquaresObjective: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
     var rot90w = rot90(w);
-    return misclassifiedPoints(w, pointClasses)
-      .map( (point) => findError(rot90w, point) )
-      .reduce( ((e1, e2) => e1 + e2), 0 );
+    var [class0points, class1points] = pointClasses;
+
+    var class0errors = class0points
+      .filter((p) => dotProduct(p, w) <= 0)
+      .map( (point) => findError(rot90w, point) );
+    var class1errors = class1points
+      .filter((p) => dotProduct(p, w) > 0)
+      .map( (point) => findError(rot90w, point) );
+
+    return class0errors.reduce( ((e1, e2) => e1 + e2), 0 ) + class1errors.reduce( ((e1, e2) => e1 + e2), 0 );
   },
-
-  misclassifiedPoints: misclassifiedPoints,
-
-  findError: findError
 };
