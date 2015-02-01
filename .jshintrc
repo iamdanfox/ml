@@ -1,6 +1,7 @@
 {
   "node": true,
   "strict": true,
+  "quotmark": "double",
   "globals": {
     "require": false,
     "module": true

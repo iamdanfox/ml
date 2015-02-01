@@ -3,7 +3,7 @@
 
 type P2 = P2;
 
-var {rot90:rot90, dotProduct:dotProduct, sizeSquared:sizeSquared} = require('./VectorUtils.jsx');
+var {rot90:rot90, dotProduct:dotProduct, sizeSquared:sizeSquared} = require("./VectorUtils.jsx");
 
 
 var misclassifiedPoints = function(w: P2, pointClasses: [Array<P2>, Array<P2>]): Array<P2> {

@@ -1,10 +1,10 @@
 /* @flow */
 "use strict";
 
-var React = require('react');
-var THREE = require('three');
+var React = require("react");
+var THREE = require("three");
 var {projectErrorForGraph: projectErrorForGraph,
-  leastSquaresObjective: leastSquaresObjective} = require('./LeastSquares.jsx');
+  leastSquaresObjective: leastSquaresObjective} = require("./LeastSquares.jsx");
 
 
 type F<U, V> = (x:U) => V;
@@ -232,7 +232,7 @@ var Surface = React.createClass({
 
   render: function(): ?ReactElement {
     return (
-      <div ref='container' style={{display:'inline-block'}}
+      <div ref="container" style={{display:"inline-block"}}
         onMouseDown={this.mouseDown}
         onMouseUp={this.mouseUp}
         onMouseMove={this.mouseMove}></div>

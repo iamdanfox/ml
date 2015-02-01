@@ -1,11 +1,11 @@
 /* @flow */
 "use strict";
 
-var React = require('react');
+var React = require("react");
 
 
 var AllPoints = React.createClass({
-  displayName: 'AllPoints',
+  displayName: "AllPoints",
 
   propTypes: {
     pointClasses: React.PropTypes.array.isRequired
@@ -22,7 +22,7 @@ var AllPoints = React.createClass({
 
 
 var PointClass = React.createClass({
-  displayName: 'PointClass',
+  displayName: "PointClass",
   render: function(): ?ReactElement {
     return (<g>
       { this.props.points

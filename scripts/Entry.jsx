@@ -1,7 +1,7 @@
 /* @flow */
 
-var MainPage = require('./MainPage.jsx');
-var React = require('react');
+var MainPage = require("./MainPage.jsx");
+var React = require("react");
 
 window.React = React; // ensures the debugger works
 React.render(<MainPage />, document.body);

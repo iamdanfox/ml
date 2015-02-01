@@ -1,19 +1,19 @@
 /* @flow */
 "use strict";
 
-var React = require('react');
-var Line = require('./Line.jsx');
-var Axes = require('./Axes.jsx');
-var AllPoints = require('./AllPoints.jsx');
-// var ObjectiveFunctionVis = require('./ObjectiveFunctionVis.cjsx');
-var Surface = require('./Surface.jsx');
+var React = require("react");
+var Line = require("./Line.jsx");
+var Axes = require("./Axes.jsx");
+var AllPoints = require("./AllPoints.jsx");
+// var ObjectiveFunctionVis = require("./ObjectiveFunctionVis.cjsx");
+var Surface = require("./Surface.jsx");
 
 var DIM = 400;
 
 type F<U, V> = (x:U) => V;
 type P2 = {x:number;y:number}
 
-var points = require('../data/points.js');
+var points = require("../data/points.js");
 
 
 var MainPage = React.createClass({
@@ -66,8 +66,8 @@ var MainPage = React.createClass({
     }
 
     return (
-      <div className='main-page'>
-        <svg style={{background:'#e0e0e0', width:DIM, height:DIM}} ref='svg' onMouseMove={this.mouseMove} >
+      <div className="main-page">
+        <svg style={{background:"#e0e0e0", width:DIM, height:DIM}} ref="svg" onMouseMove={this.mouseMove} >
           <g transform={"translate("+DIM/2+" "+DIM/2+") scale(1 -1)"}>
             <Axes dim={DIM} />
             <AllPoints pointClasses={pointClasses} />
@@ -103,9 +103,9 @@ var DataSlider = React.createClass({
   render: function(): ?ReactElement {
     var height = 34;
     return (
-      <svg style={{width: DIM, height: height, background: '#e0e0e0', display: 'block', margin: '10 0'}}
-        ref='svg' onMouseMove={this.mouseMove}>
-        <rect x="0" y="0" height={height} width={this.props.cutoff * DIM} style={{fill:'#ccc'}} />
+      <svg style={{width: DIM, height: height, background: "#e0e0e0", display: "block", margin: "10 0"}}
+        ref="svg" onMouseMove={this.mouseMove}>
+        <rect x="0" y="0" height={height} width={this.props.cutoff * DIM} style={{fill:"#ccc"}} />
         { this.props.fullData
             .map(project)
             .map((i) => <path d={`M ${i*DIM} 0 L ${i*DIM} ${height}`} strokeWidth="1"

@@ -1,13 +1,11 @@
 /* @flow */
 "use strict";
-var React = require('react');
-var {rot90:rot90, lineEq:lineEq, scale:scale} = require('./VectorUtils.jsx');
+var React = require("react");
+var {rot90:rot90, lineEq:lineEq, scale:scale} = require("./VectorUtils.jsx");
 
 
 
 var Line = React.createClass({
-  displayName: 'Line',
-
   propTypes: {
     w: React.PropTypes.shape({
       x: React.PropTypes.number.isRequired,
