@@ -21,7 +21,7 @@ module.exports = {
     loaders: [
       { test: /\.cjsx$/, loaders: ['react-hot', 'coffee-loader', 'cjsx-loader']},
       { test: /\.coffee$/, loaders: ['react-hot', 'coffee-loader'] },
-      { test: /\.jsx$/, loaders: ['react-hot', 'jsx'] },
+      { test: /\.jsx$/, loaders: ['react-hot', 'jsx-loader?harmony&stripTypes'] },
       { test: /\.less$/, loader: ['style-loader', 'css-loader', 'less-loader'] },
       { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
       { test: /\.json$/, loaders: ['json-loader'] },
