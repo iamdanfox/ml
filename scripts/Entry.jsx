@@ -1,6 +1,6 @@
 /* @flow */
 
-var MainPage = require('./MainPage.cjsx');
+var MainPage = require('./MainPage.jsx');
 var React = require('react');
 
 window.React = React; // ensures the debugger works
