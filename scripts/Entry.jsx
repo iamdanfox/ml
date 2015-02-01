@@ -1,4 +1,6 @@
 /* @flow */
+/* global window, document */
+"use strict";
 
 var MainPage = require("./MainPage.jsx");
 var React = require("react");

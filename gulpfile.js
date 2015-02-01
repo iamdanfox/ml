@@ -4,14 +4,76 @@ var gulp = require('gulp'),
     jscs = require('gulp-jscs');
 
 
+gulp.task('watch', function() {
+    gulp.watch("scripts/*.jsx", ["lint", "jscs"]);
+});
+
+
 gulp.task('jscs', function() {
   return gulp.src('scripts/*.jsx')
     .pipe(react({
       stripTypes: true
-    })) // strips types, doesn't transpile 6 to 5.
+    }))
     .pipe(jscs({
       esnext: true,
-      configPath: '.jscs.json'
+      "requireCurlyBraces": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "try",
+        "catch"
+      ],
+      "requireOperatorBeforeLineBreak": true,
+      "requireCamelCaseOrUpperCaseIdentifiers": true,
+      "maximumLineLength": {
+        "value": 130,
+        "allowComments": true,
+        "allowRegex": true
+      },
+      "validateIndentation": 2,
+      "validateQuoteMarks": "\"",
+      "disallowMultipleLineStrings": true,
+      "disallowMixedSpacesAndTabs": true,
+      "disallowSpaceAfterPrefixUnaryOperators": true,
+      "disallowMultipleVarDecl": true,
+      "disallowKeywordsOnNewLine": ["else"],
+      "requireSpaceAfterKeywords": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "switch",
+        "return",
+        "try",
+        "catch"
+      ],
+      "requireSpaceBeforeBinaryOperators": [
+        "=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", ">>>=",
+        "&=", "|=", "^=", "+=",
+        "+", "-", "*", "/", "%", "<<", ">>", ">>>", "&",
+        "|", "^", "&&", "||", "===", "==", ">=",
+        "<=", "<", ">", "!=", "!=="
+      ],
+      "requireSpaceAfterBinaryOperators": true,
+      "requireSpacesInConditionalExpression": true,
+      "requireSpacesInForStatement": true,
+      "requireLineFeedAtFileEnd": true,
+      "requireSpacesInFunctionExpression": {
+          "beforeOpeningCurlyBrace": true
+      },
+      "disallowSpacesInAnonymousFunctionExpression": {
+          "beforeOpeningRoundBrace": true
+      },
+      "disallowSpacesInsideObjectBrackets": "all",
+      "disallowSpacesInsideArrayBrackets": "all",
+      "validateJSDoc": {
+        "checkParamNames": true,
+        "requireParamTypes": true
+      },
+      "disallowNewlineBeforeBlockStatements": true
     }))
 });
 
@@ -19,9 +81,33 @@ gulp.task('lint', function() {
   return gulp.src('scripts/*.jsx')
     .pipe(react({
       stripTypes: true
-    })) // strips types, doesn't transpile 6 to 5.
+    }))
     .pipe(jshint({
-      esnext: true
+      esnext: true,
+      "bitwise": true,
+      "camelcase": false,
+      "curly": true,
+      "eqeqeq": true,
+      "forin": true,
+      "freeze": true,
+      "indent": 2,
+      "latedef": true,
+      "loopfunc": true,
+      "newcap": true,
+      "noarg": true,
+      "node": true,
+      "noempty": true,
+      "nonbsp": true,
+      "nonew": true,
+      "plusplus": true,
+      "quotmark": "double",
+      "strict": true,
+      "undef": true,
+      "unused": true,
+      "maxcomplexity": 4,
+      "maxdepth": 3,
+      "maxparams": 5,
+      "maxstatements": 10
     }))
     .pipe(jshint.reporter('default'))
 })
