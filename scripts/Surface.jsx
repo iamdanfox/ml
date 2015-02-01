@@ -125,7 +125,22 @@ var Surface = React.createClass({
         var v = graph.geometry.vertices[i];
         v.z = getZFromXY(props, v.x, v.y);
       }
+      this.colourGraphGeometry(graph.geometry);
       graph.geometry.verticesNeedUpdate = true;
+      graph.geometry.colorsNeedUpdate = true;
+
+
+      graph.geometry.computeFaceNormals();
+      graph.geometry.computeVertexNormals();
+
+      graph.geometry.normalsNeedUpdate = true;
+      graph.geometry.morphTargetsNeedUpdate = true;
+      graph.geometry.lineDistancesNeedUpdate = true;
+      graph.geometry.elementsNeedUpdate = true;
+      graph.geometry.groupsNeedUpdate = true;
+      graph.geometry.tangentsNeedUpdate = true;
+      graph.geometry.uvsNeedUpdate = true;
+      console.log(graph.geometry);
     }
   },
 
