@@ -1,7 +1,7 @@
 React = require 'react'
 Line = require './Line.cjsx'
 Axes = require './Axes.jsx'
-AllPoints = require './AllPoints.cjsx'
+AllPoints = require './AllPoints.jsx'
 ObjectiveFunctionVis = require './ObjectiveFunctionVis.cjsx'
 Surface = require './Surface.cjsx'
 
