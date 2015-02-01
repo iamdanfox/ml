@@ -15,7 +15,7 @@ var misclassifiedPoints = function(w: P2, pointClasses: [Array<P2>, Array<P2>]):
 
 
 // returns the square of the distance to rot90w's line
-var findError = function (rot90w: P2, point: P2): number {
+var findError = function(rot90w: P2, point: P2): number {
   // consider a triangle made of the vector `point`, the line `rot90w` and the distance `d`.
   // let `theta` be the angle at the origin
   // trigonometry: d = |point| * sin(theta)
@@ -34,16 +34,16 @@ var findError = function (rot90w: P2, point: P2): number {
 
 module.exports = {
 
-  projectErrorToRadius: function (error: number): number {
+  projectErrorToRadius: function(error: number): number {
     return 10 - 0.7 * Math.log(error + 1); // errors are roughly ~1132257, so log makes them reasonable.
   },
 
-  projectErrorForGraph: function (error: number): number {
+  projectErrorForGraph: function(error: number): number {
     return 10 * (10 - 0.7 * Math.log(error + 1));
   },
 
   // for every misclassified point, find the distance squared to the separating line
-  leastSquaresObjective: function (w: P2, pointClasses: [Array<P2>,Array<P2>]): number {
+  leastSquaresObjective: function(w: P2, pointClasses: [Array<P2>,Array<P2>]): number {
     var rot90w = rot90(w);
     return misclassifiedPoints(w, pointClasses)
       .map( (point) => findError(rot90w, point) )

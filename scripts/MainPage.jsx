@@ -31,7 +31,7 @@ var DataSlider = React.createClass({
     updateCutoff: React.PropTypes.func.isRequired
   },
 
-  mouseMove: function (e):void {
+  mouseMove: function(e):void {
     var newCutoff = (e.pageX - this.refs.svg.getDOMNode().getBoundingClientRect().left) / DIM;
     this.props.updateCutoff(newCutoff);
   },
@@ -60,20 +60,20 @@ var MainPage = React.createClass({
     };
   },
 
-  mouseMove: function (e: React.SyntheticElement):void {
+  mouseMove: function(e: React.SyntheticElement):void {
     var {left:left, top:top} = this.refs.svg.getDOMNode().getBoundingClientRect();
     var x = e.pageX - left;
     var y = DIM - (e.pageY - top);
     this.highlightW(x - DIM / 2, y - DIM / 2);
   },
 
-  highlightW: function (x:number,y:number): void {
+  highlightW: function(x:number,y:number): void {
     this.setState({
       highlightedW: [x,y]
     });
   },
 
-  updateCutoff: function (i:number): F<number, void> {
+  updateCutoff: function(i:number): F<number, void> {
     return (newCutoff) => {
       var newCutoffs = this.state.cutoffs.slice(0); // clone
       newCutoffs[i] = newCutoff;

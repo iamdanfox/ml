@@ -57,7 +57,7 @@ var Surface = React.createClass({
     pointClasses: React.PropTypes.array.isRequired
   },
 
-  getInitialState: function (): State {
+  getInitialState: function(): State {
     return {
       angle: 0,
       startAngle: null,
@@ -78,7 +78,7 @@ var Surface = React.createClass({
     renderScene();
   },
 
-  componentWillReceiveProps: function (nextProps: Props) {
+  componentWillReceiveProps: function(nextProps: Props) {
     if ((nextProps.pointClasses[0].length !== this.props.pointClasses[0].length) ||
       (nextProps.pointClasses[1].length !== this.props.pointClasses[1].length)) {
         this.updateGraphMesh(nextProps);
@@ -94,13 +94,13 @@ var Surface = React.createClass({
     renderScene();
   },
 
-  updateCamera: function (state: State): void {
+  updateCamera: function(state: State): void {
     camera.position.x = Math.cos(state.angle) * 300;
     camera.position.y = Math.sin(state.angle) * 300;
     camera.lookAt(new THREE.Vector3(0,0,0));
   },
 
-  updateSpherePosition: function (props: Props): void {
+  updateSpherePosition: function(props: Props): void {
     if (typeof props.highlightedW !== "undefined" && props.highlightedW !== null) {
       var [x,y] = props.highlightedW;
       var lso = leastSquaresObjective({x:x,y:y}, props.pointClasses);
@@ -109,7 +109,7 @@ var Surface = React.createClass({
     }
   },
 
-  updateGraphMesh: function (props:Props): void {
+  updateGraphMesh: function(props:Props): void {
     scene.remove(graph);
     graph = new THREE.Mesh(
       this.colourGraphGeometry(this.buildGraphGeometry(props)),
@@ -121,8 +121,8 @@ var Surface = React.createClass({
     scene.add( graph );
   },
 
-  buildGraphGeometry: function (props:Props): THREE.ParametricGeometry {
-    var polarMeshFunction = function (i: number, j: number): THREE.Vector3 {
+  buildGraphGeometry: function(props:Props): THREE.ParametricGeometry {
+    var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var theta = i * 2 * Math.PI;
       var r = Math.pow(2, 0.7 * j) - 1; // this ensures there are lots of samples near the origin.
       var x = r * Math.cos(theta) * props.dim;
@@ -135,7 +135,7 @@ var Surface = React.createClass({
     return new THREE.ParametricGeometry( polarMeshFunction, 8 * RESOLUTION, 0.5 * RESOLUTION, true );
   },
 
-  colourGraphGeometry: function (graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
+  colourGraphGeometry: function(graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
     graphGeometry.computeBoundingBox();
     var zMin = graphGeometry.boundingBox.min.z;
     var zRange = graphGeometry.boundingBox.max.z - zMin;
@@ -151,7 +151,7 @@ var Surface = React.createClass({
     return graphGeometry;
   },
 
-  mouseDown: function (e: React.SyntheticEvent): void {
+  mouseDown: function(e: React.SyntheticEvent): void {
     var intersections = this.raycast(camera, e).intersectObject(graph);
     if (intersections.length > 0){ // try to drag
       this.setState({
@@ -188,12 +188,12 @@ var Surface = React.createClass({
     }
   },
 
-  handleGraphDrag: function (e:React.SyntheticEvent, startAngle: number, mouseDownPoint: THREE.Vector3, mouseDownCamera: THREE.Camera): void {
+  handleGraphDrag: function(e:React.SyntheticEvent, startAngle: number, mouseDownPoint: THREE.Vector3, mouseDownCamera: THREE.Camera): void {
     var plane = new THREE.Plane(new THREE.Vector3(0,0,1), -mouseDownPoint.z);
     var raycaster = this.raycast(mouseDownCamera, e);
     var cursorPoint = raycaster.ray.intersectPlane(plane);
     if (typeof cursorPoint !== "undefined" && cursorPoint !== null) {
-      var angle = function (point: P2):number {
+      var angle = function(point: P2):number {
         return Math.atan(point.y / point.x);
       };
       var fudge = (cursorPoint.x>0 && mouseDownPoint.x<=0) || (cursorPoint.x<=0 && mouseDownPoint.x>0) ? Math.PI : 0;
@@ -204,7 +204,7 @@ var Surface = React.createClass({
     }
   },
 
-  handleSpaceDrag: function (e: React.SyntheticEvent, startAngle: number, mouseDownClientX: number): void {
+  handleSpaceDrag: function(e: React.SyntheticEvent, startAngle: number, mouseDownClientX: number): void {
     var deltaX = e.clientX - mouseDownClientX;
     var deltaAngle = (deltaX / this.props.dim) * 2 * Math.PI;
     this.setState({
@@ -212,7 +212,7 @@ var Surface = React.createClass({
     });
   },
 
-  handleHover: function (e: React.SyntheticEvent): void {
+  handleHover: function(e: React.SyntheticEvent): void {
     var intersections = this.raycast(camera, e).intersectObject(graph);
     if (intersections.length > 0) {
       var {x:x,y:y} = intersections[0].point;
@@ -220,7 +220,7 @@ var Surface = React.createClass({
     }
   },
 
-  raycast: function (camera: THREE.Camera, e:React.SyntheticEvent): THREE.Raycaster {
+  raycast: function(camera: THREE.Camera, e:React.SyntheticEvent): THREE.Raycaster {
     var {left:left, top:top} = this.refs.container.getDOMNode().getBoundingClientRect();
     var x = 2 * (e.clientX - left) / this.props.dim - 1;
     var y = -2 * (e.clientY - top) / this.props.dim + 1;
