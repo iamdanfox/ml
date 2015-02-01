@@ -1,5 +1,5 @@
 React = require 'react'
-{rot90, lineEq, scale} = require './VectorUtils.cjsx'
+{rot90, lineEq, scale} = require './VectorUtils.jsx'
 
 
 

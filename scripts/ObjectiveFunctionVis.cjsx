@@ -1,5 +1,5 @@
 React = require 'react'
-{rot90, lineEq, scale, dotProduct, sizeSquared, add} = require './VectorUtils.cjsx'
+{rot90, lineEq, scale, dotProduct, sizeSquared, add} = require './VectorUtils.jsx'
 
 
 module.exports = ObjectiveFunctionVis = React.createClass
