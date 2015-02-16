@@ -96,7 +96,7 @@ var MainPage = React.createClass({
         <DataSlider color="blue" fullData={points.class1} project={project} dim={this.props.dim}
           cutoff={this.state.cutoffs[1]} updateCutoff={this.updateCutoff(1)} />
 
-        <Surface dim={300} pointClasses={pointClasses} projectedError={projectedError2}
+        <Surface dim={this.props.dim} pointClasses={pointClasses} projectedError={projectedError2}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
       </div>
     );

@@ -25,28 +25,19 @@ var findError = function(rot90w: P2, point: P2): number {
 
 function projectErrorForGraph(error: number): number {
   return 10 * (10 - 0.7 * Math.log(error + 1));
-}
+};
+
+function misclassifieds(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
+  var class0 = pointClasses[0].filter(function(p) { return dotProduct(p, w) <= 0; });
+  var class1 = pointClasses[1].filter(function(p) { return dotProduct(p, w) > 0; });
+  return class0.concat(class1);
+};
 
 function leastSquaresObjective(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
   var rot90w = rot90(w);
-
-  var class0error = 0;
-  for (var i = 0; i < pointClasses[0].length; i = i + 1) {
-    var p = pointClasses[0][i];
-    if (dotProduct(p, w) <= 0) {
-      class0error = class0error + findError(rot90w, p);
-    }
-  }
-
-  var class1error = 0;
-  for (var i = 0; i < pointClasses[1].length; i = i + 1) {
-    var p = pointClasses[1][i];
-    if (dotProduct(p, w) > 0) {
-      class1error = class1error + findError(rot90w, p);
-    }
-  }
-
-  return class0error + class1error;
+  return misclassifieds(w, pointClasses)
+    .map(function(p) { return findError(rot90w, p); })
+    .reduce(function(memo, x) { return memo + x; }, 0);
 }
 
 module.exports = {
@@ -65,7 +56,7 @@ module.exports = {
   },
 
   projectedError2: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
-    return 0.2 * projectErrorForGraph(leastSquaresObjective(w, pointClasses));
+    return 10 - misclassifieds(w, pointClasses).length
   },
 };
 
