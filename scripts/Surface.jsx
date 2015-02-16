@@ -8,7 +8,6 @@ var THREE = require("three");
 var {projectErrorForGraph: projectErrorForGraph,
   leastSquaresObjective: leastSquaresObjective} = require("./LeastSquares.jsx");
 
-
 type State = {
   angle: number;
   startAngle: ?number;
@@ -16,6 +15,7 @@ type State = {
   mouseDownCamera: ?THREE.Camera;
   mouseDownPoint: ?THREE.Vector3;
   camera: THREE.PerspectiveCamera;
+  graph: THREE.Mesh;
 }
 type Props = {
   dim: number;
@@ -25,7 +25,6 @@ type Props = {
 }
 
 
-var graph: THREE.Mesh = null;
 var scene: THREE.Scene = new THREE.Scene();
 var sphere = new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() );
 scene.add(sphere);
@@ -50,6 +49,14 @@ var Surface = React.createClass({
     var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 ); // Field of view, aspect ratio, near clip, far clip
     initialCamera.up = new THREE.Vector3( 0, 0, 1 );
     initialCamera.position.z = 180;
+
+    var initialGraph = new THREE.Mesh(
+      this.colourGraphGeometry(this.buildGraphGeometry(this.props)),
+      new THREE.MeshBasicMaterial({
+        side: THREE.DoubleSide,
+        vertexColors: THREE.FaceColors
+      })
+    );
     return {
       angle: 0,
       startAngle: null,
@@ -57,6 +64,7 @@ var Surface = React.createClass({
       mouseDownCamera: null,
       mouseDownPoint: null,
       camera: initialCamera,
+      graph: initialGraph,
     };
   },
 
@@ -104,15 +112,16 @@ var Surface = React.createClass({
   },
 
   updateGraphMesh: function(props: Props): void {
-    scene.remove(graph);
-    graph = new THREE.Mesh(
+    scene.remove(this.state.graph);
+    var newGraph = new THREE.Mesh(
       this.colourGraphGeometry(this.buildGraphGeometry(props)),
       new THREE.MeshBasicMaterial({
         side: THREE.DoubleSide,
         vertexColors: THREE.FaceColors
       })
     );
-    scene.add( graph );
+    this.setState({graph: newGraph});
+    scene.add( newGraph );
   },
 
   buildGraphGeometry: function(props: Props): THREE.ParametricGeometry {
@@ -148,7 +157,7 @@ var Surface = React.createClass({
   },
 
   mouseDown: function(e: React.SyntheticEvent): void {
-    var intersections = this.raycast(this.state.camera, e).intersectObject(graph);
+    var intersections = this.raycast(this.state.camera, e).intersectObject(this.state.graph);
     if (intersections.length > 0){ // try to drag
       this.setState({
         mouseDownCamera: this.state.camera.clone(),
@@ -213,7 +222,7 @@ var Surface = React.createClass({
   },
 
   handleHover: function(e: React.SyntheticEvent): void {
-    var intersections = this.raycast(this.state.camera, e).intersectObject(graph);
+    var intersections = this.raycast(this.state.camera, e).intersectObject(this.state.graph);
     if (intersections.length > 0) {
       var {x: x, y: y} = intersections[0].point;
       this.props.highlightW(x, y);
