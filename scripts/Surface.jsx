@@ -14,7 +14,8 @@ type State = {
   startAngle: ?number;
   mouseDownClientX: ?number;
   mouseDownCamera: ?THREE.Camera;
-  mouseDownPoint: ?THREE.Vector3
+  mouseDownPoint: ?THREE.Vector3;
+  camera: THREE.PerspectiveCamera;
 }
 type Props = {
   dim: number;
@@ -26,10 +27,6 @@ type Props = {
 
 var graph: THREE.Mesh = null;
 var scene: THREE.Scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 ); // Field of view, aspect ratio, near clip, far clip
-camera.up = new THREE.Vector3( 0, 0, 1 );
-camera.position.z = 180;
-
 var sphere = new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() );
 scene.add(sphere);
 
@@ -39,9 +36,6 @@ var renderer = new THREE.WebGLRenderer({
 });
 
 renderer.setClearColor( 0x111111, 1 );
-var renderScene = function() {
-  renderer.render(scene, camera);
-};
 
 
 var Surface = React.createClass({
@@ -53,12 +47,16 @@ var Surface = React.createClass({
   },
 
   getInitialState: function(): State {
+    var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 ); // Field of view, aspect ratio, near clip, far clip
+    initialCamera.up = new THREE.Vector3( 0, 0, 1 );
+    initialCamera.position.z = 180;
     return {
       angle: 0,
       startAngle: null,
       mouseDownClientX: null,
       mouseDownCamera: null,
-      mouseDownPoint: null
+      mouseDownPoint: null,
+      camera: initialCamera,
     };
   },
 
@@ -70,7 +68,8 @@ var Surface = React.createClass({
     this.updateCamera(this.state);
     renderer.setSize( this.props.dim, this.props.dim );
     this.refs.container.getDOMNode().appendChild(renderer.domElement);
-    renderScene();
+
+    renderer.render(scene, this.state.camera);
   },
 
   componentWillReceiveProps: function(nextProps: Props) {
@@ -86,13 +85,13 @@ var Surface = React.createClass({
     if (typeof nextState !== "undefined" && nextState !== null) {
       this.updateCamera(nextState);
     }
-    renderScene();
+    renderer.render(scene, this.state.camera);
   },
 
   updateCamera: function(state: State): void {
-    camera.position.x = Math.cos(state.angle) * 300;
-    camera.position.y = Math.sin(state.angle) * 300;
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    this.state.camera.position.x = Math.cos(state.angle) * 300;
+    this.state.camera.position.y = Math.sin(state.angle) * 300;
+    this.state.camera.lookAt(new THREE.Vector3(0, 0, 0));
   },
 
   updateSpherePosition: function(props: Props): void {
@@ -149,10 +148,10 @@ var Surface = React.createClass({
   },
 
   mouseDown: function(e: React.SyntheticEvent): void {
-    var intersections = this.raycast(camera, e).intersectObject(graph);
+    var intersections = this.raycast(this.state.camera, e).intersectObject(graph);
     if (intersections.length > 0){ // try to drag
       this.setState({
-        mouseDownCamera: camera.clone(),
+        mouseDownCamera: this.state.camera.clone(),
         mouseDownPoint: intersections[0].point
       });
     }
@@ -214,7 +213,7 @@ var Surface = React.createClass({
   },
 
   handleHover: function(e: React.SyntheticEvent): void {
-    var intersections = this.raycast(camera, e).intersectObject(graph);
+    var intersections = this.raycast(this.state.camera, e).intersectObject(graph);
     if (intersections.length > 0) {
       var {x: x, y: y} = intersections[0].point;
       this.props.highlightW(x, y);
