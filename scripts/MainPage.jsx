@@ -5,10 +5,9 @@ var React = require("react");
 var Line = require("./Line.jsx");
 var Axes = require("./Axes.jsx");
 var AllPoints = require("./AllPoints.jsx");
-// var ObjectiveFunctionVis = require("./ObjectiveFunctionVis.cjsx");
 var Surface = require("./Surface.jsx");
 var DataSlider = require("./DataSlider.jsx");
-
+var {projectedError} = require("./LeastSquares.jsx");
 
 type F<U, V> = (x: U) => V;
 type P2 = {x: number;y: number}
@@ -80,6 +79,7 @@ var MainPage = React.createClass({
     var style = {background: "#e0e0e0", width: this.props.dim, height: this.props.dim};
     return (
       <div className="main-page">
+        <h2>Minimisation Objective: Squares of Misclassified points</h2>
         <svg style={style} ref="svg" onMouseMove={this.mouseMove}>
           <g transform={"translate(" + this.props.dim / 2 + " " + this.props.dim / 2 + ") scale(1 -1)"}>
             <Axes dim={this.props.dim} />
@@ -88,13 +88,16 @@ var MainPage = React.createClass({
           </g>
         </svg>
 
-        <Surface dim={this.props.dim} pointClasses={pointClasses}
+        <Surface dim={this.props.dim} pointClasses={pointClasses} projectedError={projectedError}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
 
         <DataSlider color="red" fullData={points.class0} project={project} dim={this.props.dim}
           cutoff={this.state.cutoffs[0]} updateCutoff={this.updateCutoff(0)} />
         <DataSlider color="blue" fullData={points.class1} project={project} dim={this.props.dim}
           cutoff={this.state.cutoffs[1]} updateCutoff={this.updateCutoff(1)} />
+
+        <Surface dim={300} pointClasses={pointClasses} projectedError={projectedError}
+          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
       </div>
     );
   }

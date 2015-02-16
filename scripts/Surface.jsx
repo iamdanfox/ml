@@ -5,8 +5,7 @@ type P2 = {x: number; y: number};
 
 var React = require("react");
 var THREE = require("three");
-var {projectErrorForGraph: projectErrorForGraph,
-  leastSquaresObjective: leastSquaresObjective} = require("./LeastSquares.jsx");
+var {projectedError} = require("./LeastSquares.jsx");
 
 type State = {
   angle: number;
@@ -24,7 +23,8 @@ type Props = {
   dim: number;
   pointClasses: [Array<P2>, Array<P2>];
   highlightedW: ?[number, number];
-  highlightW: F<[number, number], void>
+  highlightW: F<[number, number], void>;
+  projectedError: (w: P2, pointClasses: [Array<P2>, Array<P2>]) => THREE.Vector3;
 }
 
 
@@ -34,7 +34,8 @@ var Surface = React.createClass({
     dim: React.PropTypes.number.isRequired,
     highlightW: React.PropTypes.func.isRequired,
     highlightedW: React.PropTypes.any, // technically a tuple...
-    pointClasses: React.PropTypes.array.isRequired
+    pointClasses: React.PropTypes.array.isRequired,
+    projectedError: React.PropTypes.func.isRequired,
   },
 
   getInitialState: function(): State {
@@ -101,8 +102,7 @@ var Surface = React.createClass({
   updateSpherePosition: function(props: Props): void {
     if (typeof props.highlightedW !== "undefined" && props.highlightedW !== null) {
       var [x, y] = props.highlightedW;
-      var lso = leastSquaresObjective({x: x, y: y}, props.pointClasses);
-      var z = projectErrorForGraph(lso);
+      var z = projectedError({x, y}, props.pointClasses);
       this.state.sphere.position.set(x, y, z);
     }
   },
@@ -125,17 +125,22 @@ var Surface = React.createClass({
   },
 
   buildGraphGeometry: function(props: Props): THREE.ParametricGeometry {
+
     var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var theta = i * 2 * Math.PI;
       var r = Math.pow(2, 0.7 * j) - 1; // this ensures there are lots of samples near the origin.
       var x = r * Math.cos(theta) * props.dim;
       var y = r * Math.sin(theta) * props.dim;
-      var lso = leastSquaresObjective({x, y}, props.pointClasses);
-      return new THREE.Vector3(x, y, projectErrorForGraph(lso));
+      var z = this.props.projectedError({x, y}, props.pointClasses);
+      return new THREE.Vector3(x, y, z);
     };
 
+    // var meshFunction = function(i: number, j: number): THREE.Vector3 {
+    //   return props.polarMeshFunction(i, j, props.dim, props.pointClasses);
+    // };
+
     var RESOLUTION = 24;
-    return new THREE.ParametricGeometry( polarMeshFunction, 8 * RESOLUTION, 0.5 * RESOLUTION, true );
+    return new THREE.ParametricGeometry( polarMeshFunction.bind(this), 8 * RESOLUTION, 0.5 * RESOLUTION, true );
   },
 
   colourGraphGeometry: function(graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
