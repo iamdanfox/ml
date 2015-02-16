@@ -17,6 +17,8 @@ type State = {
   camera: THREE.PerspectiveCamera;
   graph: THREE.Mesh;
   scene: THREE.Scene;
+  sphere: THREE.MESH;
+  renderer: THREE.WebGLRenderer;
 }
 type Props = {
   dim: number;
@@ -25,14 +27,6 @@ type Props = {
   highlightW: F<[number, number], void>
 }
 
-
-var sphere = new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() );
-
-var renderer = new THREE.WebGLRenderer({
-  antialias: true
-});
-
-renderer.setClearColor( 0x111111, 1 );
 
 
 var Surface = React.createClass({
@@ -56,8 +50,16 @@ var Surface = React.createClass({
       })
     );
 
+    var initialSphere = new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() );
+
     var initialScene = new THREE.Scene();
-    initialScene.add(sphere);
+    initialScene.add(initialSphere);
+
+    var initialRenderer = new THREE.WebGLRenderer({
+      antialias: true
+    });
+
+    initialRenderer.setClearColor( 0x111111, 1 );
     return {
       angle: 0,
       startAngle: null,
@@ -67,6 +69,8 @@ var Surface = React.createClass({
       camera: initialCamera,
       graph: initialGraph,
       scene: initialScene,
+      sphere: initialSphere,
+      renderer: initialRenderer,
     };
   },
 
@@ -76,10 +80,10 @@ var Surface = React.createClass({
     this.updateSpherePosition(this.props);
 
     this.updateCamera(this.state);
-    renderer.setSize( this.props.dim, this.props.dim );
-    this.refs.container.getDOMNode().appendChild(renderer.domElement);
+    this.state.renderer.setSize( this.props.dim, this.props.dim );
+    this.refs.container.getDOMNode().appendChild(this.state.renderer.domElement);
 
-    renderer.render(this.state.scene, this.state.camera);
+    this.state.renderer.render(this.state.scene, this.state.camera);
   },
 
   componentWillReceiveProps: function(nextProps: Props) {
@@ -95,7 +99,7 @@ var Surface = React.createClass({
     if (typeof nextState !== "undefined" && nextState !== null) {
       this.updateCamera(nextState);
     }
-    renderer.render(this.state.scene, this.state.camera);
+    this.state.renderer.render(this.state.scene, this.state.camera);
   },
 
   updateCamera: function(state: State): void {
@@ -109,7 +113,7 @@ var Surface = React.createClass({
       var [x, y] = props.highlightedW;
       var lso = leastSquaresObjective({x: x, y: y}, props.pointClasses);
       var z = projectErrorForGraph(lso);
-      sphere.position.set(x, y, z);
+      this.state.sphere.position.set(x, y, z);
     }
   },
 
