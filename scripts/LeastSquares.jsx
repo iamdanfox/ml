@@ -25,13 +25,13 @@ var findError = function(rot90w: P2, point: P2): number {
 
 function projectErrorForGraph(error: number): number {
   return 10 * (10 - 0.7 * Math.log(error + 1));
-};
+}
 
-function misclassifieds(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
+function misclassifieds(w: P2, pointClasses: [Array<P2>, Array<P2>]): Array<P2> {
   var class0 = pointClasses[0].filter(function(p) { return dotProduct(p, w) <= 0; });
   var class1 = pointClasses[1].filter(function(p) { return dotProduct(p, w) > 0; });
   return class0.concat(class1);
-};
+}
 
 function leastSquaresObjective(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
   var rot90w = rot90(w);
@@ -46,8 +46,6 @@ module.exports = {
     return 10 - 0.7 * Math.log(error + 1); // errors are roughly ~1132257, so log makes them reasonable.
   },
 
-  projectErrorForGraph: projectErrorForGraph,
-
   // for every misclassified point, find the distance squared to the separating line
   leastSquaresObjective: leastSquaresObjective,
 
@@ -56,7 +54,7 @@ module.exports = {
   },
 
   projectedError2: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
-    return 10 - misclassifieds(w, pointClasses).length
+    return -misclassifieds(w, pointClasses).length;
   },
 };
 
