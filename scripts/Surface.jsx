@@ -16,6 +16,7 @@ type State = {
   mouseDownPoint: ?THREE.Vector3;
   camera: THREE.PerspectiveCamera;
   graph: THREE.Mesh;
+  scene: THREE.Scene;
 }
 type Props = {
   dim: number;
@@ -25,10 +26,7 @@ type Props = {
 }
 
 
-var scene: THREE.Scene = new THREE.Scene();
 var sphere = new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() );
-scene.add(sphere);
-
 
 var renderer = new THREE.WebGLRenderer({
   antialias: true
@@ -57,6 +55,9 @@ var Surface = React.createClass({
         vertexColors: THREE.FaceColors
       })
     );
+
+    var initialScene = new THREE.Scene();
+    initialScene.add(sphere);
     return {
       angle: 0,
       startAngle: null,
@@ -65,6 +66,7 @@ var Surface = React.createClass({
       mouseDownPoint: null,
       camera: initialCamera,
       graph: initialGraph,
+      scene: initialScene,
     };
   },
 
@@ -77,7 +79,7 @@ var Surface = React.createClass({
     renderer.setSize( this.props.dim, this.props.dim );
     this.refs.container.getDOMNode().appendChild(renderer.domElement);
 
-    renderer.render(scene, this.state.camera);
+    renderer.render(this.state.scene, this.state.camera);
   },
 
   componentWillReceiveProps: function(nextProps: Props) {
@@ -93,7 +95,7 @@ var Surface = React.createClass({
     if (typeof nextState !== "undefined" && nextState !== null) {
       this.updateCamera(nextState);
     }
-    renderer.render(scene, this.state.camera);
+    renderer.render(this.state.scene, this.state.camera);
   },
 
   updateCamera: function(state: State): void {
@@ -112,7 +114,7 @@ var Surface = React.createClass({
   },
 
   updateGraphMesh: function(props: Props): void {
-    scene.remove(this.state.graph);
+    this.state.scene.remove(this.state.graph);
     var newGraph = new THREE.Mesh(
       this.colourGraphGeometry(this.buildGraphGeometry(props)),
       new THREE.MeshBasicMaterial({
@@ -121,7 +123,7 @@ var Surface = React.createClass({
       })
     );
     this.setState({graph: newGraph});
-    scene.add( newGraph );
+    this.state.scene.add( newGraph );
   },
 
   buildGraphGeometry: function(props: Props): THREE.ParametricGeometry {
