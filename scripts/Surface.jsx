@@ -47,7 +47,7 @@ var Surface = React.createClass({
     var initialScene = new THREE.Scene();
     initialScene.add(initialSphere);
 
-    var initialRenderer = new THREE.WebGLRenderer({ antialias: true });
+    var initialRenderer = new THREE.WebGLRenderer({antialias: true});
     initialRenderer.setClearColor( 0x111111, 1 );
 
     return {
