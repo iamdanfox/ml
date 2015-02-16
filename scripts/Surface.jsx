@@ -42,24 +42,14 @@ var Surface = React.createClass({
     initialCamera.up = new THREE.Vector3( 0, 0, 1 );
     initialCamera.position.z = 180;
 
-    var initialGraph = new THREE.Mesh(
-      this.colourGraphGeometry(this.buildGraphGeometry(this.props)),
-      new THREE.MeshBasicMaterial({
-        side: THREE.DoubleSide,
-        vertexColors: THREE.FaceColors
-      })
-    );
-
     var initialSphere = new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() );
 
     var initialScene = new THREE.Scene();
     initialScene.add(initialSphere);
 
-    var initialRenderer = new THREE.WebGLRenderer({
-      antialias: true
-    });
-
+    var initialRenderer = new THREE.WebGLRenderer({ antialias: true });
     initialRenderer.setClearColor( 0x111111, 1 );
+
     return {
       angle: 0,
       startAngle: null,
@@ -67,7 +57,7 @@ var Surface = React.createClass({
       mouseDownCamera: null,
       mouseDownPoint: null,
       camera: initialCamera,
-      graph: initialGraph,
+      graph: this.buildGraphMesh(this.props),
       scene: initialScene,
       sphere: initialSphere,
       renderer: initialRenderer,
@@ -117,15 +107,19 @@ var Surface = React.createClass({
     }
   },
 
-  updateGraphMesh: function(props: Props): void {
-    this.state.scene.remove(this.state.graph);
-    var newGraph = new THREE.Mesh(
+  buildGraphMesh: function(props: Props): THREE.Mesh {
+    return new THREE.Mesh(
       this.colourGraphGeometry(this.buildGraphGeometry(props)),
       new THREE.MeshBasicMaterial({
         side: THREE.DoubleSide,
         vertexColors: THREE.FaceColors
       })
     );
+  },
+
+  updateGraphMesh: function(props: Props): void {
+    this.state.scene.remove(this.state.graph);
+    var newGraph = this.buildGraphMesh(props);
     this.setState({graph: newGraph});
     this.state.scene.add( newGraph );
   },
