@@ -3,7 +3,6 @@
 
 type P2 = {x: number; y: number};
 
-var THREE = require("three");
 var {rot90: rot90, dotProduct: dotProduct, sizeSquared: sizeSquared} = require("./VectorUtils.jsx");
 
 // returns the square of the distance to rot90w's line
@@ -65,22 +64,8 @@ module.exports = {
     return projectErrorForGraph(leastSquaresObjective(w, pointClasses));
   },
 
-  polarMeshFunction: function(i: number, j: number, dim: number, pointClasses: [Array<P2>, Array<P2>]): THREE.Vector3 {
-    var theta = i * 2 * Math.PI;
-    var r = Math.pow(2, 0.7 * j) - 1; // this ensures there are lots of samples near the origin.
-    var x = r * Math.cos(theta) * dim;
-    var y = r * Math.sin(theta) * dim;
-    var lso = leastSquaresObjective({x, y}, pointClasses);
-    return new THREE.Vector3(x, y, projectErrorForGraph(lso));
-  },
-
-  polarMeshFunction2: function(i: number, j: number, dim: number, pointClasses: [Array<P2>, Array<P2>]): THREE.Vector3 {
-    var theta = i * 2 * Math.PI;
-    var r = Math.pow(2, 0.7 * j) - 1; // this ensures there are lots of samples near the origin.
-    var x = r * Math.cos(theta) * dim;
-    var y = r * Math.sin(theta) * dim;
-    var lso = leastSquaresObjective({x, y}, pointClasses);
-    return new THREE.Vector3(x, y, 0.1 * projectErrorForGraph(lso));
+  projectedError2: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
+    return 0.2 * projectErrorForGraph(leastSquaresObjective(w, pointClasses));
   },
 };
 

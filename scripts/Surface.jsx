@@ -5,7 +5,6 @@ type P2 = {x: number; y: number};
 
 var React = require("react");
 var THREE = require("three");
-var {projectedError} = require("./LeastSquares.jsx");
 
 type State = {
   angle: number;
@@ -102,7 +101,7 @@ var Surface = React.createClass({
   updateSpherePosition: function(props: Props): void {
     if (typeof props.highlightedW !== "undefined" && props.highlightedW !== null) {
       var [x, y] = props.highlightedW;
-      var z = projectedError({x, y}, props.pointClasses);
+      var z = props.projectedError({x, y}, props.pointClasses);
       this.state.sphere.position.set(x, y, z);
     }
   },

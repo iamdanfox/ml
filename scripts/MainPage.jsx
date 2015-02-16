@@ -7,7 +7,7 @@ var Axes = require("./Axes.jsx");
 var AllPoints = require("./AllPoints.jsx");
 var Surface = require("./Surface.jsx");
 var DataSlider = require("./DataSlider.jsx");
-var {projectedError} = require("./LeastSquares.jsx");
+var {projectedError, projectedError2} = require("./LeastSquares.jsx");
 
 type F<U, V> = (x: U) => V;
 type P2 = {x: number;y: number}
@@ -96,7 +96,7 @@ var MainPage = React.createClass({
         <DataSlider color="blue" fullData={points.class1} project={project} dim={this.props.dim}
           cutoff={this.state.cutoffs[1]} updateCutoff={this.updateCutoff(1)} />
 
-        <Surface dim={300} pointClasses={pointClasses} projectedError={projectedError}
+        <Surface dim={300} pointClasses={pointClasses} projectedError={projectedError2}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
       </div>
     );
