@@ -36,8 +36,8 @@ var MainPage = React.createClass({
 
   mouseMove: function(e: React.SyntheticElement): void {
     var {left: left, top: top} = this.refs.svg.getDOMNode().getBoundingClientRect();
-    var x = e.pageX - left;
-    var y = this.props.dim - (e.pageY - top);
+    var x = e.clientX - left;
+    var y = this.props.dim - (e.clientY - top);
     this.highlightW(x - this.props.dim / 2, y - this.props.dim / 2);
   },
 

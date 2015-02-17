@@ -19,7 +19,7 @@ var DataSlider = React.createClass({
   },
 
   mouseMove: function(e: React.SyntheticEvent): void {
-    var newCutoff = (e.pageX - this.refs.svg.getDOMNode().getBoundingClientRect().left) / this.props.dim;
+    var newCutoff = (e.clientX - this.refs.svg.getDOMNode().getBoundingClientRect().left) / this.props.dim;
     this.props.updateCutoff(newCutoff);
   },
 
