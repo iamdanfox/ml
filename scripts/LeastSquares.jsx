@@ -6,7 +6,7 @@ type P2 = {x: number; y: number};
 var {rot90: rot90, dotProduct: dotProduct, sizeSquared: sizeSquared} = require("./VectorUtils.jsx");
 
 // returns the square of the distance to rot90w's line
-var findError = function(rot90w: P2, point: P2): number {
+var findErrorSquared = function(rot90w: P2, point: P2): number {
   // consider a triangle made of the vector `point`, the line `rot90w` and the distance `d`.
   // let `theta` be the angle at the origin
   // trigonometry: d = |point| * sin(theta)
@@ -36,7 +36,7 @@ function misclassifieds(w: P2, pointClasses: [Array<P2>, Array<P2>]): Array<P2> 
 function leastSquaresObjective(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
   var rot90w = rot90(w);
   return misclassifieds(w, pointClasses)
-    .map(function(p) { return findError(rot90w, p); })
+    .map(function(p) { return findErrorSquared(rot90w, p); })
     .reduce(function(memo, x) { return memo + x; }, 0);
 }
 
@@ -55,6 +55,14 @@ module.exports = {
 
   projectedError2: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
     return -misclassifieds(w, pointClasses).length;
+  },
+
+  linearError: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
+    var rot90w = rot90(w);
+    var error = misclassifieds(w, pointClasses)
+      .map(function(p) { return Math.sqrt(findErrorSquared(rot90w, p)); })
+      .reduce(function(memo, x) { return memo + x; }, 0);
+    return 100 - 10 * Math.log(error + 1);
   },
 };
 
