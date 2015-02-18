@@ -6,7 +6,7 @@ var Line = require("./Line.jsx");
 var Axes = require("./Axes.jsx");
 var AllPoints = require("./AllPoints.jsx");
 var {modulus, subtract} = require("./VectorUtils.jsx");
-var MODES = require("./modes.js");
+var Modes = require("./Modes.js");
 
 type F<U, V> = (x: U) => V;
 type P2 = {x: number;y: number}
@@ -53,14 +53,14 @@ var HyperplaneVis = React.createClass({
 
   handleClick: function(e: React.SyntheticEvent): void {
     switch (this.props.mode) {
-      case MODES.ADD_DATA:
+      case Modes.ADD_DATA:
         var w = this.getMouseXY(e);
         this.props.updatePointClasses([
           this.props.pointClasses[0].concat([w]),
           this.props.pointClasses[1]
         ]);
         break;
-      case MODES.REMOVE_DATA:
+      case Modes.REMOVE_DATA:
         var mousePosition = this.getMouseXY(e);
         this.props.updatePointClasses(
           this.props.pointClasses.map( (pointClass) => {
@@ -88,7 +88,7 @@ var HyperplaneVis = React.createClass({
           <Axes dim={this.props.dim} />
           <AllPoints pointClasses={this.props.pointClasses} />
           { this.makeHyperplane() }
-          { (this.props.mode === MODES.REMOVE_DATA) && this.renderEraserCircle() }
+          { (this.props.mode === Modes.REMOVE_DATA) && this.renderEraserCircle() }
         </g>
       </svg>
     );

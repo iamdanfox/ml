@@ -5,7 +5,7 @@ var React = require("react");
 var Surface = require("./Surface.jsx");
 var DataSlider = require("./DataSlider.jsx");
 var {projectedError, projectedError2} = require("./LeastSquares.jsx");
-var MODES = require("./modes.js");
+var Modes = require("./Modes.js");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
 
 type F<U, V> = (x: U) => V;
@@ -28,7 +28,7 @@ var MainPage = React.createClass({
     return {
       highlightedW: null,
       cutoffs: [1, 1],
-      mode: MODES.TRY_HYPERPLANE,
+      mode: Modes.TRY_HYPERPLANE,
       pointClasses: require("../data/points.js"),
     };
   },
@@ -85,12 +85,12 @@ var MainPage = React.createClass({
         <h2>Minimisation Objective: Squares of Misclassified points</h2>
 
         <div>
-          <button disabled={this.state.mode === MODES.TRY_HYPERPLANE}
-            onClick={this.updateMode(MODES.TRY_HYPERPLANE)}>Try hyperplane</button>
-          <button disabled={this.state.mode === MODES.ADD_DATA}
-            onClick={this.updateMode(MODES.ADD_DATA)}>Add Data</button>
-          <button disabled={this.state.mode === MODES.REMOVE_DATA}
-            onClick={this.updateMode(MODES.REMOVE_DATA)}>Remove Data</button>
+          <button disabled={this.state.mode === Modes.TRY_HYPERPLANE}
+            onClick={this.updateMode(Modes.TRY_HYPERPLANE)}>Try hyperplane</button>
+          <button disabled={this.state.mode === Modes.ADD_DATA}
+            onClick={this.updateMode(Modes.ADD_DATA)}>Add Data</button>
+          <button disabled={this.state.mode === Modes.REMOVE_DATA}
+            onClick={this.updateMode(Modes.REMOVE_DATA)}>Remove Data</button>
           <button onClick={this.handleClearData}>Clear Data</button>
           <button onClick={this.handleResetData}>Reset Data</button>
         </div>
