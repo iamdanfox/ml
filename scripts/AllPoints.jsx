@@ -9,7 +9,7 @@ var PointClass = React.createClass({
   render: function(): ?ReactElement {
     return (<g>
       { this.props.points
-          .map((p) => <circle key={p.x + " " + p.y} cx={p.x} cy={p.y} r="3" fill={this.props.color} />) }
+          .map((p) => <circle key={p.x + ":" + p.y} cx={p.x} cy={p.y} r="3" fill={this.props.color} />) }
     </g>);
   }
 });
