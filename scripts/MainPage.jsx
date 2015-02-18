@@ -9,15 +9,12 @@ var Surface = require("./Surface.jsx");
 var DataSlider = require("./DataSlider.jsx");
 var {projectedError, projectedError2} = require("./LeastSquares.jsx");
 var {modulus, subtract} = require("./VectorUtils.jsx");
+var MODES = require("./modes.js");
+var HyperplaneVis = require("./HyperplaneVis.jsx");
 
 type F<U, V> = (x: U) => V;
 type P2 = {x: number;y: number}
 
-var MODES = {
-  TRY_HYPERPLANE: 1,
-  ADD_DATA: 2,
-  REMOVE_DATA: 3,
-};
 
 function project(arg: P2): number {
   var {x: x, y: y} = arg;
@@ -71,6 +68,12 @@ var MainPage = React.createClass({
     };
   },
 
+  updatePointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): void {
+    this.setState({
+      pointClasses: newPointClasses,
+    });
+  },
+
   makeHyperplane: function(): ReactElement | boolean {
     if (typeof this.state.highlightedW !== "undefined" && this.state.highlightedW !== null) {
       var x = this.state.highlightedW[0];
@@ -118,7 +121,7 @@ var MainPage = React.createClass({
         var mousePosition = this.getMouseXY(e);
         this.setState({
           pointClasses: this.state.pointClasses.map( (pointClass) => {
-            return pointClass.filter( (point) => modulus(subtract(point)(mousePosition)) > DELETE_RADIUS)
+            return pointClass.filter( (point) => modulus(subtract(point)(mousePosition)) > DELETE_RADIUS);
           })
         });
         break;
@@ -156,14 +159,14 @@ var MainPage = React.createClass({
           <button onClick={this.handleResetData}>Reset Data</button>
         </div>
 
-        <svg style={style} ref="svg" onMouseMove={this.mouseMove} onClick={this.handleClick}>
-          <g transform={"translate(" + this.props.dim / 2 + " " + this.props.dim / 2 + ") scale(1 -1)"}>
-            <Axes dim={this.props.dim} />
-            <AllPoints pointClasses={pointClasses} />
-            { this.makeHyperplane() }
-            { (this.state.mode === MODES.REMOVE_DATA) && this.renderEraserCircle() }
-          </g>
-        </svg>
+        <HyperplaneVis
+          dim={this.props.dim}
+          mode={this.state.mode}
+          pointClasses={pointClasses}
+          updatePointClasses={this.updatePointClasses}
+          highlightedW={this.state.highlightedW}
+          highlightW={this.highlightW} />
+
 
         <Surface dim={this.props.dim} pointClasses={pointClasses} projectedError={projectedError}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
