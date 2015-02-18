@@ -3,6 +3,12 @@ type F<U, V> = (x: U) => V;
 type P2 = {x: number; y: number};
 "use strict";
 
+function sizeSquared(arg: P2): number {
+  var x = arg.x;
+  var y = arg.y;
+  return x * x + y * y;
+}
+
 module.exports = {
   lineEq: function(p1: P2, p2: P2): boolean {
     return (typeof p1 !== "undefined" && p1 !== null &&
@@ -35,10 +41,10 @@ module.exports = {
     };
   },
 
-  sizeSquared: function(arg: P2): number {
-    var x = arg.x;
-    var y = arg.y;
-    return x * x + y * y;
+  sizeSquared: sizeSquared,
+
+  modulus: function(arg: P2): number {
+    return Math.sqrt(sizeSquared(arg));
   },
 
   add: function(a: P2): F<P2, P2> {
@@ -48,5 +54,14 @@ module.exports = {
         y: a.y + b.y
       };
     };
-  }
+  },
+
+  subtract: function(a: P2): F<P2, P2> {
+    return function(b: P2): P2 {
+      return {
+        x: a.x - b.x,
+        y: a.y - b.y
+      };
+    };
+  },
 };

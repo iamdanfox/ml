@@ -8,6 +8,7 @@ var AllPoints = require("./AllPoints.jsx");
 var Surface = require("./Surface.jsx");
 var DataSlider = require("./DataSlider.jsx");
 var {projectedError, projectedError2} = require("./LeastSquares.jsx");
+var {modulus, subtract} = require("./VectorUtils.jsx");
 
 type F<U, V> = (x: U) => V;
 type P2 = {x: number;y: number}
@@ -15,6 +16,7 @@ type P2 = {x: number;y: number}
 var MODES = {
   TRY_HYPERPLANE: 1,
   ADD_DATA: 2,
+  REMOVE_DATA: 3,
 };
 
 function project(arg: P2): number {
@@ -22,6 +24,9 @@ function project(arg: P2): number {
   var angleRadians = Math.atan(y / x);
   return (angleRadians / Math.PI + 0.7) % 1;
 }
+
+
+var DELETE_RADIUS = 20;
 
 
 var MainPage = React.createClass({
@@ -42,12 +47,12 @@ var MainPage = React.createClass({
     var {left, top} = this.refs.svg.getDOMNode().getBoundingClientRect();
     var x = e.clientX - left;
     var y = this.props.dim - (e.clientY - top);
-    return {x, y};
+    return {x: x - this.props.dim / 2, y: y - this.props.dim / 2};
   },
 
   mouseMove: function(e: React.SyntheticEvent): void {
     var {x, y} = this.getMouseXY(e);
-    this.highlightW(x - this.props.dim / 2, y - this.props.dim / 2);
+    this.highlightW(x, y);
   },
 
   highlightW: function(x: number, y: number): void {
@@ -99,15 +104,33 @@ var MainPage = React.createClass({
   },
 
   handleClick: function(e: React.SyntheticEvent): void {
-    if (this.state.mode === MODES.ADD_DATA) {
-      var {x, y} = this.getMouseXY(e);
-      var w = {x: x - (this.props.dim / 2), y: y - (this.props.dim / 2)};
-      this.setState({
-        pointClasses: [
-          this.state.pointClasses[0].concat([w]),
-          this.state.pointClasses[1]
-        ]
-      });
+    switch (this.state.mode) {
+      case MODES.ADD_DATA:
+        var w = this.getMouseXY(e);
+        this.setState({
+          pointClasses: [
+            this.state.pointClasses[0].concat([w]),
+            this.state.pointClasses[1]
+          ]
+        });
+        break;
+      case MODES.REMOVE_DATA:
+        var mousePosition = this.getMouseXY(e);
+        this.setState({
+          pointClasses: this.state.pointClasses.map( (pointClass) => {
+            return pointClass.filter( (point) => modulus(subtract(point)(mousePosition)) > DELETE_RADIUS)
+          })
+        });
+        break;
+    }
+  },
+
+  renderEraserCircle: function(): ReactElement | boolean {
+    if (typeof this.state.highlightedW !== "undefined" && this.state.highlightedW !== null) {
+      var [x, y] = this.state.highlightedW;
+      return <circle cx={x} cy={y} r={DELETE_RADIUS} style={{fill: "rgba(0,0,0,0.2)"}} />;
+    } else {
+      return false;
     }
   },
 
@@ -127,6 +150,8 @@ var MainPage = React.createClass({
             onClick={this.updateMode(MODES.TRY_HYPERPLANE)}>Try hyperplane</button>
           <button disabled={this.state.mode === MODES.ADD_DATA}
             onClick={this.updateMode(MODES.ADD_DATA)}>Add Data</button>
+          <button disabled={this.state.mode === MODES.REMOVE_DATA}
+            onClick={this.updateMode(MODES.REMOVE_DATA)}>Remove Data</button>
           <button onClick={this.handleClearData}>Clear Data</button>
           <button onClick={this.handleResetData}>Reset Data</button>
         </div>
@@ -135,7 +160,8 @@ var MainPage = React.createClass({
           <g transform={"translate(" + this.props.dim / 2 + " " + this.props.dim / 2 + ") scale(1 -1)"}>
             <Axes dim={this.props.dim} />
             <AllPoints pointClasses={pointClasses} />
-            { (this.state.mode === MODES.TRY_HYPERPLANE) && this.makeHyperplane() }
+            { this.makeHyperplane() }
+            { (this.state.mode === MODES.REMOVE_DATA) && this.renderEraserCircle() }
           </g>
         </svg>
 
