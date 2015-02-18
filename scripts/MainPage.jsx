@@ -2,13 +2,9 @@
 "use strict";
 
 var React = require("react");
-var Line = require("./Line.jsx");
-var Axes = require("./Axes.jsx");
-var AllPoints = require("./AllPoints.jsx");
 var Surface = require("./Surface.jsx");
 var DataSlider = require("./DataSlider.jsx");
 var {projectedError, projectedError2} = require("./LeastSquares.jsx");
-var {modulus, subtract} = require("./VectorUtils.jsx");
 var MODES = require("./modes.js");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
 
@@ -23,9 +19,6 @@ function project(arg: P2): number {
 }
 
 
-var DELETE_RADIUS = 20;
-
-
 var MainPage = React.createClass({
   propTypes: {
     dim: React.PropTypes.number.isRequired,
@@ -38,18 +31,6 @@ var MainPage = React.createClass({
       mode: MODES.TRY_HYPERPLANE,
       pointClasses: require("../data/points.js"),
     };
-  },
-
-  getMouseXY: function(e: React.SyntheticEvent): {x: number; y: number} {
-    var {left, top} = this.refs.svg.getDOMNode().getBoundingClientRect();
-    var x = e.clientX - left;
-    var y = this.props.dim - (e.clientY - top);
-    return {x: x - this.props.dim / 2, y: y - this.props.dim / 2};
-  },
-
-  mouseMove: function(e: React.SyntheticEvent): void {
-    var {x, y} = this.getMouseXY(e);
-    this.highlightW(x, y);
   },
 
   highlightW: function(x: number, y: number): void {
@@ -74,19 +55,6 @@ var MainPage = React.createClass({
     });
   },
 
-  makeHyperplane: function(): ReactElement | boolean {
-    if (typeof this.state.highlightedW !== "undefined" && this.state.highlightedW !== null) {
-      var x = this.state.highlightedW[0];
-      var y = this.state.highlightedW[1];
-      return (<g>
-        <path d={`M 0 0 L ${x} ${y}`} strokeWidth="1.5" stroke={"rgba(255, 0, 0, 0.4)"} />
-        <Line w={{x: x, y: y}} dim={this.props.dim} />
-      </g>);
-    } else {
-      return false;
-    }
-  },
-
   updateMode: function(nextMode: number): () => void {
     return () =>
       this.setState({
@@ -106,44 +74,12 @@ var MainPage = React.createClass({
     });
   },
 
-  handleClick: function(e: React.SyntheticEvent): void {
-    switch (this.state.mode) {
-      case MODES.ADD_DATA:
-        var w = this.getMouseXY(e);
-        this.setState({
-          pointClasses: [
-            this.state.pointClasses[0].concat([w]),
-            this.state.pointClasses[1]
-          ]
-        });
-        break;
-      case MODES.REMOVE_DATA:
-        var mousePosition = this.getMouseXY(e);
-        this.setState({
-          pointClasses: this.state.pointClasses.map( (pointClass) => {
-            return pointClass.filter( (point) => modulus(subtract(point)(mousePosition)) > DELETE_RADIUS);
-          })
-        });
-        break;
-    }
-  },
-
-  renderEraserCircle: function(): ReactElement | boolean {
-    if (typeof this.state.highlightedW !== "undefined" && this.state.highlightedW !== null) {
-      var [x, y] = this.state.highlightedW;
-      return <circle cx={x} cy={y} r={DELETE_RADIUS} style={{fill: "rgba(0,0,0,0.2)"}} />;
-    } else {
-      return false;
-    }
-  },
-
   render: function(): ?ReactElement {
     var pointClasses = [];
     for (var i = 0; i < this.state.pointClasses.length; i = i + 1) {
       pointClasses[i] = this.state.pointClasses[i].filter((p) => project(p) < this.state.cutoffs[i]);
     }
 
-    var style = {background: "#e0e0e0", width: this.props.dim, height: this.props.dim};
     return (
       <div className="main-page">
         <h2>Minimisation Objective: Squares of Misclassified points</h2>
@@ -166,7 +102,6 @@ var MainPage = React.createClass({
           updatePointClasses={this.updatePointClasses}
           highlightedW={this.state.highlightedW}
           highlightW={this.highlightW} />
-
 
         <Surface dim={this.props.dim} pointClasses={pointClasses} projectedError={projectedError}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
