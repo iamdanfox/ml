@@ -38,10 +38,15 @@ var MainPage = React.createClass({
     };
   },
 
-  mouseMove: function(e: React.SyntheticElement): void {
-    var {left: left, top: top} = this.refs.svg.getDOMNode().getBoundingClientRect();
+  getMouseXY: function(e: React.SyntheticEvent): {x: number; y: number} {
+    var {left, top} = this.refs.svg.getDOMNode().getBoundingClientRect();
     var x = e.clientX - left;
     var y = this.props.dim - (e.clientY - top);
+    return {x, y};
+  },
+
+  mouseMove: function(e: React.SyntheticEvent): void {
+    var {x, y} = this.getMouseXY(e);
     this.highlightW(x - this.props.dim / 2, y - this.props.dim / 2);
   },
 
@@ -83,7 +88,7 @@ var MainPage = React.createClass({
 
   handleClearData: function(): void {
     this.setState({
-      pointClasses: this.state.pointClasses.map(function(){ return []; }),
+      pointClasses: this.state.pointClasses.map(function() { return []; }),
     });
   },
 
@@ -91,6 +96,19 @@ var MainPage = React.createClass({
     this.setState({
       pointClasses: require("../data/points.js"),
     });
+  },
+
+  handleClick: function(e: React.SyntheticEvent): void {
+    if (this.state.mode === MODES.ADD_DATA) {
+      var {x, y} = this.getMouseXY(e);
+      var w = {x: x - (this.props.dim / 2), y: y - (this.props.dim / 2)};
+      this.setState({
+        pointClasses: [
+          this.state.pointClasses[0].concat([w]),
+          this.state.pointClasses[1]
+        ]
+      });
+    }
   },
 
   render: function(): ?ReactElement {
@@ -113,7 +131,7 @@ var MainPage = React.createClass({
           <button onClick={this.handleResetData}>Reset Data</button>
         </div>
 
-        <svg style={style} ref="svg" onMouseMove={this.mouseMove}>
+        <svg style={style} ref="svg" onMouseMove={this.mouseMove} onClick={this.handleClick}>
           <g transform={"translate(" + this.props.dim / 2 + " " + this.props.dim / 2 + ") scale(1 -1)"}>
             <Axes dim={this.props.dim} />
             <AllPoints pointClasses={pointClasses} />
