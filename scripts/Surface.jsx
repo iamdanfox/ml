@@ -61,6 +61,7 @@ var Surface = React.createClass({
       scene: initialScene,
       sphere: initialSphere,
       renderer: initialRenderer,
+      pathLine: null,
     };
   },
 
@@ -228,9 +229,22 @@ var Surface = React.createClass({
   handleHover: function(e: React.SyntheticEvent): void {
     var intersections = this.raycast(this.state.camera, e).intersectObject(this.state.graph);
     if (intersections.length > 0) {
-      var {x: x, y: y} = intersections[0].point;
+      var {x, y, z} = intersections[0].point;
       this.props.highlightW(x, y);
+
+      this.state.scene.remove(this.state.pathLine);
+      var geometry = new THREE.Geometry();
+      geometry.vertices = [new THREE.Vector3(x, y, z), new THREE.Vector3(x, y, z + 40), new THREE.Vector3(x, y, z + 80)];
+
+      var lineMaterial = new THREE.LineBasicMaterial({
+        color: 0xff0000
+      });
+
+      var newPathLine = new THREE.Line(geometry, lineMaterial);
+      this.setState({pathLine: newPathLine});
+      this.state.scene.add( newPathLine );
     }
+
   },
 
   raycast: function(camera: THREE.Camera, e: React.SyntheticEvent): THREE.Raycaster {

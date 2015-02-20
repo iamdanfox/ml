@@ -3,7 +3,7 @@
 
 var React = require("react");
 var Surface = require("./Surface.jsx");
-var {projectedError, projectedError2} = require("./LeastSquares.jsx");
+var {projectedError, projectedError2, perceptronError} = require("./LeastSquares.jsx");
 var Modes = require("./Modes.js");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
 
@@ -82,17 +82,18 @@ var MainPage = React.createClass({
           pointClasses={this.state.pointClasses} projectedError={projectedError}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
 
+        <p>N.B. linearError looks basically the same as the leastSquares one</p>
+
+        <h2>perceptron criterion</h2>
+        <Surface dim={this.props.dim}
+          pointClasses={this.state.pointClasses} projectedError={perceptronError}
+          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
+
         <h2>Zero-One objective</h2>
         <p>The negation of the number of misclassified vectors</p>
         <Surface dim={this.props.dim}
           pointClasses={this.state.pointClasses} projectedError={projectedError2}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
-
-        <h2>perceptron criterion</h2>
-        <p>Ie a linear sum of errors</p>
-        <p>Looks pretty much exactly the same as the least squares one.</p>
-        {/*<Surface dim={this.props.dim} pointClasses={this.state.pointClasses} projectedError={linearError}
-                  highlightedW={this.state.highlightedW} highlightW={this.highlightW} />*/}
 
       </div>
     );

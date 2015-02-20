@@ -64,5 +64,13 @@ module.exports = {
       .reduce(function(memo, x) { return memo + x; }, 0);
     return 100 - 10 * Math.log(error + 1);
   },
+
+  perceptronError: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
+    if (misclassifieds(w, pointClasses).length === 0) {
+      return 100;
+    } else {
+      return 0;
+    }
+  },
 };
 
