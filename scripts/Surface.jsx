@@ -25,7 +25,7 @@ type Props = {
   pointClasses: PointClasses;
   highlightedW: ?[number, number];
   highlightW: F<[number, number], void>;
-  projectedError: (w: P2, pointClasses: PointClasses) => THREE.Vector3;
+  projectedError: (w: P2, pointClasses: PointClasses) => number;
   optimiserFunction: ?(w: P2, pointClasses: PointClasses) => Array<P2>;
 }
 
@@ -243,11 +243,13 @@ var Surface = React.createClass({
 
         // geometry.vertices = [new THREE.Vector3(x, y, z), new THREE.Vector3(x, y, z + 40), new THREE.Vector3(x, y, z + 80)];
         geometry.vertices = this.props.optimiserFunction({x, y}, this.props.pointClasses).map(
-          function(p: P2) {
-            var zCoord = 40;
-            return new THREE.Vector3(p.x, p.y, zCoord);
+          (w) => {
+            var z = this.props.projectedError(w, this.props.pointClasses);
+            return new THREE.Vector3(w.x, w.y, z);
           }
         );
+
+        console.log(geometry.vertices);
 
         var lineMaterial = new THREE.LineBasicMaterial({
           color: 0xff0000
