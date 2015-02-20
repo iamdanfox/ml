@@ -6,6 +6,7 @@ var Surface = require("./Surface.jsx");
 var {projectedError, projectedError2, perceptronError} = require("./LeastSquares.jsx");
 var Modes = require("./Modes.js");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
+var {computePerceptronWeight} = require("./Perceptron.jsx");
 
 type P2 = {x: number; y: number}
 
@@ -93,7 +94,8 @@ var MainPage = React.createClass({
         <p>The negation of the number of misclassified vectors</p>
         <Surface dim={this.props.dim}
           pointClasses={this.state.pointClasses} projectedError={projectedError2}
-          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
+          highlightedW={this.state.highlightedW} highlightW={this.highlightW}
+          optimiserFunction={computePerceptronWeight} />
 
       </div>
     );

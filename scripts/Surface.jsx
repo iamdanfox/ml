@@ -15,15 +15,18 @@ type State = {
   camera: THREE.PerspectiveCamera;
   graph: THREE.Mesh;
   scene: THREE.Scene;
-  sphere: THREE.MESH;
+  sphere: THREE.Mesh;
   renderer: THREE.WebGLRenderer;
+  pathLine: ?THREE.Line;
 }
+type PointClasses = [Array<P2>, Array<P2>];
 type Props = {
   dim: number;
-  pointClasses: [Array<P2>, Array<P2>];
+  pointClasses: PointClasses;
   highlightedW: ?[number, number];
   highlightW: F<[number, number], void>;
-  projectedError: (w: P2, pointClasses: [Array<P2>, Array<P2>]) => THREE.Vector3;
+  projectedError: (w: P2, pointClasses: PointClasses) => THREE.Vector3;
+  optimiserFunction: ?(w: P2, pointClasses: PointClasses) => Array<P2>;
 }
 
 
@@ -35,6 +38,7 @@ var Surface = React.createClass({
     highlightedW: React.PropTypes.any, // technically a tuple...
     pointClasses: React.PropTypes.array.isRequired,
     projectedError: React.PropTypes.func.isRequired,
+    optimiserFunction: React.PropTypes.func
   },
 
   getInitialState: function(): State {
@@ -229,20 +233,30 @@ var Surface = React.createClass({
   handleHover: function(e: React.SyntheticEvent): void {
     var intersections = this.raycast(this.state.camera, e).intersectObject(this.state.graph);
     if (intersections.length > 0) {
-      var {x, y, z} = intersections[0].point;
+      var {x, y} = intersections[0].point;
       this.props.highlightW(x, y);
 
+      // TODO: extract this into a nice function
       this.state.scene.remove(this.state.pathLine);
-      var geometry = new THREE.Geometry();
-      geometry.vertices = [new THREE.Vector3(x, y, z), new THREE.Vector3(x, y, z + 40), new THREE.Vector3(x, y, z + 80)];
+      if (typeof this.props.optimiserFunction !== "undefined" && this.props.optimiserFunction !== null){
+        var geometry = new THREE.Geometry();
 
-      var lineMaterial = new THREE.LineBasicMaterial({
-        color: 0xff0000
-      });
+        // geometry.vertices = [new THREE.Vector3(x, y, z), new THREE.Vector3(x, y, z + 40), new THREE.Vector3(x, y, z + 80)];
+        geometry.vertices = this.props.optimiserFunction({x, y}, this.props.pointClasses).map(
+          function(p: P2) {
+            var zCoord = 40;
+            return new THREE.Vector3(p.x, p.y, zCoord);
+          }
+        );
 
-      var newPathLine = new THREE.Line(geometry, lineMaterial);
-      this.setState({pathLine: newPathLine});
-      this.state.scene.add( newPathLine );
+        var lineMaterial = new THREE.LineBasicMaterial({
+          color: 0xff0000
+        });
+
+        var newPathLine = new THREE.Line(geometry, lineMaterial);
+        this.setState({pathLine: newPathLine});
+        this.state.scene.add( newPathLine );
+      }
     }
 
   },
