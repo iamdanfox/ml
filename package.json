@@ -4,7 +4,8 @@
   "main": "server.js",
   "dependencies": {
     "react": "^0.12.2",
-    "three": "^0.69.0"
+    "react-three": "^0.3.0",
+    "three": "^0.68.0"
   },
   "devDependencies": {
     "cjsx-loader": "^1.1.0",
