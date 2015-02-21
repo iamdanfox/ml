@@ -88,12 +88,10 @@ var Surface = React.createClass({
     }
     if (typeof nextState !== "undefined" && nextState !== null) {
       this.updateCamera(nextState);
-    }
-    this.updateSpherePosition(nextProps);
 
-    if (nextProps.highlightedW !== this.props.highlightedW) {
-      this.drawOptimiserLine(nextProps, nextState);
     }
+    this.updateOptimiserLineIfNecessary(nextProps);
+    this.updateSpherePosition(nextProps);
 
     this.state.renderer.render(this.state.scene, this.state.camera);
   },
@@ -235,27 +233,26 @@ var Surface = React.createClass({
 
   },
 
-  drawOptimiserLine: function(props: Props, state: State): void {
-    var HOVER_AMOUNT = 3; // hack to keep the line above the surface. (better would be smart interpolation)
-
-    if ((typeof props.highlightedW !== "undefined" && props.highlightedW !== null) &&
-      (typeof props.optimiserFunction !== "undefined" && props.optimiserFunction !== null)) {
+  updateOptimiserLineIfNecessary: function(props: Props): void {
+    if ((props.highlightedW !== this.props.highlightedW)  &&
+      (typeof props.highlightedW !== "undefined" && props.highlightedW !== null)) {
       var [x, y] = props.highlightedW;
+      this.state.scene.remove(this.state.pathLine);
 
-      this.state.scene.remove(state.pathLine);
+      if (typeof props.optimiserFunction !== "undefined" && props.optimiserFunction !== null) {
+        var geometry = new THREE.Geometry();
+        geometry.vertices = props.optimiserFunction({x, y}, this.props.pointClasses).map(
+          (w) => {
+            var z = this.props.projectedError(w, this.props.pointClasses);
+            return new THREE.Vector3(w.x, w.y, z + 3); // hack to keep the line above the surface. (better would be smart interpolation)
+          }
+        );
 
-      var geometry = new THREE.Geometry();
-      geometry.vertices = props.optimiserFunction({x, y}, this.props.pointClasses).map(
-        (w) => {
-          var z = this.props.projectedError(w, this.props.pointClasses);
-          return new THREE.Vector3(w.x, w.y, z + HOVER_AMOUNT);
-        }
-      );
-
-      var lineMaterial = new THREE.LineBasicMaterial({color: 0xff0000});
-      var newPathLine = new THREE.Line(geometry, lineMaterial);
-      this.setState({pathLine: newPathLine});
-      this.state.scene.add( newPathLine );
+        var lineMaterial = new THREE.LineBasicMaterial({color: 0xff0000});
+        var newPathLine = new THREE.Line(geometry, lineMaterial);
+        this.setState({pathLine: newPathLine});
+        this.state.scene.add( newPathLine );
+      }
     }
   },
 
