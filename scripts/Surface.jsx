@@ -81,19 +81,20 @@ var Surface = React.createClass({
     this.state.renderer.render(this.state.scene, this.state.camera);
   },
 
-  componentWillReceiveProps: function(nextProps: Props) {
+  componentWillUpdate: function(nextProps: Props, nextState?: State): void {
     if ((nextProps.pointClasses[0].length !== this.props.pointClasses[0].length) ||
       (nextProps.pointClasses[1].length !== this.props.pointClasses[1].length)) {
       this.updateGraphMesh(nextProps);
     }
-
-    this.updateSpherePosition(nextProps);
-  },
-
-  componentWillUpdate: function(nextProps: Props, nextState?: State): void {
     if (typeof nextState !== "undefined" && nextState !== null) {
       this.updateCamera(nextState);
     }
+    this.updateSpherePosition(nextProps);
+
+    if (nextProps.highlightedW !== this.props.highlightedW) {
+      this.drawOptimiserLine(nextProps, nextState);
+    }
+
     this.state.renderer.render(this.state.scene, this.state.camera);
   },
 
@@ -111,6 +112,13 @@ var Surface = React.createClass({
     }
   },
 
+  updateGraphMesh: function(props: Props): void {
+    this.state.scene.remove(this.state.graph);
+    var newGraph = this.buildGraphMesh(props);
+    this.setState({graph: newGraph});
+    this.state.scene.add( newGraph );
+  },
+
   buildGraphMesh: function(props: Props): THREE.Mesh {
     return new THREE.Mesh(
       this.colourGraphGeometry(this.buildGraphGeometry(props)),
@@ -121,15 +129,7 @@ var Surface = React.createClass({
     );
   },
 
-  updateGraphMesh: function(props: Props): void {
-    this.state.scene.remove(this.state.graph);
-    var newGraph = this.buildGraphMesh(props);
-    this.setState({graph: newGraph});
-    this.state.scene.add( newGraph );
-  },
-
   buildGraphGeometry: function(props: Props): THREE.ParametricGeometry {
-
     var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var theta = i * 2 * Math.PI;
       var r = Math.pow(2, 0.7 * j) - 1; // this ensures there are lots of samples near the origin.
@@ -138,10 +138,6 @@ var Surface = React.createClass({
       var z = this.props.projectedError({x, y}, props.pointClasses);
       return new THREE.Vector3(x, y, z);
     };
-
-    // var meshFunction = function(i: number, j: number): THREE.Vector3 {
-    //   return props.polarMeshFunction(i, j, props.dim, props.pointClasses);
-    // };
 
     var RESOLUTION = 24;
     return new THREE.ParametricGeometry( polarMeshFunction.bind(this), 8 * RESOLUTION, 0.5 * RESOLUTION, true );
@@ -235,19 +231,21 @@ var Surface = React.createClass({
     if (intersections.length > 0) {
       var {x, y} = intersections[0].point;
       this.props.highlightW(x, y);
-
-      this.drawOptimiserLine(x, y);
     }
 
   },
 
-  drawOptimiserLine: function(x: number, y: number): void {
+  drawOptimiserLine: function(props: Props, state: State): void {
     var HOVER_AMOUNT = 3; // hack to keep the line above the surface. (better would be smart interpolation)
-    this.state.scene.remove(this.state.pathLine);
-    if (typeof this.props.optimiserFunction !== "undefined" && this.props.optimiserFunction !== null){
-      var geometry = new THREE.Geometry();
 
-      geometry.vertices = this.props.optimiserFunction({x, y}, this.props.pointClasses).map(
+    if ((typeof props.highlightedW !== "undefined" && props.highlightedW !== null) &&
+      (typeof props.optimiserFunction !== "undefined" && props.optimiserFunction !== null)) {
+      var [x, y] = props.highlightedW;
+
+      this.state.scene.remove(state.pathLine);
+
+      var geometry = new THREE.Geometry();
+      geometry.vertices = props.optimiserFunction({x, y}, this.props.pointClasses).map(
         (w) => {
           var z = this.props.projectedError(w, this.props.pointClasses);
           return new THREE.Vector3(w.x, w.y, z + HOVER_AMOUNT);
