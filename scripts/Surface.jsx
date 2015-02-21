@@ -265,10 +265,16 @@ var Surface = React.createClass({
     var {left: left, top: top} = this.refs.container.getDOMNode().getBoundingClientRect();
     var x = 2 * (e.clientX - left) / this.props.dim - 1;
     var y = -2 * (e.clientY - top) / this.props.dim + 1;
-    var raycaster = new THREE.Raycaster();
-    raycaster.set( camera.position, camera );
-    raycaster.ray.direction.set(x, y, 0.5).unproject(camera).sub(camera.position).normalize();
-    return raycaster;
+
+    // `unproject` code from THREE v.69, not present in THREE v.68
+    var pos = new THREE.Vector3(x, y, 0.5);
+    var projectionMatrixInverse = new THREE.Matrix4();
+    var _viewProjectionMatrix = new THREE.Matrix4();
+    projectionMatrixInverse.getInverse( camera.projectionMatrix );
+    _viewProjectionMatrix.multiplyMatrices( camera.matrixWorld, projectionMatrixInverse );
+
+    var direction = pos.applyProjection( _viewProjectionMatrix ).sub(camera.position).normalize();
+    return new THREE.Raycaster(camera.position, direction);
   },
 
   render: function(): ?ReactElement {
