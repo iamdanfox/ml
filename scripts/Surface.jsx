@@ -236,31 +236,31 @@ var Surface = React.createClass({
       var {x, y} = intersections[0].point;
       this.props.highlightW(x, y);
 
-      // TODO: extract this into a nice function
-      this.state.scene.remove(this.state.pathLine);
-      if (typeof this.props.optimiserFunction !== "undefined" && this.props.optimiserFunction !== null){
-        var geometry = new THREE.Geometry();
-
-        // geometry.vertices = [new THREE.Vector3(x, y, z), new THREE.Vector3(x, y, z + 40), new THREE.Vector3(x, y, z + 80)];
-        geometry.vertices = this.props.optimiserFunction({x, y}, this.props.pointClasses).map(
-          (w) => {
-            var z = this.props.projectedError(w, this.props.pointClasses);
-            return new THREE.Vector3(w.x, w.y, z);
-          }
-        );
-
-        console.log(geometry.vertices);
-
-        var lineMaterial = new THREE.LineBasicMaterial({
-          color: 0xff0000
-        });
-
-        var newPathLine = new THREE.Line(geometry, lineMaterial);
-        this.setState({pathLine: newPathLine});
-        this.state.scene.add( newPathLine );
-      }
+      this.drawOptimiserLine(x, y);
     }
 
+  },
+
+  drawOptimiserLine: function(x: number, y: number): void {
+    this.state.scene.remove(this.state.pathLine);
+    if (typeof this.props.optimiserFunction !== "undefined" && this.props.optimiserFunction !== null){
+      var geometry = new THREE.Geometry();
+
+      geometry.vertices = this.props.optimiserFunction({x, y}, this.props.pointClasses).map(
+        (w) => {
+          var z = this.props.projectedError(w, this.props.pointClasses);
+          return new THREE.Vector3(w.x, w.y, z);
+        }
+      );
+
+      var lineMaterial = new THREE.LineBasicMaterial({
+        color: 0xff0000
+      });
+
+      var newPathLine = new THREE.Line(geometry, lineMaterial);
+      this.setState({pathLine: newPathLine});
+      this.state.scene.add( newPathLine );
+    }
   },
 
   raycast: function(camera: THREE.Camera, e: React.SyntheticEvent): THREE.Raycaster {

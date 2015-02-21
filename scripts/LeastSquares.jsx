@@ -1,6 +1,10 @@
 /* @flow */
 "use strict";
 
+
+// Class0 points, p, have dotProduct(p, w) > 0
+// Class1 points, p, have dotProduct(p, w) <= 0
+
 type P2 = {x: number; y: number};
 
 var {rot90: rot90, dotProduct: dotProduct, sizeSquared: sizeSquared} = require("./VectorUtils.jsx");
