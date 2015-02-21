@@ -95,7 +95,10 @@ var MainPage = React.createClass({
           pointClasses={this.state.pointClasses} projectedError={projectedError}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW} /> }
 
-        <Surface2 dim={this.props.dim} />
+        <Surface2 dim={this.props.dim}
+          pointClasses={this.state.pointClasses} projectedError={projectedError2}
+          highlightedW={this.state.highlightedW} highlightW={this.highlightW}
+          optimiserFunction={computePerceptronWeight}  />
 
       </div>
     );
