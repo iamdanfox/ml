@@ -242,6 +242,7 @@ var Surface = React.createClass({
   },
 
   drawOptimiserLine: function(x: number, y: number): void {
+    var HOVER_AMOUNT = 3; // hack to keep the line above the surface. (better would be smart interpolation)
     this.state.scene.remove(this.state.pathLine);
     if (typeof this.props.optimiserFunction !== "undefined" && this.props.optimiserFunction !== null){
       var geometry = new THREE.Geometry();
@@ -249,14 +250,11 @@ var Surface = React.createClass({
       geometry.vertices = this.props.optimiserFunction({x, y}, this.props.pointClasses).map(
         (w) => {
           var z = this.props.projectedError(w, this.props.pointClasses);
-          return new THREE.Vector3(w.x, w.y, z);
+          return new THREE.Vector3(w.x, w.y, z + HOVER_AMOUNT);
         }
       );
 
-      var lineMaterial = new THREE.LineBasicMaterial({
-        color: 0xff0000
-      });
-
+      var lineMaterial = new THREE.LineBasicMaterial({color: 0xff0000});
       var newPathLine = new THREE.Line(geometry, lineMaterial);
       this.setState({pathLine: newPathLine});
       this.state.scene.add( newPathLine );

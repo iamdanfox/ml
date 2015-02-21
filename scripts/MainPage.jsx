@@ -80,22 +80,19 @@ var MainPage = React.createClass({
           highlightW={this.highlightW} />
 
         <Surface dim={this.props.dim}
-          pointClasses={this.state.pointClasses} projectedError={projectedError}
-          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
-
-        <p>N.B. linearError looks basically the same as the leastSquares one</p>
-
-        <h2>perceptron criterion</h2>
-        <Surface dim={this.props.dim}
-          pointClasses={this.state.pointClasses} projectedError={perceptronError}
-          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
-
-        <h2>Zero-One objective</h2>
-        <p>The negation of the number of misclassified vectors</p>
-        <Surface dim={this.props.dim}
           pointClasses={this.state.pointClasses} projectedError={projectedError2}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW}
           optimiserFunction={computePerceptronWeight} />
+
+        { false &&
+          <Surface dim={this.props.dim}
+            pointClasses={this.state.pointClasses} projectedError={perceptronError}
+            highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
+        }
+
+        <Surface dim={this.props.dim}
+          pointClasses={this.state.pointClasses} projectedError={projectedError}
+          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
 
       </div>
     );

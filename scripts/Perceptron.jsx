@@ -54,6 +54,14 @@ the algorithm's progression.  First w is the start weight, last w is the result 
 Maximum list length = 300 (for non-terminating stuff)
 */
 var PERCEPTRON_NU = 0.1;
+/*
+The value of nu is interesting to observe.
+
+<0.05 - often doesn't reach optimal (runs out of data points)
+0.1 - almost always reaches the optimum. Occasionally stops just shy of optimal.
+0.5 - seems to work pretty fast.  Occasionally overshoots a bit.
+>0.75 - seems to work, but ends up with a large w.
+*/
 function computePerceptronWeight(startWeight: P2, pointClasses: PointClasses): Array<P2> {
   var trainingData = pointClassesTransform(pointClasses);
 
