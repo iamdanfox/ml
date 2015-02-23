@@ -6,7 +6,7 @@ type PointClasses = [Array<P2>,Array<P2>];
 "use strict";
 
 
-var {add, dotProduct, scale} = require("./VectorUtils.jsx");
+var {add, scale, pointClassesTransform, classify, classTransform} = require("./VectorUtils.jsx");
 
 /*
 The Perceptron training algorithm cycles through each training
@@ -19,34 +19,6 @@ otherwise the example’s vector is added or subtracted
 vector.
 */
 
-
-function classify(w: P2, vectorToClassify: P2) {
-  if (dotProduct(vectorToClassify, w) > 0) {
-    return 0;
-  } else {
-    return 1;
-  }
-}
-
-function classTransform(classification: number): number {
-  if (classification === 0) {
-    return -1;
-  } else {
-    console.assert(classification === 1);
-    return 1;
-  }
-}
-
-function pointClassesTransform(pointClasses: PointClasses): Array<P2t> {
-  var [class0, class1] = pointClasses;
-  var transformedClass0 = class0.map(function(p) {
-    return {x: p.x, y: p.y, t: -1};
-  });
-  var transformedClass1 = class1.map(function(p) {
-    return {x: p.x, y: p.y, t: 1};
-  });
-  return transformedClass0.concat(transformedClass1);
-}
 
 /**
 Given some data and a start weight, return a list of vectors w such that describes
