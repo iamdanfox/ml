@@ -2,6 +2,7 @@
 type P2 = {x: number; y: number};
 type P2t = {x: number; y: number; t: number};
 type PointClasses = [Array<P2>,Array<P2>];
+
 "use strict";
 
 
