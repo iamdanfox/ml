@@ -12,7 +12,7 @@ var {pointClassesTransform, dotProduct, modulus} = require("./VectorUtils.jsx");
 function objective(w: P2, pointClasses: PointClasses): number {
   // compute the `margin` for all points in pointClasses
   var points = pointClassesTransform(pointClasses);
-  var margins = points.map( (point) => point.t * dotProduct(w, point) );
+  var margins = points.map( (point) => -1 * point.t * dotProduct(w, point) ); // -1 fudge
   // find the minimum of these
   var minimumMargin = Math.min.apply(null, margins);
   // normalise by w.

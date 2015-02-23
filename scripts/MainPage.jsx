@@ -7,6 +7,7 @@ var {projectedError, projectedError2, perceptronError} = require("./LeastSquares
 var Modes = require("./Modes.js");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
 var {computePerceptronWeight} = require("./Perceptron.jsx");
+var MaximumMargin = require("./MaximumMargin.jsx");
 
 type P2 = {x: number; y: number}
 
@@ -93,6 +94,11 @@ var MainPage = React.createClass({
         <Surface dim={this.props.dim}
           pointClasses={this.state.pointClasses} projectedError={projectedError}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
+
+        <Surface dim={this.props.dim}
+          pointClasses={this.state.pointClasses} projectedError={MaximumMargin.objective}
+          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
+
 
       </div>
     );
