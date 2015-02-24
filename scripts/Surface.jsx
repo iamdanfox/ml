@@ -114,6 +114,7 @@ var Surface = React.createClass({
     this.state.scene.remove(this.state.graph);
     var newGraph = this.buildGraphMesh(props);
     this.setState({graph: newGraph});
+    console.log(newGraph);
     this.state.scene.add( newGraph );
   },
 
@@ -130,7 +131,7 @@ var Surface = React.createClass({
   buildGraphGeometry: function(props: Props): THREE.ParametricGeometry {
     var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var theta = i * 2 * Math.PI;
-      var r = Math.pow(2, 0.7 * j) - 1; // this ensures there are lots of samples near the origin.
+      var r = Math.pow(2, j * j) - 1; // this ensures there are lots of samples near the origin and gets close to 0!
       var x = r * Math.cos(theta) * props.dim;
       var y = r * Math.sin(theta) * props.dim;
       var z = this.props.projectedError({x, y}, props.pointClasses);
