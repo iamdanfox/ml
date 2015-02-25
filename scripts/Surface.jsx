@@ -114,7 +114,6 @@ var Surface = React.createClass({
     this.state.scene.remove(this.state.graph);
     var newGraph = this.buildGraphMesh(props);
     this.setState({graph: newGraph});
-    console.log(newGraph);
     this.state.scene.add( newGraph );
   },
 

@@ -3,11 +3,11 @@
 
 var React = require("react");
 var Surface = require("./Surface.jsx");
-var {projectedError, projectedError2, perceptronError} = require("./LeastSquares.jsx");
+var {projectedError2, perceptronError} = require("./LeastSquares.jsx");
 var Modes = require("./Modes.js");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
 var {computePerceptronWeight} = require("./Perceptron.jsx");
-var MaximumMargin = require("./MaximumMargin.jsx");
+var ParallelCoords = require("./ParallelCoords.jsx");
 
 type P2 = {x: number; y: number}
 
@@ -91,15 +91,7 @@ var MainPage = React.createClass({
             highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
         }
 
-        <Surface dim={this.props.dim}
-          pointClasses={this.state.pointClasses} projectedError={projectedError}
-          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
-
-        <Surface dim={this.props.dim}
-          pointClasses={this.state.pointClasses} projectedError={MaximumMargin.objective}
-          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
-
-
+        <ParallelCoords />
       </div>
     );
   }
