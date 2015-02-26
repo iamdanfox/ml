@@ -91,7 +91,7 @@ var MainPage = React.createClass({
             highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
         }
 
-        <ParallelCoords />
+        <ParallelCoords dim={this.props.dim} />
       </div>
     );
   }
