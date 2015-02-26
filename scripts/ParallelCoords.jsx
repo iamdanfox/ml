@@ -10,7 +10,10 @@ var ParallelCoords = React.createClass({
   getInitialState: function() {
     var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 ); // Field of view, aspect ratio, near clip, far clip
     initialCamera.up = new THREE.Vector3( 0, 0, 1 );
+    initialCamera.position.x = 180;
+    initialCamera.position.y = 180;
     initialCamera.position.z = 180;
+    initialCamera.lookAt(new THREE.Vector3(0, 0, 0));
 
     var initialScene = new THREE.Scene();
     // add axes to scene
@@ -24,7 +27,16 @@ var ParallelCoords = React.createClass({
           y: RADIUS * Math.sin(angle),
         }
       });
-    console.log(baseCoords);
+
+    for (i in baseCoords) {
+      var {x, y} = baseCoords[i];
+      var lineMaterial = new THREE.LineBasicMaterial({color: 0xff0000});
+      var geometry = new THREE.Geometry();
+      geometry.vertices = [new THREE.Vector3(x, y, 0), new THREE.Vector3(x, y, 100)];
+
+      var axisLine = new THREE.Line(geometry, lineMaterial);
+      initialScene.add( axisLine );
+    }
 
     var initialRenderer = new THREE.WebGLRenderer({antialias: true});
     initialRenderer.setClearColor( 0x111111, 1 );
