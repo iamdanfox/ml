@@ -17,14 +17,13 @@ var Header = React.createClass({
     return (
       <div className="title-page" style={{width: "100%",
         padding: "10px",
-        height: "400px",
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
       }}>
         <h2 style={{width: "600px",
           textAlign: "center",
-          lineHeight: "45px"}}>
+          lineHeight: "45px",
+          marginTop: "3em"}}>
           <span style={{fontFamily: "Lucida Grande",
             fontSize: "60px",
             letterSpacing: "-2.4px"}}>Understanding Machine Learning</span>
@@ -37,6 +36,15 @@ var Header = React.createClass({
         </h2>
       </div>
     );
+  }
+});
+
+var HR = React.createClass({
+  render: function(): ?ReactElement {
+    return <hr style={{width: "100px",
+      borderWidth: "1px 0 0 0",
+      opacity: 0.5,
+      margin: "2em auto 2em auto"}} />;
   }
 });
 
@@ -97,16 +105,46 @@ var MainPage = React.createClass({
 
         <Header />
 
+        <HR />
+
         <div style={{width: "700px",
-        lineHeight: "35px"}}>
-        <p>Vel volutpat justo quisque vulputate nisl sodales a in suspendisse a
-        a a vehicula cum tristique adipiscing quam. A sociis faucibus ac phasellus
-        phasellus consectetur penatibus lacus adipiscing quis viverra scelerisque
-        adipiscing ac primis. Adipiscing a in scelerisque ante a duis auctor morbi
-        ad a scelerisque tincidunt scelerisque integer at. Placerat torquent eget
-        laoreet vestibulum tempor condimentum consectetur ridiculus ac ad at torquent
-        condimentum dapibus condimentum volutpat tempus ullamcorper netus ad lobortis.</p>
+        lineHeight: "35px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"}}>
+
+
+          <p>Machine learning is all about learning from data in order to
+          make decisions. This article uses binary linear classifiers as an example.</p>
+
+          <HR />
+
+          <p style={{width: '100%'}}>What is a binary linear classifier?</p>
+
+          <p style={{width: '100%'}}>Well, a "binary classifier" is something that
+          takes in objects and puts then into one of two classes. These objects must be
+          represented as a mathematical vector, e.g. x1 = [1,2,3,4].</p>
+
+          <img src="http://i.imgur.com/BGPlM09.jpg" style={{maxWidth: "50%", margin: "1em" }} />
+
+          <p>A classifier is "linear" if it makes this decision using a
+          linear function of an input vector x.  If our objects are
+          one-dimensional, the decision boundary is just a point. In two
+          dimensions, it&apos;s a line and in three dimensions, the decision
+          boundary is a plane.</p>
+
+
+          <img src="http://i.imgur.com/jZg6nCx.jpg" style={{maxWidth: "120%", margin: "1em" }} />
+
+
+
         </div>
+
+
+
+
+
+
         { false && <div>
 
           <div>

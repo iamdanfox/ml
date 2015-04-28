@@ -33,7 +33,7 @@ gulp.task('jscs', function() {
         "allowRegex": true
       },
       "validateIndentation": 2,
-      "validateQuoteMarks": "\"",
+      // "validateQuoteMarks": "\"",
       "disallowMultipleLineStrings": true,
       "disallowMixedSpacesAndTabs": true,
       "disallowSpaceAfterPrefixUnaryOperators": true,
@@ -100,7 +100,7 @@ gulp.task('jshint', function() {
       "nonbsp": true,
       "nonew": true,
       "plusplus": true,
-      "quotmark": "double",
+      // "quotmark": "double",
       "strict": true,
       "undef": true,
       "unused": true,
