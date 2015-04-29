@@ -3,7 +3,7 @@
 
 var React = require("react");
 var Surface = require("./Surface.jsx");
-var {projectedError, projectedError2, perceptronError} = require("./LeastSquares.jsx");
+var {projectedError, projectedError2} = require("./LeastSquares.jsx");
 var Modes = require("./Modes.js");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
 var {computePerceptronWeight} = require("./Perceptron.jsx");
@@ -16,6 +16,7 @@ type P2 = {x: number; y: number}
 var MainPage = React.createClass({
   propTypes: {
     dim: React.PropTypes.number.isRequired,
+    projectedError: React.PropTypes.func.isRequired
   },
 
   getInitialState: function(): {highlightedW: ?[number, number]; mode: number} {
@@ -69,7 +70,7 @@ var MainPage = React.createClass({
           highlightW={this.highlightW} />
 
         <Surface dim={this.props.dim}
-          pointClasses={this.state.pointClasses} projectedError={perceptronError}
+          pointClasses={this.state.pointClasses} projectedError={this.props.projectedError}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
 
 

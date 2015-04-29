@@ -6,6 +6,9 @@ var HR = require("./HR.jsx");
 var Header = require("./Header.jsx");
 var MainPage = require("./MainPage.jsx");
 
+var {perceptronError} = require("./LeastSquares.jsx");
+var MaximumMargin = require("./MaximumMargin.jsx");
+
 
 var Article = React.createClass({
   render: function(): ?ReactElement {
@@ -112,7 +115,7 @@ var Article = React.createClass({
           objective function isn&apos;t particularly helpful:</p>
 
           <div style={{width: "850px"}}>
-            <MainPage dim={400}  />
+            <MainPage dim={400} projectedError={perceptronError}  />
           </div>
 
           <p>As you can see from the right hand diagram, there are a large
@@ -122,6 +125,23 @@ var Article = React.createClass({
           <HR />
 
           <h2>Logistic Regression</h2>
+
+          <p>use probability ideas p(C1|x) to come up with w. (slide 7, set 5) show derivation</p>
+
+          <p>mention generative vs discriminative ??</p>
+
+          <p>MLE estimate. some kind of vis here. (training data
+            against probability of training data.. one curve for each w)</p>
+
+          <p>define objective (conditional likelihood of the data)</p>
+
+          <div style={{width: "850px"}}>
+            <MainPage dim={400} projectedError={MaximumMargin.objective}  />
+          </div>
+
+          <p>Classification related to 0.5 on the logistic sigmoid curve</p>
+
+          <p>algorithm: gradient descent to find best.yay.. criticism of logistic regression (???)</p>
         </div>
       </div>
     );
