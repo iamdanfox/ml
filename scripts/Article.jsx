@@ -6,7 +6,7 @@ var HR = require("./HR.jsx");
 var Header = require("./Header.jsx");
 var MainPage = require("./MainPage.jsx");
 
-var {perceptronError} = require("./LeastSquares.jsx");
+var {projectedError, perceptronError} = require("./LeastSquares.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 
 
@@ -78,7 +78,7 @@ var Article = React.createClass({
 
           <p>A good idea would be to look through all our known training data
           and find a hyperplane that classifies them all correctly.  The
-          Perceptron algorithm is one example of this.</p>
+          <em> Perceptron</em> algorithm does exactly this.</p>
 
           <code>
           Initialize vector w<br />
@@ -111,8 +111,9 @@ var Article = React.createClass({
 
           <p>An <em>objective function</em> can
           compute a score for each potential vector w
-          so that we can automatically choose the best one.  Unsurprisingly, the perceptron
-          objective function isn&apos;t particularly helpful:</p>
+          so that we can automatically choose the best one.  The blue pie-shape on the right
+          shows the value of the perceptron objective for all the possible choices of the vector
+          w.  Hover over the graph on the left to see what one particular choice of w looks like.</p>
 
           <div style={{width: "850px"}}>
             <MainPage dim={400} projectedError={perceptronError}  />
@@ -136,12 +137,32 @@ var Article = React.createClass({
           <p>define objective (conditional likelihood of the data)</p>
 
           <div style={{width: "850px"}}>
-            <MainPage dim={400} projectedError={MaximumMargin.objective}  />
+            <MainPage dim={400} projectedError={projectedError}  />
+            { false && "NOTE THIS IS NOT LOGISTIC REGRESSION ERROR!"}
           </div>
 
           <p>Classification related to 0.5 on the logistic sigmoid curve</p>
 
-          <p>algorithm: gradient descent to find best.yay.. criticism of logistic regression (???)</p>
+          <p>algorithm: gradient descent to find best.yay..
+          criticism of logistic regression (???)</p>
+
+
+
+          <HR />
+
+
+          <h2>Maximum Margin Classifier</h2>
+
+          <p>[objective function - minimise ||w|| subject to yi(wTxi) >= 1
+          <a href="https://www.cs.ox.ac.uk/teaching/materials13-14/machinelearning/lecture_lsvm.pdf">
+          Slide 9</a></p>
+
+          <div style={{width: "850px"}}>
+            <MainPage dim={400} projectedError={MaximumMargin.objective}  />
+          </div>
+
+          <p>Describe lagrangian/KKT method for solving this (?!?! needs work to understand this)</p>
+
         </div>
       </div>
     );

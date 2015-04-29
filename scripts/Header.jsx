@@ -8,7 +8,7 @@ var Header = React.createClass({
   render: function(): ?ReactElement {
     return (
       <div className="title-page" style={{width: "100%",
-        padding: "10px",
+        padding: "10px 0",
         display: "flex",
         justifyContent: "center",
       }}>
