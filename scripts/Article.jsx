@@ -119,9 +119,9 @@ var Article = React.createClass({
 
           <p>[[Same data, show: [Bad, Good, Bad]]]</p>
 
-          <p>An <em>objective function</em> can
-          compute a score for each potential vector <Katex>w</Katex>
-          so that we can automatically choose the best one.  The blue pie-shape on the right
+          <p>An <em>objective function</em> can compute a score for each potential
+          vector <Katex>w</Katex> so
+          that we can automatically choose the best one.  The blue pie-shape on the right
           shows the value of the perceptron objective for all the possible choices of the
           vector <Katex>w</Katex>.  Hover over the graph on the
           left to see what one particular choice
@@ -135,6 +135,14 @@ var Article = React.createClass({
           number of possibilities for the
           vector <Katex>w</Katex> that all share the maximum objective
           function.</p>
+
+          <HR />
+
+          <h2>Least Squares</h2>
+
+          <div style={{width: "850px"}}>
+            <MainPage dim={400} projectedError={projectedError}  />
+          </div>
 
           <HR />
 
@@ -152,10 +160,7 @@ var Article = React.createClass({
 
           <p>define objective (conditional likelihood of the data)</p>
 
-          <div style={{width: "850px"}}>
-            <MainPage dim={400} projectedError={projectedError}  />
-            { false && "NOTE THIS IS NOT LOGISTIC REGRESSION ERROR!"}
-          </div>
+          { false && "TODO: real Logistic Regression"}
 
           <p>Classification related to 0.5 on the logistic sigmoid curve</p>
 
@@ -167,11 +172,15 @@ var Article = React.createClass({
           <HR />
 
 
-          <h2>Maximum Margin Classifier</h2>
+          <h2>Maximum Margin (SVM)</h2>
 
-          <p>[objective function - minimise ||w|| subject to yi(wTxi) >= 1
+          <p>[objective function]
           <a href="https://www.cs.ox.ac.uk/teaching/materials13-14/machinelearning/lecture_lsvm.pdf">
           Slide 9</a></p>
+
+
+          <p><Katex tex="argmax_w \{ \frac{||w||^2}{2} \}" /> </p>
+          <p> s.t. &nbsp;&nbsp;&nbsp;<Katex tex="y_i  ( w \cdot x_i ) \geq 1 " /></p>
 
           <div style={{width: "850px"}}>
             <MainPage dim={400} projectedError={MaximumMargin.objective}  />
