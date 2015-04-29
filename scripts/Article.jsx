@@ -117,9 +117,11 @@ var Article = React.createClass({
           eyeballing a few possibilities, it&apos;s clear
           which ones will be good and which will be bad, but we need some way to quantify this.</p>
 
-          <p>[[Same data, show: [Bad, Good, Bad]]]</p>
+          <img src="http://i.imgur.com/Ds0JJjb.jpg" style={{maxWidth: "100%", margin: "1em" }} />
 
-          <p>An <em>objective function</em> can compute a score for each potential
+          <p>
+          An <em>objective function</em> can
+          compute a score for each potential
           vector <Katex>w</Katex> so
           that we can automatically choose the best one.  The blue pie-shape on the right
           shows the value of the perceptron objective for all the possible choices of the
@@ -138,20 +140,13 @@ var Article = React.createClass({
 
           <HR />
 
-          <h2>Least Squares</h2>
-
-          <div style={{width: "850px"}}>
-            <MainPage dim={400} projectedError={projectedError}  />
-          </div>
-
-          <HR />
-
           <h2>Logistic Regression</h2>
 
           <p>
           use probability
           ideas <Katex tex="p(C_{k}|x)" /> to come
-          up with <Katex>w</Katex>. (slide 7, set 5) show derivation</p>
+          up with <Katex>w</Katex>. (<a href="https://www.google.com/url?q=https%3A%2F%2Fwww.cs.ox.ac.uk%2Fteaching%2Fmaterials13-14%2Fmachinelearning%2Flecture_logistic_regression.pdf&sa=D&sntz=1&usg=AFQjCNFe-3EOTDqUonxMk8NwJr4ipEsK7A">
+            slide 7, set 5</a>) show derivation</p>
 
           <p>mention generative vs discriminative ??</p>
 
@@ -180,7 +175,7 @@ var Article = React.createClass({
 
 
           <p><Katex tex="argmax_w \{ \frac{||w||^2}{2} \}" /> </p>
-          <p> s.t. &nbsp;&nbsp;&nbsp;<Katex tex="y_i  ( w \cdot x_i ) \geq 1 " /></p>
+          <p><Katex tex="s.t. ~~~~ y_i  ( w \cdot x_i ) \geq 1, ~~~~ \forall i" /></p>
 
           <div style={{width: "850px"}}>
             <MainPage dim={400} projectedError={MaximumMargin.objective}  />
