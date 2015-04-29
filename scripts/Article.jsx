@@ -6,7 +6,7 @@ var HR = require("./HR.jsx");
 var Header = require("./Header.jsx");
 var MainPage = require("./MainPage.jsx");
 
-var {projectedError, perceptronError} = require("./LeastSquares.jsx");
+var {perceptronError} = require("./LeastSquares.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 var Katex = require('./Katex.jsx');
 
@@ -154,6 +154,8 @@ var Article = React.createClass({
             against probability of training data.. one curve for each w)</p>
 
           <p>define objective (conditional likelihood of the data)</p>
+
+          <p><Katex tex="- \displaystyle \sum _i ~ y_i log( \sigma(w \cdot x_i) ) + ( 1 - y_i ) log( 1 - \sigma ( w \cdot x_i ) )" /></p>
 
           { false && "TODO: real Logistic Regression"}
 
