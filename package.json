@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "main": "server.js",
   "dependencies": {
+    "katex": "^0.2.0",
     "react": "^0.12.2",
     "three": "^0.69.0"
   },

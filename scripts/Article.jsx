@@ -8,6 +8,18 @@ var MainPage = require("./MainPage.jsx");
 
 var {projectedError, perceptronError} = require("./LeastSquares.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
+var katex = require('katex');
+
+
+var Katex = React.createClass({
+  render: function(): ?ReactElement {
+    var tex = this.props.tex || this.props.children;
+    var math = katex.renderToString(tex);
+    return(<span dangerouslySetInnerHTML={{__html: math}}></span>);
+  }
+});
+
+
 
 
 var Article = React.createClass({
@@ -127,7 +139,7 @@ var Article = React.createClass({
 
           <h2>Logistic Regression</h2>
 
-          <p>use probability ideas p(C1|x) to come up with w. (slide 7, set 5) show derivation</p>
+          <p>use probability ideas <Katex tex="p(C_{k}|x)" /> to come up with w. (slide 7, set 5) show derivation</p>
 
           <p>mention generative vs discriminative ??</p>
 
