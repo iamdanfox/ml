@@ -8,18 +8,7 @@ var MainPage = require("./MainPage.jsx");
 
 var {projectedError, perceptronError} = require("./LeastSquares.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
-var katex = require('katex');
-
-
-var Katex = React.createClass({
-  render: function(): ?ReactElement {
-    var tex = this.props.tex || this.props.children;
-    var math = katex.renderToString(tex);
-    return (
-      <span dangerouslySetInnerHTML={{__html: math}}></span>
-    );
-  }
-});
+var Katex = require('./Katex.jsx');
 
 
 
