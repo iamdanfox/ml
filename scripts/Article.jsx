@@ -15,7 +15,9 @@ var Katex = React.createClass({
   render: function(): ?ReactElement {
     var tex = this.props.tex || this.props.children;
     var math = katex.renderToString(tex);
-    return(<span dangerouslySetInnerHTML={{__html: math}}></span>);
+    return (
+      <span dangerouslySetInnerHTML={{__html: math}}></span>
+    );
   }
 });
 
@@ -53,8 +55,11 @@ var Article = React.createClass({
 
           <img src="http://i.imgur.com/BGPlM09.jpg" style={{maxWidth: "60%", margin: "1em" }} />
 
-          <p>Linear classifiers accept objects represented as vectors, e.g. [10, -3, 0, 4],
-          and make their decisions using a linear function of the input vector. </p>
+          <p>
+          Linear classifiers accept objects represented as vectors,
+          e.g. <Katex tex="[10, -3, 0, 4]" /> and
+          make their decisions using a linear function of the input vector.
+          </p>
 
           <p>
           If our objects are
@@ -68,17 +73,20 @@ var Article = React.createClass({
           <img src="http://i.imgur.com/jZg6nCx.jpg" style={{maxWidth: "120%", margin: "1em" }} />
 
           <p>
-          Since the boundary is a hyperplane, we can represent it by a normal vector, n,
-          and an offset vector, c.  In practice, it&apos;s convenient
+          Since the boundary is a hyperplane, we can represent it by a normal
+          vector, <Katex>n</Katex>,
+          and an offset vector, <Katex>c</Katex>.  In practice, it&apos;s convenient
           to add one fake dimension (with value 1) to every object in our data because
           this lets us define the same hyperplane using just one vector.
           This is called <em>homogeneous form</em>.</p>
 
           <img src="http://i.imgur.com/XaHtzYx.jpg" style={{maxWidth: "50%", margin: "1em" }} />
 
-          <p>Our classifier can then use this vector n to decide the
-          class for an unseen vector x = [x1, x2].
-          It computes [x1, x2, 1] . n and if the result is positive,
+          <p>Our classifier can then use this
+          vector <Katex>n</Katex> to decide the
+          class for an unseen vector <Katex>x = [x_1, x_2]</Katex>. It
+          computes <Katex tex="[x_1, x_2, 1] \cdot n" /> and
+          if the result is positive,
           returns class A, otherwise it returns class B.</p>
 
           <p>The question is, how can we learn the value of the
@@ -116,30 +124,37 @@ var Article = React.createClass({
 
           <h2>Objective Functions</h2>
 
-          <p>How can we choose a better w?  From eyeballing a few possibilities, it&apos; clear
+          <p>How can we choose a better <Katex>w</Katex>?  From
+          eyeballing a few possibilities, it&apos;s clear
           which ones will be good and which will be bad, but we need some way to quantify this.</p>
 
           <p>[[Same data, show: [Bad, Good, Bad]]]</p>
 
           <p>An <em>objective function</em> can
-          compute a score for each potential vector w
+          compute a score for each potential vector <Katex>w</Katex>
           so that we can automatically choose the best one.  The blue pie-shape on the right
-          shows the value of the perceptron objective for all the possible choices of the vector
-          w.  Hover over the graph on the left to see what one particular choice of w looks like.</p>
+          shows the value of the perceptron objective for all the possible choices of the
+          vector <Katex>w</Katex>.  Hover over the graph on the
+          left to see what one particular choice
+          of <Katex>w</Katex> looks like.</p>
 
           <div style={{width: "850px"}}>
             <MainPage dim={400} projectedError={perceptronError}  />
           </div>
 
           <p>As you can see from the right hand diagram, there are a large
-          number of possibilities for the vector w that all share the maximum objective
+          number of possibilities for the
+          vector <Katex>w</Katex> that all share the maximum objective
           function.</p>
 
           <HR />
 
           <h2>Logistic Regression</h2>
 
-          <p>use probability ideas <Katex tex="p(C_{k}|x)" /> to come up with w. (slide 7, set 5) show derivation</p>
+          <p>
+          use probability
+          ideas <Katex tex="p(C_{k}|x)" /> to come
+          up with <Katex>w</Katex>. (slide 7, set 5) show derivation</p>
 
           <p>mention generative vs discriminative ??</p>
 
