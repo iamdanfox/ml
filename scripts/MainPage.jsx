@@ -111,7 +111,8 @@ var MainPage = React.createClass({
         lineHeight: "31px",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center"}}>
+        alignItems: "center",
+        paddingBottom: "10em"}}>
 
 
           <p style={{width: '100%'}}>
@@ -183,6 +184,31 @@ var MainPage = React.createClass({
 
           <HR />
 
+          <h2>Objective Functions</h2>
+
+          <p>How can we choose a better w?  From eyeballing a few possibilities, it&apos; clear
+          which ones will be good and which will be bad, but we need some way to quantify this.</p>
+
+          <p>[[Same data, show: [Bad, Good, Bad]]]</p>
+
+          <p>An <em>objective function</em> can
+          compute a score for each potential vector w
+          so that we can automatically choose the best one.  Unsurprisingly, the perceptron
+          objective function isn&apos;t particularly helpful:</p>
+
+          <div style={{width: "850px", display: "flex", justifyContent: "space-between"}}>
+            <HyperplaneVis
+              dim={this.props.dim}
+              mode={this.state.mode}
+              pointClasses={this.state.pointClasses}
+              updatePointClasses={this.updatePointClasses}
+              highlightedW={this.state.highlightedW}
+              highlightW={this.highlightW} />
+
+            <Surface dim={this.props.dim}
+              pointClasses={this.state.pointClasses} projectedError={perceptronError}
+              highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
+          </div>
         </div>
 
 
@@ -203,24 +229,11 @@ var MainPage = React.createClass({
             <button onClick={this.handleResetData}>Reset Data</button>
           </div>
 
-          <HyperplaneVis
-            dim={this.props.dim}
-            mode={this.state.mode}
-            pointClasses={this.state.pointClasses}
-            updatePointClasses={this.updatePointClasses}
-            highlightedW={this.state.highlightedW}
-            highlightW={this.highlightW} />
 
           <Surface dim={this.props.dim}
             pointClasses={this.state.pointClasses} projectedError={projectedError2}
             highlightedW={this.state.highlightedW} highlightW={this.highlightW}
             optimiserFunction={computePerceptronWeight} />
-
-          { false &&
-            <Surface dim={this.props.dim}
-              pointClasses={this.state.pointClasses} projectedError={perceptronError}
-              highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
-          }
 
           <Surface dim={this.props.dim}
             pointClasses={this.state.pointClasses} projectedError={projectedError}
