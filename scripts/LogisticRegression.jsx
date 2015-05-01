@@ -6,21 +6,27 @@ type PointClasses = [Array<P2>,Array<P2>];
 "use strict";
 
 var {pointClassesTransform, dotProduct} = require("./VectorUtils.jsx");
+var Decimal = require('decimal.js');
+Decimal.config({
+  errors: false // otherwise the constructor won't accept numbers like -134.94875696261266 (> 15 significant digits)
+});
 
 
-function sigmoid(z: number): number {
-  return 1 / (1 + Math.pow(Math.E, -z));
+function preciseSigmoid(z) { // e.g. z = 2
+  var minusZ = new Decimal(-z);         // minusZ = -2
+  var exp = minusZ.exponential(); // already base e. exp = 0.135...
+  var denominator = exp.plus(1);
+  return Decimal.ONE.dividedBy(denominator);
 }
 
-function logSigmoid(wx): number {
-  return Math.log(sigmoid(wx));
+function preciseLogSigmoid(z) {
+  return preciseSigmoid(z).naturalLogarithm();
 }
 
-function logOneMinusSigmoid(wx): number {
-  return Math.log(1) - Math.log((Math.pow(Math.E, wx) + 1 ));
+function preciseLogOneMinusSigmoid(z) {
+  return Decimal.ONE.minus(preciseSigmoid(z)).naturalLogarithm();
 }
 
-// PRECISION FREAKOUTS... TODO: investigate `Big.js`
 
 // the objective function is used to generate the surface
 function objective(w: P2, pointClasses: PointClasses): number {
@@ -29,8 +35,7 @@ function objective(w: P2, pointClasses: PointClasses): number {
 
   var sum = points.map(function sumElement(point: P2t): number {
     var wx = dotProduct(w, point);
-    console.log(sigmoid(wx));
-    return point.t * logSigmoid(wx) + (1 - point.t) * logOneMinusSigmoid(wx);
+    return point.t * preciseLogSigmoid(wx).toNumber() + (1 - point.t) * preciseLogOneMinusSigmoid(wx).toNumber();
   });
   var v = sum.reduce(function(a, b) {return a + b;}, 0);
   return v;
