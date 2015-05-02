@@ -23,21 +23,36 @@ var MainPage = React.createClass({
   getInitialState: function(): {highlightedW: ?[number, number]; mode: number} {
     return {
       highlightedW: null,
+      optimiserLine: null,
       mode: Modes.TRY_HYPERPLANE,
       pointClasses: require("../data/points.js"),
     };
+  },
+
+  updateCachedOptimiserLine: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): void {
+    if (typeof this.props.optimiserFunction !== "undefined" &&
+      this.props.optimiserFunction !== null) {
+      this.setState({
+        optimiserLine: this.props.optimiserFunction(w, pointClasses)
+      });
+    }
   },
 
   highlightW: function(x: number, y: number): void {
     this.setState({
       highlightedW: [x, y]
     });
+    this.updateCachedOptimiserLine({x, y}, this.state.pointClasses);
   },
 
   updatePointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): void {
     this.setState({
       pointClasses: newPointClasses,
     });
+    if (typeof this.state.highlightedW !== "undefined" && this.state.highlightedW !== null) {
+      var [x, y] = this.state.highlightedW;
+      this.updateCachedOptimiserLine({x, y}, newPointClasses);
+    }
   },
 
   updateMode: function(nextMode: number): () => void {
@@ -99,7 +114,7 @@ var MainPage = React.createClass({
         <Surface dim={this.props.dim}
           pointClasses={this.state.pointClasses} projectedError={this.props.projectedError}
           highlightedW={this.state.highlightedW} highlightW={this.highlightW}
-          optimiserFunction={this.props.optimiserFunction} />
+          optimiserLine={this.state.optimiserLine} />
 
 
         { false && <div>
