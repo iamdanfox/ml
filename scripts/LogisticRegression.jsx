@@ -39,8 +39,9 @@ function objective(w: P2, pointClasses: PointClasses): number {
 }
 
 
-var NU = 0.01;
-var ACCEPTING_GRAD = 1;
+var NU = 0.03;
+var ACCEPTING_GRAD = 1; // we reach this in ~ 300 loops, but it takes more like 6000 to reach 0.1!
+var MAX_STOPS = 1000;
 
 function optimise(startW: P2, pointClasses: PointClasses): Array<P2> {
   var points = pointClassesTransformZeroOne(pointClasses);
@@ -62,7 +63,7 @@ function optimise(startW: P2, pointClasses: PointClasses): Array<P2> {
   var w = startW;
   var grad;
   var stops = [];
-  while (grad = gradient(w, pointClasses), modulus(grad) > ACCEPTING_GRAD) {
+  while (grad = gradient(w, pointClasses), modulus(grad) > ACCEPTING_GRAD && stops.length < MAX_STOPS) {
     stops.push(w);
     w = add(w)(scale(-1 * NU)(grad));
   }
