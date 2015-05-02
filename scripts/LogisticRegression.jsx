@@ -5,7 +5,7 @@ type PointClasses = [Array<P2>,Array<P2>];
 
 "use strict";
 
-var {pointClassesTransformZeroOne, dotProduct, scale, modulus} = require("./VectorUtils.jsx");
+var {pointClassesTransformZeroOne, dotProduct, scale} = require("./VectorUtils.jsx");
 
 
 
@@ -24,12 +24,15 @@ function objective(w: P2, pointClasses: PointClasses): number {
 
   var points = pointClassesTransformZeroOne(pointClasses);
 
+  // we're actually trying to minimise this.
   var sum = -points
     .map(function sumElement(point: P2t): number { // crucially, t is either 0 or 1.
       var wx = dotProduct(smallerW, point);
       return point.t * logSigmoid(wx) + (1 - point.t) * logOneMinusSigmoid(wx);
     })
     .reduce(function(a, b) {return a + b;}, 0);
+
+  // flip representation because Surface.jsx shows maximisation
   return 100 - Math.log(1 + sum) * 10;
 }
 
