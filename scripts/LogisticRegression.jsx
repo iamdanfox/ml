@@ -5,7 +5,7 @@ type PointClasses = [Array<P2>,Array<P2>];
 
 "use strict";
 
-var {pointClassesTransform, dotProduct, scale} = require("./VectorUtils.jsx");
+var {pointClassesTransformZeroOne, dotProduct, scale, modulus} = require("./VectorUtils.jsx");
 
 
 
@@ -19,16 +19,18 @@ function logOneMinusSigmoid(wx): number {
 
 // the objective function is used to generate the surface
 function objective(w: P2, pointClasses: PointClasses): number {
-  var smallerW = scale(1 / 200)(w); // scaling hack to prevent overflows!
+  var antiOverflowFudgeFactor = 1 / 200;
+  var smallerW = scale(antiOverflowFudgeFactor)(w);
 
-  var points = pointClassesTransform(pointClasses);
+  var points = pointClassesTransformZeroOne(pointClasses);
 
-  var sum = points.map(function sumElement(point: P2t): number {
-    var wx = dotProduct(smallerW, point);
-    return point.t * logSigmoid(wx) + (1 - point.t) * logOneMinusSigmoid(wx);
-  });
-  var v = sum.reduce(function(a, b) {return a + b;}, 0);
-  return -20 + 10 * Math.log(-v); // I think this Math.log is absorbing an infinity or something...
+  var sum = -points
+    .map(function sumElement(point: P2t): number { // crucially, t is either 0 or 1.
+      var wx = dotProduct(smallerW, point);
+      return point.t * logSigmoid(wx) + (1 - point.t) * logOneMinusSigmoid(wx);
+    })
+    .reduce(function(a, b) {return a + b;}, 0);
+  return Math.log(1 + sum) * 10;
 }
 
 module.exports = {

@@ -85,6 +85,17 @@ module.exports = {
     return transformedClass0.concat(transformedClass1);
   },
 
+  pointClassesTransformZeroOne: function(pointClasses: PointClasses): Array<P2t> {
+    var [class0, class1] = pointClasses;
+    var transformedClass0 = class0.map(function(p) {
+      return {x: p.x, y: p.y, t: 0};
+    });
+    var transformedClass1 = class1.map(function(p) {
+      return {x: p.x, y: p.y, t: 1};
+    });
+    return transformedClass0.concat(transformedClass1);
+  },
+
   classify: function(w: P2, vectorToClassify: P2): number {
     if (dotProduct(vectorToClassify, w) > 0) {
       return 0;
