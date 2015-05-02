@@ -30,7 +30,7 @@ function objective(w: P2, pointClasses: PointClasses): number {
       return point.t * logSigmoid(wx) + (1 - point.t) * logOneMinusSigmoid(wx);
     })
     .reduce(function(a, b) {return a + b;}, 0);
-  return Math.log(1 + sum) * 10;
+  return 100 - Math.log(1 + sum) * 10;
 }
 
 module.exports = {
