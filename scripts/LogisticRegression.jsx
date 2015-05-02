@@ -19,10 +19,11 @@ function logOneMinusSigmoid(wx): number {
   return -Math.log(Math.exp(wx) + 1); // "equivalent" formulations of this don't give same results!
 }
 
+var ANTI_OVERFLOW_FUDGE = 1 / 200;
+
 // the objective function is used to generate the surface
 function objective(w: P2, pointClasses: PointClasses): number {
-  var antiOverflowFudgeFactor = 1 / 200;
-  var smallerW = scale(antiOverflowFudgeFactor)(w);
+  var smallerW = scale(ANTI_OVERFLOW_FUDGE)(w);
   var points = pointClassesTransformZeroOne(pointClasses);
 
   // we're actually trying to minimise this.
@@ -38,54 +39,37 @@ function objective(w: P2, pointClasses: PointClasses): number {
 }
 
 
-// gradient at w
-// https://www.cs.ox.ac.uk/teaching/materials13-14/machinelearning/lecture_logistic_regression.pdf
-// slide 12
-function gradient(w: P2, pointClasses: PointClasses): P2 {
-  var antiOverflowFudgeFactor = 1 / 200;
-  var smallerW = scale(antiOverflowFudgeFactor)(w);
-  var points = pointClassesTransformZeroOne(pointClasses);
-
-  var grad = points
-    .map(function(point: P2t): P2 {
-      var wx = dotProduct(smallerW, point);
-      return scale(sigmoid(wx) - point.t)(point);
-    })
-    .reduce(function(a, b) { return add(a)(b); }, {x: 0, y: 0});
-
-  return grad;
-}
-
-var NU = 0.005;
+var NU = 0.01;
+var ACCEPTING_GRAD = 1;
 
 function optimise(startW: P2, pointClasses: PointClasses): Array<P2> {
+  var points = pointClassesTransformZeroOne(pointClasses);
+  var len = points.length;
+
+  function gradient(w: P2): P2 {
+    var smallerW = scale(ANTI_OVERFLOW_FUDGE)(w);
+    var grad = {x: 0, y: 0};
+
+    for (var i = 0; i < len; i++) {
+      var point = points[i];
+      var scaleFactor = sigmoid(smallerW.x * point.x + smallerW.y * point.y) - point.t;
+      grad.x = grad.x + scaleFactor * point.x;
+      grad.y = grad.y + scaleFactor * point.y;
+    }
+    return grad;
+  }
+
   var w = startW;
-  var grad = gradient(w, pointClasses);
-  var stops = [w];
-  while (modulus(grad) > 1) {
-    grad = gradient(w, pointClasses);
-    w = add(w)(scale(-1 * NU)(grad));
+  var grad;
+  var stops = [];
+  while (grad = gradient(w, pointClasses), modulus(grad) > ACCEPTING_GRAD) {
     stops.push(w);
+    w = add(w)(scale(-1 * NU)(grad));
   }
   return stops;
 }
 
-  // var trainingData = pointClassesTransform(pointClasses);
-  // var resultantWeights = [startWeight];
-  // for (var i = 0; i < trainingData.length; i = i + 1){
-  //   var trainingVector = trainingData[i];
-  //   var lastW = resultantWeights[resultantWeights.length - 1];
-  //   if (classTransform(classify(lastW, trainingVector)) !== trainingVector.t) {
-  //     // there was a classification error, so we should add or subtract the trainingVector.
-  //     var nextWeight = add(lastW)(scale(-1 * PERCEPTRON_NU * trainingVector.t)( trainingVector ));
-  //     resultantWeights.push(nextWeight);
-  //   }
-  // }
-  // return resultantWeights;
-// }
-
 module.exports = {
   objective: objective,
-  gradient: gradient,
   optimise: optimise
 };
