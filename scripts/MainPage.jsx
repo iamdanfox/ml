@@ -58,16 +58,33 @@ var MainPage = React.createClass({
     });
   },
 
+  transitionPointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): () => void {
+    var callback = function() {
+      this.setState({
+        pointClasses: newPointClasses,
+      });
+    };
+    return callback.bind(this);
+  },
+
   render: function(): ?ReactElement {
     return (
       <div style={{display: "flex", justifyContent: "space-between" }}>
-        <HyperplaneVis
-          dim={this.props.dim}
-          mode={this.state.mode}
-          pointClasses={this.state.pointClasses}
-          updatePointClasses={this.updatePointClasses}
-          highlightedW={this.state.highlightedW}
-          highlightW={this.highlightW} />
+        <div style={{position: "relative"}}>
+          <HyperplaneVis
+            dim={this.props.dim}
+            mode={this.state.mode}
+            pointClasses={this.state.pointClasses}
+            updatePointClasses={this.updatePointClasses}
+            highlightedW={this.state.highlightedW}
+            highlightW={this.highlightW} />
+
+        <div style={{position: "absolute", bottom: 0, left: 0}}>
+          <button onClick={this.transitionPointClasses(require('../data/points.js'))}>Default</button>
+          <button onClick={this.transitionPointClasses(require('../data/closePoints.js'))}>Close</button>
+          <button onClick={this.transitionPointClasses(require('../data/overlapPoints.js'))}>Overlap</button>
+        </div>
+        </div>
 
         <Surface dim={this.props.dim}
           pointClasses={this.state.pointClasses} projectedError={this.props.projectedError}
