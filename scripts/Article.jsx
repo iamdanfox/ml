@@ -159,7 +159,7 @@ var Article = React.createClass({
           <p><Katex tex="- \displaystyle \sum _i ~ y_i log( \sigma(w \cdot x_i) ) + ( 1 - y_i ) log( 1 - \sigma ( w \cdot x_i ) )" /></p>
 
           <div style={{width: "850px"}}>
-            {false && <MainPage dim={400} projectedError={LogisticRegression.objective}  />}
+            <MainPage dim={400} projectedError={LogisticRegression.objective}  />
           </div>
 
           <p>Classification related to 0.5 on the logistic sigmoid curve</p>
