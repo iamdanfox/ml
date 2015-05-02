@@ -4,7 +4,7 @@
 var React = require("react");
 var MainPage = require("./MainPage.jsx");
 
-var LogisticRegression = require("./LogisticRegression.jsx");
+var {objective, optimise} = require("./LogisticRegression.jsx");
 var K = require('./Katex.jsx');
 
 
@@ -75,7 +75,7 @@ var LogisticRegressionSection = React.createClass({
 
 
       <div style={{width: "850px"}}>
-        <MainPage dim={400} projectedError={LogisticRegression.objective}  />
+        <MainPage dim={400} projectedError={objective} optimiserFunction={optimise} />
       </div>
 
       <p>(<a href="https://www.google.com/url?q=https%3A%2F%2Fwww.cs.ox.ac.uk%2Fteaching%2Fmaterials13-14%2Fmachinelearning%2Flecture_logistic_regression.pdf&sa=D&sntz=1&usg=AFQjCNFe-3EOTDqUonxMk8NwJr4ipEsK7A">
