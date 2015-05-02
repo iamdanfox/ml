@@ -9,7 +9,7 @@ var MainPage = require("./MainPage.jsx");
 var {perceptronError} = require("./LeastSquares.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
-var Katex = require('./Katex.jsx');
+var K = require('./Katex.jsx');
 
 
 
@@ -47,7 +47,7 @@ var Article = React.createClass({
 
           <p>
           Linear classifiers accept objects represented as vectors,
-          e.g. <Katex tex="[10, -3, 0, 4]" /> and
+          e.g. <K tex="[10, -3, 0, 4]" /> and
           make their decisions using a linear function of the input vector.
           </p>
 
@@ -64,8 +64,8 @@ var Article = React.createClass({
 
           <p>
           Since the boundary is a hyperplane, we can represent it by a normal
-          vector, <Katex>n</Katex>,
-          and an offset vector, <Katex>c</Katex>.  In practice, it&apos;s convenient
+          vector, <K>n</K>,
+          and an offset vector, <K>c</K>.  In practice, it&apos;s convenient
           to add one fake dimension (with value 1) to every object in our data because
           this lets us define the same hyperplane using just one vector.
           This is called <em>homogeneous form</em>.</p>
@@ -73,9 +73,9 @@ var Article = React.createClass({
           <img src="http://i.imgur.com/XaHtzYx.jpg" style={{maxWidth: "50%", margin: "1em" }} />
 
           <p>Our classifier can then use this
-          vector <Katex>n</Katex> to decide the
-          class for an unseen vector <Katex>x = [x_1, x_2]</Katex>. It
-          computes <Katex tex="[x_1, x_2, 1] \cdot n" /> and
+          vector <K>n</K> to decide the
+          class for an unseen vector <K>x = [x_1, x_2]</K>. It
+          computes <K tex="[x_1, x_2, 1] \cdot n" /> and
           if the result is positive,
           returns class A, otherwise it returns class B.</p>
 
@@ -114,7 +114,7 @@ var Article = React.createClass({
 
           <h2>Objective Functions</h2>
 
-          <p>How can we choose a better <Katex>w</Katex>?  From
+          <p>How can we choose a better <K>w</K>?  From
           eyeballing a few possibilities, it&apos;s clear
           which ones will be good and which will be bad, but we need some way to quantify this.</p>
 
@@ -123,12 +123,12 @@ var Article = React.createClass({
           <p>
           An <em>objective function</em> can
           compute a score for each potential
-          vector <Katex>w</Katex> so
+          vector <K>w</K> so
           that we can automatically choose the best one.  The blue pie-shape on the right
           shows the value of the perceptron objective for all the possible choices of the
-          vector <Katex>w</Katex>.  Hover over the graph on the
+          vector <K>w</K>.  Hover over the graph on the
           left to see what one particular choice
-          of <Katex>w</Katex> looks like.</p>
+          of <K>w</K> looks like.</p>
 
           <div style={{width: "850px"}}>
             <MainPage dim={400} projectedError={perceptronError}  />
@@ -136,38 +136,80 @@ var Article = React.createClass({
 
           <p>As you can see from the right hand diagram, there are a large
           number of possibilities for the
-          vector <Katex>w</Katex> that all share the maximum objective
+          vector <K>w</K> that all share the maximum objective
           function.</p>
 
           <HR />
 
           <h2>Logistic Regression</h2>
 
+          <p style={{width: "100%"}}>Let&apos;s try a probability based model.
+          It would be great if we knew: </p>
+
+          <ul>
+            <li>the probablity that a vector <K>x</K> was in
+            one class, <K tex="p(C_1|x)" /></li>
+            <li>and the probability that it&apos;s in
+            the other class, <K tex="p(C_2|x)" /></li>
+          </ul>
+
+          <p style={{width: "100%"}}>Because if we did, we could just pick whichever was bigger, ie:</p>
+
+          <ul style={{listStyle: "none"}}>
+          <li>
+            <K tex="log \frac{ p(C_1|x) }{ p(C_2|x) } > 0 ~~~ \rightarrow ~~" />
+            return <K>x</K> in <K tex="C_1" />
+          </li>
+          <li>
+            <K tex="log \frac{ p(C_1|x) }{ p(C_2|x) } < 0 ~~~ \rightarrow ~~" />
+            return <K>x</K> in <K tex="C_2" />
+          </li>
+          </ul>
+
+          <p>However, since we&apos;re trying to create a linear model, we need to
+          express <K tex="log \frac{ p(C_1|x) }{ p(C_2|x) }" /> as some weight
+          vector multiplied by our
+          test vector, <K>w \cdot x</K>. </p>
+
+          <K tex="y(x) = log \frac{ p(C_1|x) }{ p(C_2|x) } = w{\cdot}x" />
+
+
+          <p style={{width: "100%"}}>
+            <strong>
+            How should we find a good value of <K>w</K>?</strong> Since
+            we&apos;re using a probabilistic model, it makes sense to choose
+            a <K>w</K> that maximises the likelihood of seeing the training data (MLE).
+            ??!?!?!
+          </p>
+
+          <K tex="- \displaystyle \sum _i log ~ p(C_1 | x_i)^{y_i} p(C_2 | x_i)^{1 - y_i} " />
+
+          <p>In order to compute this, we need an expression
+          for <K>p(C_1|x_i)</K>. Luckily, we can re-arrange the equation
+          for <K>y(x)</K> above:</p>
+
+          <K tex="\Rightarrow p(C_1|x) =
+          \sigma(w{\cdot}x) =
+          \Large \frac{ 1 }{ 1 + e^{w \cdot x} }" />
+
+          <p>Rearranging a bit, we can now compute a useful 'score' for any
+          particular <K>w</K> that we want to try out:</p>
+
           <p>
-          use probability
-          ideas <Katex tex="p(C_{k}|x)" /> to come
-          up with <Katex>w</Katex>. (<a href="https://www.google.com/url?q=https%3A%2F%2Fwww.cs.ox.ac.uk%2Fteaching%2Fmaterials13-14%2Fmachinelearning%2Flecture_logistic_regression.pdf&sa=D&sntz=1&usg=AFQjCNFe-3EOTDqUonxMk8NwJr4ipEsK7A">
-            slide 7, set 5</a>) show derivation</p>
+            <K tex="\displaystyle
+            -\sum _i ~ y_i log( \sigma(w \cdot x_i) ) + ( 1 - y_i ) log( 1 - \sigma ( w \cdot x_i ) )" />
+          </p>
 
-          <p>mention generative vs discriminative ??</p>
-
-          <p>MLE estimate. some kind of vis here. (training data
-            against probability of training data.. one curve for each w)</p>
-
-          <p>define objective (conditional likelihood of the data)</p>
-
-          <p><Katex tex="- \displaystyle \sum _i ~ y_i log( \sigma(w \cdot x_i) ) + ( 1 - y_i ) log( 1 - \sigma ( w \cdot x_i ) )" /></p>
 
           <div style={{width: "850px"}}>
             <MainPage dim={400} projectedError={LogisticRegression.objective}  />
           </div>
 
-          <p>Classification related to 0.5 on the logistic sigmoid curve</p>
+          <p>(<a href="https://www.google.com/url?q=https%3A%2F%2Fwww.cs.ox.ac.uk%2Fteaching%2Fmaterials13-14%2Fmachinelearning%2Flecture_logistic_regression.pdf&sa=D&sntz=1&usg=AFQjCNFe-3EOTDqUonxMk8NwJr4ipEsK7A">
+            slide 7, set 5</a>)</p>
 
           <p>algorithm: gradient descent to find best.yay..
           criticism of logistic regression (???)</p>
-
-
 
           <HR />
 
@@ -179,8 +221,12 @@ var Article = React.createClass({
           Slide 9</a></p>
 
 
-          <p><Katex tex="argmax_w \{ \frac{||w||^2}{2} \}" /> </p>
-          <p><Katex tex="s.t. ~~~~ y_i  ( w \cdot x_i ) \geq 1, ~~~~ \forall i" /></p>
+          <p>
+            <K tex="argmax_w \{ \frac{||w||^2}{2} \}" />
+          </p>
+          <p>
+            <K tex="s.t. ~~~~ y_i  ( w \cdot x_i ) \geq 1, ~~~~ \forall i" />
+          </p>
 
           <div style={{width: "850px"}}>
             <MainPage dim={400} projectedError={MaximumMargin.objective}  />
