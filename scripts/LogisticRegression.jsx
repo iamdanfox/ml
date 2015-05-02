@@ -51,11 +51,11 @@ function optimise(startW: P2, pointClasses: PointClasses): Array<P2> {
     var smallerW = scale(ANTI_OVERFLOW_FUDGE)(w);
     var grad = {x: 0, y: 0};
 
-    for (var i = 0; i < len; i++) {
+    for (var i = 0; i < len; i = i + 1) {
       var point = points[i];
       var scaleFactor = sigmoid(smallerW.x * point.x + smallerW.y * point.y) - point.t;
       grad.x = grad.x + scaleFactor * point.x;
-      grad.y = grad.y + scaleFactor * point.y;
+      grad.y = grad.y + scaleFactor * point.y; // inlined scale factor and dot products here to reduce GC
     }
     return grad;
   }

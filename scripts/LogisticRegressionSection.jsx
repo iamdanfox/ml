@@ -78,8 +78,9 @@ var LogisticRegressionSection = React.createClass({
         <MainPage dim={400} projectedError={objective} optimiserFunction={optimise} />
       </div>
 
-      <p>(<a href="https://www.google.com/url?q=https%3A%2F%2Fwww.cs.ox.ac.uk%2Fteaching%2Fmaterials13-14%2Fmachinelearning%2Flecture_logistic_regression.pdf&sa=D&sntz=1&usg=AFQjCNFe-3EOTDqUonxMk8NwJr4ipEsK7A">
-        slide 7, set 5</a>)</p>
+      <p>
+        (<a href={"https://www.cs.ox.ac.uk/" +
+        "teaching/materials13-14/machinelearning/lecture_logistic_regression.pdf"}>slide 7, set 5</a>)</p>
 
       <p>algorithm: gradient descent to find best.yay..
       criticism of logistic regression (???)</p>

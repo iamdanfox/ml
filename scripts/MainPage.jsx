@@ -81,9 +81,18 @@ var MainPage = React.createClass({
             highlightW={this.highlightW} />
 
           <div style={{position: "absolute", bottom: 0, left: 0}}>
-            <button onMouseOver={this.transitionPointClasses(require('../data/points.js'))}>Default</button>
-            <button onMouseOver={this.transitionPointClasses(require('../data/closePoints.js'))}>Close</button>
-            <button onMouseOver={this.transitionPointClasses(require('../data/overlapPoints.js'))}>Overlap</button>
+            <button
+                onMouseOver={this.transitionPointClasses(require('../data/points.js'))}>
+              Default
+            </button>
+            <button
+                onMouseOver={this.transitionPointClasses(require('../data/closePoints.js'))}>
+              Close
+            </button>
+            <button
+                onMouseOver={this.transitionPointClasses(require('../data/overlapPoints.js'))}>
+              Overlap
+            </button>
           </div>
         </div>
 
