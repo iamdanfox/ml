@@ -9,14 +9,15 @@ var HyperplaneVis = require("./HyperplaneVis.jsx");
 var {computePerceptronWeight} = require("./Perceptron.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 
-type P2 = {x: number; y: number}
+type P2 = {x: number; y: number};
 
 
 
 var MainPage = React.createClass({
   propTypes: {
     dim: React.PropTypes.number.isRequired,
-    projectedError: React.PropTypes.func.isRequired
+    projectedError: React.PropTypes.func.isRequired,
+    optimiserFunction: React.PropTypes.func //?(w: P2, pointClasses: PointClasses) => Array<P2>
   },
 
   getInitialState: function(): {highlightedW: ?[number, number]; mode: number} {
@@ -79,16 +80,17 @@ var MainPage = React.createClass({
             highlightedW={this.state.highlightedW}
             highlightW={this.highlightW} />
 
-        <div style={{position: "absolute", bottom: 0, left: 0}}>
-          <button onMouseOver={this.transitionPointClasses(require('../data/points.js'))}>Default</button>
-          <button onMouseOver={this.transitionPointClasses(require('../data/closePoints.js'))}>Close</button>
-          <button onMouseOver={this.transitionPointClasses(require('../data/overlapPoints.js'))}>Overlap</button>
-        </div>
+          <div style={{position: "absolute", bottom: 0, left: 0}}>
+            <button onMouseOver={this.transitionPointClasses(require('../data/points.js'))}>Default</button>
+            <button onMouseOver={this.transitionPointClasses(require('../data/closePoints.js'))}>Close</button>
+            <button onMouseOver={this.transitionPointClasses(require('../data/overlapPoints.js'))}>Overlap</button>
+          </div>
         </div>
 
         <Surface dim={this.props.dim}
           pointClasses={this.state.pointClasses} projectedError={this.props.projectedError}
-          highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
+          highlightedW={this.state.highlightedW} highlightW={this.highlightW}
+          optimiserFunction={this.props.optimiserFunction} />
 
 
         { false && <div>

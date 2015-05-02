@@ -248,7 +248,7 @@ var Surface = React.createClass({
           }
         );
 
-        var lineMaterial = new THREE.LineBasicMaterial({color: 0xff0000});
+        var lineMaterial = new THREE.LineBasicMaterial({color: 0xffffff});
         var newPathLine = new THREE.Line(geometry, lineMaterial);
         this.setState({pathLine: newPathLine});
         this.state.scene.add( newPathLine );
