@@ -74,8 +74,8 @@ var LogisticRegressionSection = React.createClass({
       </p>
 
 
-      <div style={{width: "850px"}}>
-        <MainVis dim={400} projectedError={objective} optimiserFunction={optimise} />
+      <div style={{width: "1000px"}}>
+        <MainVis dim={500} projectedError={objective} optimiserFunction={optimise} />
       </div>
 
       <p>
