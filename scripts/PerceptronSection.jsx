@@ -9,10 +9,15 @@ var INITIAL_POINTS = require('../data/points.js');
 var INITIAL_W = {x: 80, y: 60};
 var perceptronSteps = Perceptron.computePerceptronWeight(INITIAL_W, INITIAL_POINTS);
 
+type State = {
+  nextStep: ?number;
+  timer: ?number;
+}
+
 
 
 var PerceptronSection = React.createClass({
-  getInitialState: function() {
+  getInitialState: function(): State {
     return {
       nextStep: null, // null implies animation isn't started.
       timer: null
@@ -52,7 +57,7 @@ var PerceptronSection = React.createClass({
     if (this.state.nextStep === perceptronSteps.length) {
       clearTimeout(this.state.timer);
     } else {
-      this.setState({nextStep: this.state.nextStep + 1 % perceptronSteps.length});
+      this.setState({nextStep: this.state.nextStep + 1});
     }
   },
 

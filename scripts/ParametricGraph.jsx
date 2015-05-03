@@ -7,10 +7,13 @@ var THREE = require('three');
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
 type Props = {
+  colourFunction: (boundingBox: any, v1: THREE.Vector3, v2: THREE.Vector3, v3: THREE.Vector3, mutableFaceColor: THREE.Color) => void;
   dim: number;
   pointClasses: PointClasses;
   projectedError: (w: P2, pointClasses: PointClasses) => number;
+  rResolution: number;
   scene: THREE.Scene;
+  thetaResolution: number;
 }
 type State = {
   graph: THREE.Mesh;
@@ -18,7 +21,6 @@ type State = {
 
 
 
-var COLOUR_CURVE = (z) => 0.08 + 0.82 * Math.pow(z, 2);
 var MATERIAL = new THREE.MeshBasicMaterial({
   side: THREE.DoubleSide,
   vertexColors: THREE.FaceColors,
@@ -29,18 +31,26 @@ var MATERIAL = new THREE.MeshBasicMaterial({
 
 var ParametricGraph = React.createClass({
   propTypes: {
+    colourFunction: React.PropTypes.func,
     dim: React.PropTypes.number.isRequired,
-    projectedError: React.PropTypes.func.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
-    thetaResolution: React.PropTypes.number,
+    projectedError: React.PropTypes.func.isRequired,
     rResolution: React.PropTypes.number,
-    scene: React.PropTypes.any.isRequired
+    scene: React.PropTypes.any.isRequired,
+    thetaResolution: React.PropTypes.number,
   },
 
   getDefaultProps: function() {
     return {
       thetaResolution: 192,
-      rResolution: 12
+      rResolution: 12,
+      colourFunction: function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor): void {
+        var zMin = boundingBox.min.z;
+        var zRange = boundingBox.max.z - zMin;
+        var totalZ = vertex1.z + vertex2.z + vertex3.z;
+        var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+        mutableFaceColor.setHSL(0.54, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
+      }
     }
   },
 
@@ -91,15 +101,6 @@ var ParametricGraph = React.createClass({
       this.props.thetaResolution, this.props.rResolution, true);
   },
 
-  colourFunction: function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor): void {
-    var zMin = boundingBox.min.z;
-    var zRange = boundingBox.max.z - zMin;
-
-    var totalZ = vertex1.z + vertex2.z + vertex3.z;
-    var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-    mutableFaceColor.setHSL(0.54, 0.8, COLOUR_CURVE(normalizedZ));
-  },
-
   colourGeometry: function(graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
     graphGeometry.computeBoundingBox();
     var zMin = graphGeometry.boundingBox.min.z;
@@ -107,7 +108,7 @@ var ParametricGraph = React.createClass({
 
     for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
       var face = graphGeometry.faces[i];
-      this.colourFunction(graphGeometry.boundingBox,
+      this.props.colourFunction(graphGeometry.boundingBox,
         graphGeometry.vertices[face.a],
         graphGeometry.vertices[face.b],
         graphGeometry.vertices[face.c],
