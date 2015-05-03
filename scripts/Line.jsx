@@ -2,7 +2,7 @@
 "use strict";
 
 var React = require("react");
-var {PureRenderMixin} = require('react/addons').addons;
+var {PureRenderMixin} = require("react/addons").addons;
 var {rot90: rot90, lineEq: lineEq, scale: scale} = require("./VectorUtils.jsx");
 
 

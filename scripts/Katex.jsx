@@ -2,7 +2,7 @@
 "use strict";
 
 var React = require("react");
-var katex = require('katex');
+var katex = require("katex");
 
 
 var Katex = React.createClass({

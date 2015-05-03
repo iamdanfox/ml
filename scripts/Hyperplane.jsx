@@ -3,7 +3,7 @@
 
 var Line = require("./Line.jsx");
 var React = require("react");
-var {PureRenderMixin} = require('react/addons').addons;
+var {PureRenderMixin} = require("react/addons").addons;
 
 
 var Hyperplane = React.createClass({

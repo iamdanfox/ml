@@ -2,7 +2,7 @@
 "use strict";
 
 var React = require("react");
-var THREE = require('three');
+var THREE = require("three");
 
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];

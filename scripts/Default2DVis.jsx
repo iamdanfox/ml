@@ -6,7 +6,7 @@ var Line = require("./Line.jsx");
 var React = require("react");
 var ReplacePointsBar = require("./ReplacePointsBar.jsx");
 var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
-var {PureRenderMixin} = require('react/addons').addons;
+var {PureRenderMixin} = require("react/addons").addons;
 
 
 var Default2DVis = React.createClass({

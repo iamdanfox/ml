@@ -12,7 +12,7 @@ var Perceptron = require("./Perceptron.jsx");
 var React = require("react");
 var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
 
-var INITIAL_POINTS = require('../data/points.js');
+var INITIAL_POINTS = require("../data/points.js");
 var INITIAL_W = {x: 80, y: 60};
 var perceptronSteps:Array<P2> = Perceptron.computePerceptronWeight(INITIAL_W, INITIAL_POINTS);
 
@@ -27,11 +27,11 @@ var PerceptronSection = React.createClass({
   },
 
   componentDidMount: function() {
-    window.addEventListener('scroll', this.onScroll, false);
+    window.addEventListener("scroll", this.onScroll, false);
   },
 
   componentWillUnmount: function() {
-    window.removeEventListener('scroll', this.onScroll, false);
+    window.removeEventListener("scroll", this.onScroll, false);
     clearTimeout(this.state.timer);
   },
 

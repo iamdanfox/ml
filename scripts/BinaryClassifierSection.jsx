@@ -2,7 +2,7 @@
 "use strict";
 
 var React = require("react");
-var K = require('./Katex.jsx');
+var K = require("./Katex.jsx");
 
 
 
@@ -14,7 +14,7 @@ var BinaryClassifierSection = React.createClass({
         flexDirection: "column",
         alignItems: "center"}}>
 
-        <p style={{width: '100%'}}>
+        <p style={{width: "100%"}}>
         A <em>binary classifier</em> is something that
         can learn how to put unseen objects into one of two classes based on examples
         that are already in those classes.

@@ -5,11 +5,11 @@ var React = require("react");
 var HR = require("./HR.jsx");
 
 var Header = require("./Header.jsx");
-var BinaryClassifierSection = require('./BinaryClassifierSection.jsx');
-var PerceptronSection = require('./PerceptronSection.jsx');
-var ObjectiveFunctionSection = require('./ObjectiveFunctionSection.jsx');
-var LogisticRegressionSection = require('./LogisticRegressionSection.jsx');
-var MaximumMarginSection = require('./MaximumMarginSection.jsx');
+var BinaryClassifierSection = require("./BinaryClassifierSection.jsx");
+var PerceptronSection = require("./PerceptronSection.jsx");
+var ObjectiveFunctionSection = require("./ObjectiveFunctionSection.jsx");
+var LogisticRegressionSection = require("./LogisticRegressionSection.jsx");
+var MaximumMarginSection = require("./MaximumMarginSection.jsx");
 
 
 var Article = React.createClass({

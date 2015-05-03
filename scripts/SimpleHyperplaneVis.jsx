@@ -4,7 +4,7 @@
 var AllPoints = require("./AllPoints.jsx");
 var Axes = require("./Axes.jsx");
 var React = require("react");
-var {PureRenderMixin} = require('react/addons').addons;
+var {PureRenderMixin} = require("react/addons").addons;
 
 
 var SimpleHyperplaneVis = React.createClass({
