@@ -19,7 +19,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "webpack --watch -d",
     "jscs": "./node_modules/.bin/gulp jscs",
     "jshint": "./node_modules/.bin/gulp jshint",
     "watch": "./node_modules/.bin/gulp watch"

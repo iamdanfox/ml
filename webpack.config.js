@@ -3,18 +3,16 @@
 var webpack = require('webpack');
 
 module.exports = {
-  entry: [
-    'webpack-dev-server/client?http://localhost:3000',
-    'webpack/hot/dev-server',
-    './scripts/Entry.jsx'
-  ],
+  entry: {
+    app: './scripts/Entry.jsx',
+    vendor: ['react/addons', 'three', 'katex']
+  },
   output: {
-    path: __dirname,
     filename: 'bundle.js',
-    publicPath: '/scripts/'
+    path: './build/'
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.js')
   ],
   resolve: {
     extensions: ['', '.js', '.jsx']
@@ -23,7 +21,7 @@ module.exports = {
     loaders: [
       {
         test: /\.jsx$/,
-        loaders: ['react-hot', 'jsx-loader?harmony&stripTypes']
+        loaders: ['jsx-loader?harmony&stripTypes']
       },
     ]
   }

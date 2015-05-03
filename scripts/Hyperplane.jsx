@@ -2,7 +2,7 @@
 "use strict";
 
 var Line = require("./Line.jsx");
-var React = require("react");
+var React = require("react/addons");
 var {PureRenderMixin} = require("react/addons").addons;
 
 

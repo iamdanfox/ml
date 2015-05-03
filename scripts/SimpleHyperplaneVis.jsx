@@ -3,7 +3,7 @@
 
 var AllPoints = require("./AllPoints.jsx");
 var Axes = require("./Axes.jsx");
-var React = require("react");
+var React = require("react/addons");
 var {PureRenderMixin} = require("react/addons").addons;
 
 

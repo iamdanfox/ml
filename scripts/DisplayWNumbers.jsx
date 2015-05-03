@@ -2,7 +2,7 @@
 "use strict";
 
 var K = require("./Katex.jsx");
-var React = require("react");
+var React = require("react/addons");
 
 var DisplayWNumbers = React.createClass({
   render: function() {

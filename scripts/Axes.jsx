@@ -1,6 +1,6 @@
 /* @flow */
 "use strict";
-var React = require("react");
+var React = require("react/addons");
 
 var Axes = React.createClass({
   render: function(): ?ReactElement {

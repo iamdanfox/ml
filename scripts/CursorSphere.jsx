@@ -1,7 +1,7 @@
 /* @flow */
 "use strict";
 
-var React = require("react");
+var React = require("react/addons");
 var THREE = require("three");
 
 type P2 = {x: number; y: number};

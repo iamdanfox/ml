@@ -3,7 +3,7 @@ type F<U, V> = (x: U) => V;
 type P2 = {x: number; y: number};
 "use strict";
 
-var React = require("react");
+var React = require("react/addons");
 var THREE = require("three");
 
 type State = {

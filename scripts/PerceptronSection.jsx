@@ -9,7 +9,7 @@ type State = {
 
 var Hyperplane = require("./Hyperplane.jsx");
 var Perceptron = require("./Perceptron.jsx");
-var React = require("react");
+var React = require("react/addons");
 var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
 
 var INITIAL_POINTS = require("../data/points.js");

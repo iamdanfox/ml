@@ -10,7 +10,7 @@ var Draggable3DScene = require("./Draggable3DScene.jsx");
 var K = require("./Katex.jsx");
 var OptimiserLine = require("./OptimiserLine.jsx");
 var ParametricGraph = require("./ParametricGraph.jsx");
-var React = require("react");
+var React = require("react/addons");
 var {objective, optimise, fastOptimise} = require("./LogisticRegression.jsx");
 
 

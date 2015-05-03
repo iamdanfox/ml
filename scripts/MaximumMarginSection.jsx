@@ -10,7 +10,7 @@ var Hyperplane = require("./Hyperplane.jsx");
 var K = require("./Katex.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 var ParametricGraph = require("./ParametricGraph.jsx");
-var React = require("react");
+var React = require("react/addons");
 var ReplacePointsBar = require("./ReplacePointsBar.jsx");
 var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
 
