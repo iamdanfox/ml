@@ -8,7 +8,7 @@ type State = {
 }
 
 var React = require("react");
-var HyperplaneVis = require("./HyperplaneVis.jsx");
+var {SimpleHyperplaneVis, Hyperplane} = require("./SimpleHyperplaneVis.jsx");
 var Perceptron = require("./Perceptron.jsx");
 
 var INITIAL_POINTS = require('../data/points.js');
@@ -63,7 +63,6 @@ var PerceptronSection = React.createClass({
   },
 
   render: function(): ?ReactElement {
-    var currentStep: number = this.state.nextStep - 1;
 
     return (<div style={{
         display: "flex",
@@ -82,12 +81,9 @@ var PerceptronSection = React.createClass({
       </code>
 
       <div ref="container">
-        <HyperplaneVis
-          dim={400}
-          mode={0}
-          highlightW={function() {}}
-          pointClasses={INITIAL_POINTS}
-          highlightedW={perceptronSteps[currentStep]} />
+        <SimpleHyperplaneVis dim={400} highlightW={function() {}} pointClasses={INITIAL_POINTS}>
+          { this.state.nextStep && <Hyperplane w={perceptronSteps[this.state.nextStep - 1]} dim={400} />}
+        </SimpleHyperplaneVis>
         <div>
           <button onClick={this.startAnimation}>Start again</button>
         </div>
