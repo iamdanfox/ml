@@ -7,7 +7,7 @@ var THREE = require('three');
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
 type Props = {
-  highlightedW: ?[number, number];
+  highlightedW: ?P2;
   pointClasses: PointClasses;
   projectedError: (w: P2, pointClasses: PointClasses) => number;
   scene: THREE.Scene;
@@ -16,7 +16,7 @@ type Props = {
 
 var CursorSphere = React.createClass({
   propTypes: {
-    highlightedW: React.PropTypes.any.isRequired,
+    highlightedW: React.PropTypes.object.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
     projectedError: React.PropTypes.func.isRequired,
     scene: React.PropTypes.any.isRequired
@@ -44,8 +44,8 @@ var CursorSphere = React.createClass({
     if (this.shouldComponentUpdate(nextProps)) {
       var highlightedW = nextProps.highlightedW;
       if (typeof highlightedW !== "undefined" && highlightedW !== null) {
-        var [x, y] = highlightedW;
-        var z = nextProps.projectedError({x, y}, nextProps.pointClasses);
+        var {x, y} = highlightedW;
+        var z = nextProps.projectedError(highlightedW, nextProps.pointClasses);
         this.state.sphere.position.set(x, y, z);
       }
     }

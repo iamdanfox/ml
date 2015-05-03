@@ -1,16 +1,16 @@
 /* @flow */
 "use strict";
 
-var React = require("react");
-var Draggable3DScene = require("./Draggable3DScene.jsx");
-var {projectedError, projectedError2} = require("./LeastSquares.jsx");
-var Modes = require("./Modes.js");
-var HyperplaneVis = require("./HyperplaneVis.jsx");
-var {computePerceptronWeight} = require("./Perceptron.jsx");
-var MaximumMargin = require("./MaximumMargin.jsx");
-var OptimiserLine = require('./OptimiserLine.jsx');
+// var MaximumMargin = require("./MaximumMargin.jsx");
+// var Modes = require("./Modes.js");
+// var {computePerceptronWeight} = require("./Perceptron.jsx");
+// var {projectedError, projectedError2} = require("./LeastSquares.jsx");
 var CursorSphere = require('./CursorSphere.jsx');
+var Draggable3DScene = require("./Draggable3DScene.jsx");
+var HyperplaneVis = require("./HyperplaneVis.jsx");
+var OptimiserLine = require('./OptimiserLine.jsx');
 var ParametricGraph = require('./ParametricGraph.jsx');
+var React = require("react");
 
 type P2 = {x: number; y: number};
 
@@ -23,17 +23,17 @@ var MainPage = React.createClass({
     optimiserFunction: React.PropTypes.func //?(w: P2, pointClasses: PointClasses) => Array<P2>
   },
 
-  getInitialState: function(): {highlightedW: ?[number, number]; mode: number} {
+  getInitialState: function(): {highlightedW: ?P2} {
     return {
       highlightedW: null,
-      mode: Modes.TRY_HYPERPLANE,
+      // mode: Modes.TRY_HYPERPLANE,
       pointClasses: require("../data/points.js"),
     };
   },
 
-  highlightW: function(x: number, y: number): void {
+  highlightW: function(point: P2): void {
     this.setState({
-      highlightedW: [x, y]
+      highlightedW: point
     });
   },
 
@@ -43,12 +43,12 @@ var MainPage = React.createClass({
     });
   },
 
-  updateMode: function(nextMode: number): () => void {
-    return () =>
-      this.setState({
-        mode: nextMode,
-      });
-  },
+  // updateMode: function(nextMode: number): () => void {
+  //   return () =>
+  //     this.setState({
+  //       mode: nextMode,
+  //     });
+  // },
 
   replacePointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): () => void {
     var callback = function() {
@@ -65,9 +65,17 @@ var MainPage = React.createClass({
         this.props.optimiserFunction !== null &&
         typeof this.state.highlightedW !== "undefined" &&
         this.state.highlightedW !== null) {
-      var [x, y] = this.state.highlightedW;
-      optimiserLine = this.props.optimiserFunction({x, y}, this.state.pointClasses);
+      optimiserLine = this.props.optimiserFunction(this.state.highlightedW, this.state.pointClasses);
     }
+
+    // <div>
+    //   <button disabled={this.state.mode === Modes.TRY_HYPERPLANE}
+    //     onClick={this.updateMode(Modes.TRY_HYPERPLANE)}>Try hyperplane</button>
+    //   <button disabled={this.state.mode === Modes.ADD_DATA}
+    //     onClick={this.updateMode(Modes.ADD_DATA)}>Add Data</button>
+    //   <button disabled={this.state.mode === Modes.REMOVE_DATA}
+    //     onClick={this.updateMode(Modes.REMOVE_DATA)}>Remove Data</button>
+    // </div>
 
     return (
       <div style={{display: "flex", justifyContent: "space-between" }}>
@@ -97,11 +105,8 @@ var MainPage = React.createClass({
           </div>
         </div>
 
-        <Draggable3DScene
-            dim={this.props.dim}
-            pointClasses={this.state.pointClasses}
-            projectedError={this.props.projectedError}
-            highlightW={this.highlightW}>
+        <Draggable3DScene dim={this.props.dim} pointClasses={this.state.pointClasses}
+            projectedError={this.props.projectedError} highlightW={this.highlightW}>
 
           <ParametricGraph />
           <OptimiserLine vertices={optimiserLine} />
@@ -109,33 +114,6 @@ var MainPage = React.createClass({
 
         </Draggable3DScene>
 
-
-        { false && <div>
-
-          <div>
-            <button disabled={this.state.mode === Modes.TRY_HYPERPLANE}
-              onClick={this.updateMode(Modes.TRY_HYPERPLANE)}>Try hyperplane</button>
-            <button disabled={this.state.mode === Modes.ADD_DATA}
-              onClick={this.updateMode(Modes.ADD_DATA)}>Add Data</button>
-            <button disabled={this.state.mode === Modes.REMOVE_DATA}
-              onClick={this.updateMode(Modes.REMOVE_DATA)}>Remove Data</button>
-          </div>
-
-
-          <Draggable3DScene dim={this.props.dim}
-            pointClasses={this.state.pointClasses} projectedError={projectedError2}
-            highlightedW={this.state.highlightedW} highlightW={this.highlightW}
-            optimiserFunction={computePerceptronWeight} />
-
-          <Draggable3DScene dim={this.props.dim}
-            pointClasses={this.state.pointClasses} projectedError={projectedError}
-            highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
-
-          <Draggable3DScene dim={this.props.dim}
-            pointClasses={this.state.pointClasses} projectedError={MaximumMargin.objective}
-            highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
-
-        </div> }
       </div>
     );
   }

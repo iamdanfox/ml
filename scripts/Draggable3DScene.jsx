@@ -19,7 +19,7 @@ type State = {
 type PointClasses = [Array<P2>, Array<P2>];
 type Props = {
   dim: number;
-  highlightW: F<[number, number], void>;
+  highlightW: F<P2, void>;
   pointClasses: PointClasses;
   projectedError: (w: P2, pointClasses: PointClasses) => number;
 }
@@ -145,8 +145,7 @@ var Draggable3DScene = React.createClass({
   handleHover: function(e: React.SyntheticEvent): void {
     var intersections = this.raycast(this.state.camera, e).intersectObjects(this.state.scene.children);
     if (intersections.length > 0) {
-      var {x, y} = intersections[0].point;
-      this.props.highlightW(x, y);
+      this.props.highlightW(intersections[0].point);
     }
   },
 

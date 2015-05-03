@@ -22,14 +22,13 @@ var HyperplaneVis = React.createClass({
     mode: React.PropTypes.number.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
     updatePointClasses: React.PropTypes.func.isRequired,
-    highlightedW: React.PropTypes.array.isRequired,
+    highlightedW: React.PropTypes.object.isRequired,
     highlightW: React.PropTypes.func.isRequired,
     optimiserLine: React.PropTypes.array
   },
 
   mouseMove: function(e: React.SyntheticEvent): void {
-    var {x, y} = this.getMouseXY(e);
-    this.props.highlightW(x, y);
+    this.props.highlightW(this.getMouseXY(e));
   },
 
   getMouseXY: function(e: React.SyntheticEvent): {x: number; y: number} {
@@ -41,8 +40,7 @@ var HyperplaneVis = React.createClass({
 
   makeHyperplane: function(): ReactElement | boolean {
     if (typeof this.props.highlightedW !== "undefined" && this.props.highlightedW !== null) {
-      var x = this.props.highlightedW[0];
-      var y = this.props.highlightedW[1];
+      var {x, y} = this.props.highlightedW;
       return (<g>
         <path d={`M 0 0 L ${x} ${y}`} strokeWidth="1.5" stroke={"rgba(255, 0, 0, 0.4)"} />
         <Line w={{x: x, y: y}} dim={this.props.dim} />
@@ -74,7 +72,7 @@ var HyperplaneVis = React.createClass({
 
   renderEraserCircle: function(): ReactElement | boolean {
     if (typeof this.props.highlightedW !== "undefined" && this.props.highlightedW !== null) {
-      var [x, y] = this.props.highlightedW;
+      var {x, y} = this.props.highlightedW;
       return <circle cx={x} cy={y} r={DELETE_RADIUS} style={{fill: "rgba(0,0,0,0.2)"}} />;
     } else {
       return false;
