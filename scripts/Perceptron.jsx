@@ -1,10 +1,8 @@
 /* @flow */
-type P2 = {x: number; y: number};
-type P2t = {x: number; y: number; t: number};
-type PointClasses = [Array<P2>,Array<P2>];
-
 "use strict";
 
+type P2 = {x: number; y: number};
+type PointClasses = [Array<P2>,Array<P2>];
 
 var {add, scale, pointClassesTransform, classify, classTransform, dotProduct} = require("./VectorUtils.jsx");
 
@@ -18,7 +16,6 @@ otherwise the example’s vector is added or subtracted
 (depending on its class label) from the current weight
 vector.
 */
-
 
 /**
 Given some data and a start weight, return a list of vectors w such that describes
@@ -36,27 +33,10 @@ The value of nu is interesting to observe.
 0.5 - seems to work pretty fast.  Occasionally overshoots a bit.
 >0.75 - seems to work, but ends up with a large w.
 */
-function computePerceptronWeight(startWeight: P2, pointClasses: PointClasses): Array<P2> {
-  var trainingData = pointClassesTransform(pointClasses);
-
-  var resultantWeights = [startWeight];
-  for (var epoch = 0; epoch < EPOCHS; epoch = epoch + 1){
-    for (var i = 0; i < trainingData.length; i = i + 1){
-      var trainingVector = trainingData[i];
-      var lastW = resultantWeights[resultantWeights.length - 1];
-      if (classTransform(classify(lastW, trainingVector)) !== trainingVector.t) {
-        // there was a classification error, so we should add or subtract the trainingVector.
-        var nextWeight = add(lastW)(scale(-1 * PERCEPTRON_NU * trainingVector.t)( trainingVector ));
-        resultantWeights.push(nextWeight);
-      }
-    }
-  }
-  return resultantWeights;
-}
 
 module.exports = {
 
-  objective: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
+  objective: function(w: P2, pointClasses: PointClasses): number {
     var class0 = pointClasses[0].filter(function(p) { return dotProduct(p, w) <= 0; });
     var class1 = pointClasses[1].filter(function(p) { return dotProduct(p, w) > 0; });
     var misclassifieds = class0.concat(class1);
@@ -68,5 +48,22 @@ module.exports = {
     }
   },
 
-  computePerceptronWeight: computePerceptronWeight
+  optimise: function(startWeight: P2, pointClasses: PointClasses): Array<P2> {
+    var trainingData = pointClassesTransform(pointClasses);
+
+    var resultantWeights = [startWeight];
+    for (var epoch = 0; epoch < EPOCHS; epoch = epoch + 1){
+      for (var i = 0; i < trainingData.length; i = i + 1){
+        var trainingVector = trainingData[i];
+        var lastW = resultantWeights[resultantWeights.length - 1];
+        if (classTransform(classify(lastW, trainingVector)) !== trainingVector.t) {
+          // there was a classification error, so we should add or subtract the trainingVector.
+          var nextWeight = add(lastW)(scale(-1 * PERCEPTRON_NU * trainingVector.t)( trainingVector ));
+          resultantWeights.push(nextWeight);
+        }
+      }
+    }
+    return resultantWeights;
+  },
+
 };

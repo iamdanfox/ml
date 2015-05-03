@@ -11,10 +11,9 @@ var Draggable3DScene = require("./Draggable3DScene.jsx");
 var K = require("./Katex.jsx");
 var OptimiserLine = require("./OptimiserLine.jsx");
 var ParametricGraph = require("./ParametricGraph.jsx");
-var perceptronError = require("./Perceptron.jsx").objective;
 var React = require("react");
 var ReplacePointsBar = require("./ReplacePointsBar.jsx");
-var {computePerceptronWeight} = require("./Perceptron.jsx");
+var {objective, optimise} = require("./Perceptron.jsx");
 
 
 
@@ -40,7 +39,7 @@ var PerceptronVis = React.createClass({
     var optimiserLine;
     if (typeof this.state.highlightedW !== "undefined" &&
        this.state.highlightedW !== null) {
-      optimiserLine = computePerceptronWeight(this.state.highlightedW, this.state.pointClasses);
+      optimiserLine = optimise(this.state.highlightedW, this.state.pointClasses);
     }
 
     return <div style={{width: "850px"}}>
@@ -56,7 +55,7 @@ var PerceptronVis = React.createClass({
         </div>
 
         <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
-            projectedError={perceptronError} highlightW={this.highlightW}>
+            projectedError={objective} highlightW={this.highlightW}>
           <ParametricGraph thetaResolution={120} rResolution={20} />
           {optimiserLine && <OptimiserLine vertices={optimiserLine} />}
           {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}

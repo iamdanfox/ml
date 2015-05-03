@@ -14,7 +14,7 @@ var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
 
 var INITIAL_POINTS = require("../data/points.js");
 var INITIAL_W = {x: 80, y: 60};
-var perceptronSteps:Array<P2> = Perceptron.computePerceptronWeight(INITIAL_W, INITIAL_POINTS);
+var perceptronSteps:Array<P2> = Perceptron.optimise(INITIAL_W, INITIAL_POINTS);
 
 
 
