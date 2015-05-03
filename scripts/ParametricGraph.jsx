@@ -40,10 +40,16 @@ var ParametricGraph = React.createClass({
     thetaResolution: React.PropTypes.number,
   },
 
+  // 120 * 40 looks great... 4800 computations
+  // 96 * 32
+  // 72 * 24
+  // 36 * 12
+  // 24 * 8 is pretty much a minimum.
+
   getDefaultProps: function() {
     return {
-      thetaResolution: 192,
-      rResolution: 12,
+      thetaResolution: 96,
+      rResolution: 32,
       colourFunction: function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor): void {
         var zMin = boundingBox.min.z;
         var zRange = boundingBox.max.z - zMin;
