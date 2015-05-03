@@ -5,13 +5,12 @@ type P2 = {x: number; y: number};
 
 
 var CursorSphere = require('./CursorSphere.jsx');
+var Default2DVis = require("./Default2DVis.jsx");
 var DisplayWNumbers = require("./DisplayWNumbers.jsx");
 var Draggable3DScene = require("./Draggable3DScene.jsx");
-var HyperplaneVis = require("./HyperplaneVis.jsx");
 var K = require('./Katex.jsx');
-var Modes = require("./Modes.js");
-var ParametricGraph = require('./ParametricGraph.jsx');
 var OptimiserLine = require('./OptimiserLine.jsx');
+var ParametricGraph = require('./ParametricGraph.jsx');
 var React = require("react");
 var {computePerceptronWeight} = require("./Perceptron.jsx");
 var {perceptronError} = require("./LeastSquares.jsx");
@@ -48,10 +47,9 @@ var PerceptronVis = React.createClass({
       <div style={{display: "flex", justifyContent: "space-between"}}>
 
         <div style={{position: "relative"}}>
-          <HyperplaneVis dim={dim} mode={Modes.TRY_HYPERPLANE}
-            pointClasses={this.state.pointClasses} updatePointClasses={this.updatePointClasses}
-            highlightedW={this.state.highlightedW} highlightW={this.highlightW}
-            optimiserLine={optimiserLine} />
+          <Default2DVis dim={dim} pointClasses={this.state.pointClasses}
+            highlightW={this.highlightW} optimiserLine={optimiserLine}
+            highlightedW={this.state.highlightedW} updatePointClasses={this.updatePointClasses} />
 
           <ReplacePointsBar callback={this.updatePointClasses}
             style={{position: "absolute", bottom: 0, left: 0}} />

@@ -55,8 +55,8 @@ var LogisticRegressionVis = React.createClass({
       <div style={{display: "flex", justifyContent: "space-between"}}>
 
         <Default2DVis dim={dim} pointClasses={this.state.pointClasses}
-            highlightW={this.highlightW} optimiserLine={optimiserLine}
-            highlightedW={this.state.highlightedW} updatePointClasses={this.updatePointClasses} />
+          highlightW={this.highlightW} optimiserLine={optimiserLine}
+          highlightedW={this.state.highlightedW} updatePointClasses={this.updatePointClasses} />
 
         <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
             projectedError={objective} highlightW={this.highlightW}>

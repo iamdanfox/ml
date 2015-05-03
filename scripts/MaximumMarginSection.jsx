@@ -39,7 +39,7 @@ var MaxMarginVis = React.createClass({
         <div style={{position: "relative"}}>
           <SimpleHyperplaneVis dim={dim} pointClasses={this.state.pointClasses}
             highlightW={this.highlightW}>
-            { this.state.highlightedW && <Hyperplane w={this.state.highlightedW} /> }
+            { this.state.highlightedW && <Hyperplane w={this.state.highlightedW} dim={dim} /> }
           </SimpleHyperplaneVis>
 
           <ReplacePointsBar callback={this.updatePointClasses}
