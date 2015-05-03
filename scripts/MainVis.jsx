@@ -1,17 +1,18 @@
 /* @flow */
 "use strict";
 
+type P2 = {x: number; y: number};
+
 var CursorSphere = require('./CursorSphere.jsx');
+var DisplayWNumbers = require("./DisplayWNumbers.jsx");
 var Draggable3DScene = require("./Draggable3DScene.jsx");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
-var K = require("./Katex.jsx");
 var Modes = require("./Modes.js");
 var OptimiserLine = require('./OptimiserLine.jsx');
 var ParametricGraph = require('./ParametricGraph.jsx');
 var React = require("react");
 var {ReplacePointsBar} = require("./ReplacePointsButton.jsx");
 
-type P2 = {x: number; y: number};
 
 
 
@@ -41,6 +42,7 @@ var MainVis = React.createClass({
     var optimiserLine;
     var colourFunction;
     var optimiserFunction = this.props.optimiserFunction;
+
     if (typeof optimiserFunction !== "undefined" &&
         optimiserFunction !== null) {
 
@@ -70,13 +72,6 @@ var MainVis = React.createClass({
         optimiserLine = optimiserFunction(this.state.highlightedW, this.state.pointClasses);
       }
     }
-
-    var formatW = (w) => {
-      var {x, y} = w;
-      var xVal = Math.floor(10 * x) / 10;
-      var yVal = Math.floor(10 * y) / 10;
-      return xVal + ", " + yVal;
-    };
 
     return (
       <div>
@@ -110,11 +105,7 @@ var MainVis = React.createClass({
         </div>
 
         <div>
-        { this.state.highlightedW  && <div><K tex={"initial~~" +
-          " \\large w_0 = [" + formatW(this.state.highlightedW) + "]"} /></div>}
-
-          {optimiserLine && <div><K tex={"output~~ " +
-            "\\large w = [" + formatW(optimiserLine[optimiserLine.length - 1]) + "]"} /></div> }
+        { this.state.highlightedW && <DisplayWNumbers w={this.state.highlightedW} />}
         </div>
       </div>
     );
