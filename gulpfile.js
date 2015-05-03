@@ -104,7 +104,7 @@ gulp.task('jshint', function() {
       "nonbsp": true,
       "nonew": true,
       "plusplus": true,
-      "predef": [ "window" ],
+      "predef": [ "window", "document" ],
       "strict": true,
       "undef": true,
       "unused": true,

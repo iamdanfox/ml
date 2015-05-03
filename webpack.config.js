@@ -17,11 +17,14 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin()
   ],
   resolve: {
-    extensions: ['', '.js', '.jsx', '.coffee', '.cjsx', '.less']
+    extensions: ['', '.js', '.jsx']
   },
   module: {
     loaders: [
-      { test: /\.jsx$/, loaders: ['react-hot', 'jsx-loader?harmony&stripTypes'] },
+      {
+        test: /\.jsx$/,
+        loaders: ['react-hot', 'jsx-loader?harmony&stripTypes']
+      },
     ]
   }
 };
