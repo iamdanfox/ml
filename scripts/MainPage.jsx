@@ -22,13 +22,10 @@ var OptimiserLine = React.createClass({
   },
 
   getInitialState: function() {
-    return {
-      line: null
-    };
+    return { line: null };
   },
 
   componentWillMount: function() {
-    // console.log('adding to scene', this.props.scene, this.state.line)
     // this.props.scene.add(this.state.line);
   },
 
@@ -45,7 +42,6 @@ var OptimiserLine = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     var vertices = nextProps.vertices;
     if (typeof vertices !== "undefined" && vertices !== null) {
-      console.log('updating vertices', vertices.length)
       this.props.scene.remove(this.state.line)
 
       var LINE_MATERIAL = new THREE.LineBasicMaterial({color: 0xffffff});
@@ -173,8 +169,7 @@ var MainPage = React.createClass({
 
         <Surface dim={this.props.dim}
             pointClasses={this.state.pointClasses} projectedError={this.props.projectedError}
-            highlightedW={this.state.highlightedW} highlightW={this.highlightW}
-            optimiserLine={this.state.optimiserLine}>
+            highlightedW={this.state.highlightedW} highlightW={this.highlightW}>
           <OptimiserLine vertices={this.state.optimiserLine} />
         </Surface>
 

@@ -26,7 +26,6 @@ type Props = {
   highlightedW: ?[number, number];
   highlightW: F<[number, number], void>;
   projectedError: (w: P2, pointClasses: PointClasses) => number;
-  optimiserLine: ?Array<P2>;
 }
 
 
@@ -37,8 +36,7 @@ var Surface = React.createClass({
     highlightW: React.PropTypes.func.isRequired,
     highlightedW: React.PropTypes.any, // technically a tuple...
     pointClasses: React.PropTypes.array.isRequired,
-    projectedError: React.PropTypes.func.isRequired,
-    optimiserLine: React.PropTypes.array
+    projectedError: React.PropTypes.func.isRequired
   },
 
   getInitialState: function(): State {
@@ -94,7 +92,7 @@ var Surface = React.createClass({
       this.updateCamera(nextState);
 
     }
-    this.updateOptimiserLineIfNecessary(nextProps);
+
     this.updateSpherePosition(nextProps);
 
     this.state.renderer.render(this.state.scene, this.state.camera);
@@ -237,28 +235,6 @@ var Surface = React.createClass({
 
   },
 
-  updateOptimiserLineIfNecessary: function(props: Props): void {
-    // var optimiserLine = props.optimiserLine; // makes flowtype happy...
-    // if (optimiserLine !== this.props.optimiserLine &&
-    //   (typeof optimiserLine !== "undefined" && optimiserLine !== null)) {
-
-    //   var geometry = new THREE.Geometry();
-    //   this.state.scene.remove(this.state.pathLine);
-
-    //   geometry.vertices = optimiserLine.map(
-    //     (w) => {
-    //       var z = this.props.projectedError(w, this.props.pointClasses);
-    //       return new THREE.Vector3(w.x, w.y, z + 3); // hack to keep the line above the surface. (better would be smart interpolation)
-    //     }
-    //   );
-
-    //   var lineMaterial = new THREE.LineBasicMaterial({color: 0xffffff});
-    //   var newPathLine = new THREE.Line(geometry, lineMaterial);
-    //   this.setState({pathLine: newPathLine});
-    //   this.state.scene.add( newPathLine );
-    // }
-  },
-
   raycast: function(camera: THREE.Camera, e: React.SyntheticEvent): THREE.Raycaster {
     var {left: left, top: top} = this.refs.container.getDOMNode().getBoundingClientRect();
     var x = 2 * (e.clientX - left) / this.props.dim - 1;
@@ -279,7 +255,6 @@ var Surface = React.createClass({
       return React.cloneElement(childElement, mergeInProps);
     });
 
-    console.log('rendering scene', this.state.scene)
     this.state.renderer.render(this.state.scene, this.state.camera);
 
     return (
