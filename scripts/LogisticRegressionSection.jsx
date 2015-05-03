@@ -3,18 +3,15 @@
 
 type P2 = {x: number; y: number};
 
-
 var CursorSphere = require('./CursorSphere.jsx');
 var DisplayWNumbers = require("./DisplayWNumbers.jsx");
 var Draggable3DScene = require("./Draggable3DScene.jsx");
-var HyperplaneVis = require("./HyperplaneVis.jsx");
 var K = require('./Katex.jsx');
-var Modes = require("./Modes.js");
 var OptimiserLine = require('./OptimiserLine.jsx');
 var ParametricGraph = require('./ParametricGraph.jsx');
 var React = require("react");
 var {objective, optimise, fastOptimise} = require("./LogisticRegression.jsx");
-var {ReplacePointsBar} = require("./ReplacePointsButton.jsx");
+var {Default2DVis} = require("./SimpleHyperplaneVis.jsx");
 
 
 
@@ -57,15 +54,9 @@ var LogisticRegressionVis = React.createClass({
     return <div style={{width: "1000px"}}>
       <div style={{display: "flex", justifyContent: "space-between"}}>
 
-        <div style={{position: "relative"}}>
-          <HyperplaneVis dim={dim} mode={Modes.TRY_HYPERPLANE}
-            pointClasses={this.state.pointClasses} updatePointClasses={this.updatePointClasses}
-            highlightedW={this.state.highlightedW} highlightW={this.highlightW}
-            optimiserLine={optimiserLine} />
-
-          <ReplacePointsBar callback={this.updatePointClasses}
-            style={{position: "absolute", bottom: 0, left: 0}} />
-        </div>
+        <Default2DVis dim={dim} pointClasses={this.state.pointClasses}
+            highlightW={this.highlightW} optimiserLine={optimiserLine}
+            highlightedW={this.state.highlightedW} updatePointClasses={this.updatePointClasses} />
 
         <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
             projectedError={objective} highlightW={this.highlightW}>

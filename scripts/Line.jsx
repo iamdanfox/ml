@@ -1,6 +1,8 @@
 /* @flow */
 "use strict";
+
 var React = require("react");
+var {PureRenderMixin} = require('react/addons').addons;
 var {rot90: rot90, lineEq: lineEq, scale: scale} = require("./VectorUtils.jsx");
 
 
@@ -30,6 +32,8 @@ var Line = React.createClass({
     }).isRequired,
     dim: React.PropTypes.number.isRequired
   },
+
+  mixins: [PureRenderMixin],
 
   findBorderIntersection: function(v: {x: number;y: number}): ?[number, number] {
     var dim = this.props.dim;

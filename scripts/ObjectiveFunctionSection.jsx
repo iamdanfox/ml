@@ -23,7 +23,7 @@ var PerceptronVis = React.createClass({
   getInitialState: function(): {highlightedW: ?P2} {
     return {
       highlightedW: null,
-      pointClasses: require("../data/closePoints.js"),
+      pointClasses: require("../data/points.js"),
     };
   },
 
