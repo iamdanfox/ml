@@ -1,5 +1,6 @@
-webpackJsonp([0],[
-/* 0 */
+webpackJsonp([0],{
+
+/***/ 0:
 /*!***************************!*\
   !*** ./scripts/Entry.jsx ***!
   \***************************/
@@ -9,17 +10,14 @@ webpackJsonp([0],[
 	"use strict";
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var Article = __webpack_require__(/*! ./Article.jsx */ 5);
+	var Article = __webpack_require__(/*! ./Article.jsx */ 10);
 	
 	React.render(React.createElement(Article, null), document.body);
 
 
 /***/ },
-/* 1 */,
-/* 2 */,
-/* 3 */,
-/* 4 */,
-/* 5 */
+
+/***/ 10:
 /*!*****************************!*\
   !*** ./scripts/Article.jsx ***!
   \*****************************/
@@ -29,14 +27,14 @@ webpackJsonp([0],[
 	"use strict";
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var HR = __webpack_require__(/*! ./HR.jsx */ 11);
+	var HR = __webpack_require__(/*! ./HR.jsx */ 28);
 	
-	var Header = __webpack_require__(/*! ./Header.jsx */ 12);
-	var BinaryClassifierSection = __webpack_require__(/*! ./BinaryClassifierSection.jsx */ 13);
-	var PerceptronSection = __webpack_require__(/*! ./PerceptronSection.jsx */ 14);
-	var ObjectiveFunctionSection = __webpack_require__(/*! ./ObjectiveFunctionSection.jsx */ 15);
-	var LogisticRegressionSection = __webpack_require__(/*! ./LogisticRegressionSection.jsx */ 16);
-	var MaximumMarginSection = __webpack_require__(/*! ./MaximumMarginSection.jsx */ 17);
+	var Header = __webpack_require__(/*! ./Header.jsx */ 29);
+	var BinaryClassifierSection = __webpack_require__(/*! ./BinaryClassifierSection.jsx */ 30);
+	var PerceptronSection = __webpack_require__(/*! ./PerceptronSection.jsx */ 31);
+	var ObjectiveFunctionSection = __webpack_require__(/*! ./ObjectiveFunctionSection.jsx */ 32);
+	var LogisticRegressionSection = __webpack_require__(/*! ./LogisticRegressionSection.jsx */ 33);
+	var MaximumMarginSection = __webpack_require__(/*! ./MaximumMarginSection.jsx */ 34);
 	
 	
 	var Article = React.createClass({displayName: "Article",
@@ -80,12 +78,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */
+
+/***/ 28:
 /*!************************!*\
   !*** ./scripts/HR.jsx ***!
   \************************/
@@ -111,7 +105,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 12 */
+
+/***/ 29:
 /*!****************************!*\
   !*** ./scripts/Header.jsx ***!
   \****************************/
@@ -155,7 +150,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 13 */
+
+/***/ 30:
 /*!*********************************************!*\
   !*** ./scripts/BinaryClassifierSection.jsx ***!
   \*********************************************/
@@ -165,7 +161,7 @@ webpackJsonp([0],[
 	"use strict";
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var K = __webpack_require__(/*! ./Katex.jsx */ 35);
+	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
 	
 	
 	
@@ -230,7 +226,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 14 */
+
+/***/ 31:
 /*!***************************************!*\
   !*** ./scripts/PerceptronSection.jsx ***!
   \***************************************/
@@ -245,12 +242,12 @@ webpackJsonp([0],[
 	                 
 	 
 	
-	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 36);
-	var Perceptron = __webpack_require__(/*! ./Perceptron.jsx */ 37);
+	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 90);
+	var Perceptron = __webpack_require__(/*! ./Perceptron.jsx */ 91);
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 38);
+	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 92);
 	
-	var INITIAL_POINTS = __webpack_require__(/*! ../data/points.js */ 39);
+	var INITIAL_POINTS = __webpack_require__(/*! ../data/points.js */ 93);
 	var INITIAL_W = {x: 80, y: 60};
 	var perceptronSteps           = Perceptron.optimise(INITIAL_W, INITIAL_POINTS);
 	
@@ -346,7 +343,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 15 */
+
+/***/ 32:
 /*!**********************************************!*\
   !*** ./scripts/ObjectiveFunctionSection.jsx ***!
   \**********************************************/
@@ -358,16 +356,16 @@ webpackJsonp([0],[
 	                                 
 	
 	
-	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 40);
-	var Default2DVis = __webpack_require__(/*! ./Default2DVis.jsx */ 41);
-	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 42);
-	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 43);
-	var K = __webpack_require__(/*! ./Katex.jsx */ 35);
-	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 44);
-	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 45);
+	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 94);
+	var Default2DVis = __webpack_require__(/*! ./Default2DVis.jsx */ 95);
+	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 96);
+	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 97);
+	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
+	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 98);
+	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 99);
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 46);
-	var $__0=   __webpack_require__(/*! ./Perceptron.jsx */ 37),objective=$__0.objective,optimise=$__0.optimise;
+	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 100);
+	var $__0=   __webpack_require__(/*! ./Perceptron.jsx */ 91),objective=$__0.objective,optimise=$__0.optimise;
 	
 	
 	
@@ -375,7 +373,7 @@ webpackJsonp([0],[
 	  getInitialState: function()                      {
 	    return {
 	      highlightedW: null,
-	      pointClasses: __webpack_require__(/*! ../data/points.js */ 39),
+	      pointClasses: __webpack_require__(/*! ../data/points.js */ 93),
 	    };
 	  },
 	
@@ -466,7 +464,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 16 */
+
+/***/ 33:
 /*!***********************************************!*\
   !*** ./scripts/LogisticRegressionSection.jsx ***!
   \***********************************************/
@@ -477,15 +476,15 @@ webpackJsonp([0],[
 	
 	                                 
 	
-	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 40);
-	var Default2DVis = __webpack_require__(/*! ./Default2DVis.jsx */ 41);
-	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 42);
-	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 43);
-	var K = __webpack_require__(/*! ./Katex.jsx */ 35);
-	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 44);
-	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 45);
+	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 94);
+	var Default2DVis = __webpack_require__(/*! ./Default2DVis.jsx */ 95);
+	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 96);
+	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 97);
+	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
+	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 98);
+	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 99);
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var $__0=    __webpack_require__(/*! ./LogisticRegression.jsx */ 47),objective=$__0.objective,optimise=$__0.optimise,fastOptimise=$__0.fastOptimise;
+	var $__0=    __webpack_require__(/*! ./LogisticRegression.jsx */ 101),objective=$__0.objective,optimise=$__0.optimise,fastOptimise=$__0.fastOptimise;
 	
 	
 	
@@ -493,7 +492,7 @@ webpackJsonp([0],[
 	  getInitialState: function()                      {
 	    return {
 	      highlightedW: null,
-	      pointClasses: __webpack_require__(/*! ../data/closePoints.js */ 48),
+	      pointClasses: __webpack_require__(/*! ../data/closePoints.js */ 102),
 	    };
 	  },
 	
@@ -633,7 +632,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 17 */
+
+/***/ 34:
 /*!******************************************!*\
   !*** ./scripts/MaximumMarginSection.jsx ***!
   \******************************************/
@@ -644,16 +644,16 @@ webpackJsonp([0],[
 	
 	                                 
 	
-	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 40);
-	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 42);
-	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 43);
-	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 36);
-	var K = __webpack_require__(/*! ./Katex.jsx */ 35);
-	var MaximumMargin = __webpack_require__(/*! ./MaximumMargin.jsx */ 49);
-	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 45);
+	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 94);
+	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 96);
+	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 97);
+	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 90);
+	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
+	var MaximumMargin = __webpack_require__(/*! ./MaximumMargin.jsx */ 103);
+	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 99);
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 46);
-	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 38);
+	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 100);
+	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 92);
 	
 	
 	
@@ -661,7 +661,7 @@ webpackJsonp([0],[
 	  getInitialState: function()                      {
 	    return {
 	      highlightedW: null,
-	      pointClasses: __webpack_require__(/*! ../data/closePoints.js */ 48),
+	      pointClasses: __webpack_require__(/*! ../data/closePoints.js */ 102),
 	    };
 	  },
 	
@@ -734,24 +734,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */,
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */,
-/* 31 */,
-/* 32 */,
-/* 33 */,
-/* 34 */,
-/* 35 */
+
+/***/ 89:
 /*!***************************!*\
   !*** ./scripts/Katex.jsx ***!
   \***************************/
@@ -778,7 +762,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 36 */
+
+/***/ 90:
 /*!********************************!*\
   !*** ./scripts/Hyperplane.jsx ***!
   \********************************/
@@ -787,7 +772,7 @@ webpackJsonp([0],[
 	/* @flow */
 	"use strict";
 	
-	var Line = __webpack_require__(/*! ./Line.jsx */ 104);
+	var Line = __webpack_require__(/*! ./Line.jsx */ 167);
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var $__0=  __webpack_require__(/*! react/addons */ 1).addons,PureRenderMixin=$__0.PureRenderMixin;
 	
@@ -813,7 +798,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 37 */
+
+/***/ 91:
 /*!********************************!*\
   !*** ./scripts/Perceptron.jsx ***!
   \********************************/
@@ -825,7 +811,7 @@ webpackJsonp([0],[
 	                                 
 	                                          
 	
-	var $__0=       __webpack_require__(/*! ./VectorUtils.jsx */ 107),add=$__0.add,scale=$__0.scale,pointClassesTransform=$__0.pointClassesTransform,classify=$__0.classify,classTransform=$__0.classTransform,dotProduct=$__0.dotProduct;
+	var $__0=       __webpack_require__(/*! ./VectorUtils.jsx */ 168),add=$__0.add,scale=$__0.scale,pointClassesTransform=$__0.pointClassesTransform,classify=$__0.classify,classTransform=$__0.classTransform,dotProduct=$__0.dotProduct;
 	
 	/*
 	The Perceptron training algorithm cycles through each training
@@ -891,7 +877,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 38 */
+
+/***/ 92:
 /*!*****************************************!*\
   !*** ./scripts/SimpleHyperplaneVis.jsx ***!
   \*****************************************/
@@ -900,8 +887,8 @@ webpackJsonp([0],[
 	/* @flow */
 	"use strict";
 	
-	var AllPoints = __webpack_require__(/*! ./AllPoints.jsx */ 105);
-	var Axes = __webpack_require__(/*! ./Axes.jsx */ 106);
+	var AllPoints = __webpack_require__(/*! ./AllPoints.jsx */ 169);
+	var Axes = __webpack_require__(/*! ./Axes.jsx */ 170);
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var $__0=  __webpack_require__(/*! react/addons */ 1).addons,PureRenderMixin=$__0.PureRenderMixin;
 	
@@ -946,7 +933,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 39 */
+
+/***/ 93:
 /*!************************!*\
   !*** ./data/points.js ***!
   \************************/
@@ -958,7 +946,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 40 */
+
+/***/ 94:
 /*!**********************************!*\
   !*** ./scripts/CursorSphere.jsx ***!
   \**********************************/
@@ -1026,7 +1015,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 41 */
+
+/***/ 95:
 /*!**********************************!*\
   !*** ./scripts/Default2DVis.jsx ***!
   \**********************************/
@@ -1035,11 +1025,11 @@ webpackJsonp([0],[
 	/* @flow */
 	"use strict";
 	
-	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 36);
-	var Line = __webpack_require__(/*! ./Line.jsx */ 104);
+	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 90);
+	var Line = __webpack_require__(/*! ./Line.jsx */ 167);
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 46);
-	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 38);
+	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 100);
+	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 92);
 	var $__0=  __webpack_require__(/*! react/addons */ 1).addons,PureRenderMixin=$__0.PureRenderMixin;
 	
 	
@@ -1078,7 +1068,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 42 */
+
+/***/ 96:
 /*!*************************************!*\
   !*** ./scripts/DisplayWNumbers.jsx ***!
   \*************************************/
@@ -1087,7 +1078,7 @@ webpackJsonp([0],[
 	/* @flow */
 	"use strict";
 	
-	var K = __webpack_require__(/*! ./Katex.jsx */ 35);
+	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
 	var React = __webpack_require__(/*! react/addons */ 1);
 	
 	var DisplayWNumbers = React.createClass({displayName: "DisplayWNumbers",
@@ -1104,7 +1095,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 43 */
+
+/***/ 97:
 /*!**************************************!*\
   !*** ./scripts/Draggable3DScene.jsx ***!
   \**************************************/
@@ -1303,7 +1295,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 44 */
+
+/***/ 98:
 /*!***********************************!*\
   !*** ./scripts/OptimiserLine.jsx ***!
   \***********************************/
@@ -1379,7 +1372,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 45 */
+
+/***/ 99:
 /*!*************************************!*\
   !*** ./scripts/ParametricGraph.jsx ***!
   \*************************************/
@@ -1521,7 +1515,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 46 */
+
+/***/ 100:
 /*!**************************************!*\
   !*** ./scripts/ReplacePointsBar.jsx ***!
   \**************************************/
@@ -1546,13 +1541,13 @@ webpackJsonp([0],[
 	var ReplacePointsBar = React.createClass({displayName: "ReplacePointsBar",
 	  render: function()                {
 	    return React.createElement("div", {style: this.props.style}, 
-	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/points.js */ 39)}, 
+	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/points.js */ 93)}, 
 	        "Default"
 	      ), 
-	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/closePoints.js */ 48)}, 
+	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/closePoints.js */ 102)}, 
 	        "Close"
 	      ), 
-	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/overlapPoints.js */ 108)}, 
+	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/overlapPoints.js */ 171)}, 
 	        "Overlap"
 	      )
 	    );
@@ -1563,7 +1558,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 47 */
+
+/***/ 101:
 /*!****************************************!*\
   !*** ./scripts/LogisticRegression.jsx ***!
   \****************************************/
@@ -1576,7 +1572,7 @@ webpackJsonp([0],[
 	
 	"use strict";
 	
-	var $__0=      __webpack_require__(/*! ./VectorUtils.jsx */ 107),pointClassesTransformZeroOne=$__0.pointClassesTransformZeroOne,dotProduct=$__0.dotProduct,scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
+	var $__0=      __webpack_require__(/*! ./VectorUtils.jsx */ 168),pointClassesTransformZeroOne=$__0.pointClassesTransformZeroOne,dotProduct=$__0.dotProduct,scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
 	
 	function sigmoid(wx)         {
 	  return 1 / (1 + Math.exp(-wx));
@@ -1684,7 +1680,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 48 */
+
+/***/ 102:
 /*!*****************************!*\
   !*** ./data/closePoints.js ***!
   \*****************************/
@@ -1695,7 +1692,8 @@ webpackJsonp([0],[
 	module.exports = [[{"x":-69.91981426253915,"y":4.750457964837551},{"x":-106.71077957376838,"y":34.54018207266927},{"x":-75.78700138255954,"y":39.27134918048978},{"x":-97.5,"y":98.703125},{"x":-76.5,"y":73.703125},{"x":-53.5,"y":87.703125},{"x":-60.5,"y":39.703125},{"x":-45.5,"y":61.703125},{"x":-85.5,"y":10.703125},{"x":-98.5,"y":-19.296875},{"x":-120.5,"y":-0.296875},{"x":-118.5,"y":18.703125},{"x":-144.5,"y":3.703125},{"x":-123.5,"y":-16.296875},{"x":-11.5,"y":2.453125},{"x":-8.5,"y":32.453125},{"x":-2.5,"y":87.453125},{"x":-45.5,"y":19.453125},{"x":-15.5,"y":62.453125},{"x":-50.5,"y":122.453125},{"x":-49.5,"y":-50.546875},{"x":-38.5,"y":-5.546875},{"x":-83.5,"y":-30.546875},{"x":-110.5,"y":-65.546875},{"x":-88.5,"y":-4.546875},{"x":-77.5,"y":-40.546875},{"x":-88.5,"y":-101.546875},{"x":-123.5,"y":-146.546875},{"x":-75.5,"y":-136.546875},{"x":-75.5,"y":-96.546875},{"x":-104.5,"y":-96.546875},{"x":-4.5,"y":85.453125},{"x":2.5,"y":169.453125},{"x":-22.5,"y":135.453125},{"x":-22.5,"y":104.453125},{"x":-10.5,"y":116.453125},{"x":-37.5,"y":59.453125},{"x":-50.5,"y":8.453125},{"x":-98.5,"y":-41.546875},{"x":-49.5,"y":-82.546875},{"x":-45.5,"y":5.453125},{"x":-59.5,"y":-53.546875},{"x":-84.5,"y":-13.546875},{"x":-71.5,"y":83.453125},{"x":-92.5,"y":30.453125},{"x":-99.5,"y":-14.546875},{"x":-63.5,"y":9.453125},{"x":-63.5,"y":40.453125},{"x":-38.5,"y":71.453125},{"x":-40.5,"y":-9.546875},{"x":-63.5,"y":-30.546875},{"x":-84.5,"y":-66.546875},{"x":-70.5,"y":-82.546875},{"x":-58.5,"y":-6.546875}],[{"x":53.5,"y":-79.296875},{"x":97.5,"y":-35.296875},{"x":108.5,"y":29.703125},{"x":87.5,"y":6.703125},{"x":64.5,"y":-55.296875},{"x":49.5,"y":-12.546875},{"x":31.5,"y":-68.546875},{"x":55.5,"y":42.453125},{"x":96.5,"y":140.453125},{"x":53.5,"y":88.453125},{"x":24.5,"y":31.453125},{"x":14.5,"y":6.453125},{"x":5.5,"y":-45.546875},{"x":31.5,"y":-45.546875},{"x":40.5,"y":-75.546875},{"x":45.5,"y":-97.546875},{"x":22.5,"y":-93.546875},{"x":14.5,"y":-75.546875},{"x":45.5,"y":-114.546875},{"x":73.5,"y":6.453125},{"x":97.5,"y":88.453125},{"x":73.5,"y":89.453125},{"x":35.5,"y":70.453125},{"x":19.5,"y":56.453125},{"x":44.5,"y":58.453125},{"x":29.5,"y":-24.546875},{"x":37.5,"y":19.453125},{"x":82.5,"y":42.453125},{"x":62.5,"y":-28.546875},{"x":30.5,"y":-128.546875},{"x":-22.5,"y":-140.546875},{"x":-2.5,"y":-101.546875},{"x":12.5,"y":-139.546875},{"x":12.5,"y":-157.546875},{"x":10.5,"y":-110.546875},{"x":-5.5,"y":-73.546875},{"x":26.5,"y":-2.546875},{"x":18.5,"y":-27.546875},{"x":47.5,"y":20.453125}]]
 
 /***/ },
-/* 49 */
+
+/***/ 103:
 /*!***********************************!*\
   !*** ./scripts/MaximumMargin.jsx ***!
   \***********************************/
@@ -1708,7 +1706,7 @@ webpackJsonp([0],[
 	
 	"use strict";
 	
-	var $__0=    __webpack_require__(/*! ./VectorUtils.jsx */ 107),pointClassesTransform=$__0.pointClassesTransform,dotProduct=$__0.dotProduct,modulus=$__0.modulus;
+	var $__0=    __webpack_require__(/*! ./VectorUtils.jsx */ 168),pointClassesTransform=$__0.pointClassesTransform,dotProduct=$__0.dotProduct,modulus=$__0.modulus;
 	
 	
 	// the objective function is used to generate the surface
@@ -1735,61 +1733,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 50 */,
-/* 51 */,
-/* 52 */,
-/* 53 */,
-/* 54 */,
-/* 55 */,
-/* 56 */,
-/* 57 */,
-/* 58 */,
-/* 59 */,
-/* 60 */,
-/* 61 */,
-/* 62 */,
-/* 63 */,
-/* 64 */,
-/* 65 */,
-/* 66 */,
-/* 67 */,
-/* 68 */,
-/* 69 */,
-/* 70 */,
-/* 71 */,
-/* 72 */,
-/* 73 */,
-/* 74 */,
-/* 75 */,
-/* 76 */,
-/* 77 */,
-/* 78 */,
-/* 79 */,
-/* 80 */,
-/* 81 */,
-/* 82 */,
-/* 83 */,
-/* 84 */,
-/* 85 */,
-/* 86 */,
-/* 87 */,
-/* 88 */,
-/* 89 */,
-/* 90 */,
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */,
-/* 95 */,
-/* 96 */,
-/* 97 */,
-/* 98 */,
-/* 99 */,
-/* 100 */,
-/* 101 */,
-/* 102 */,
-/* 103 */,
-/* 104 */
+
+/***/ 167:
 /*!**************************!*\
   !*** ./scripts/Line.jsx ***!
   \**************************/
@@ -1800,7 +1745,7 @@ webpackJsonp([0],[
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var $__0=  __webpack_require__(/*! react/addons */ 1).addons,PureRenderMixin=$__0.PureRenderMixin;
-	var $__1=       __webpack_require__(/*! ./VectorUtils.jsx */ 107),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
+	var $__1=       __webpack_require__(/*! ./VectorUtils.jsx */ 168),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
 	
 	
 	// my stackoverflow explanation: http: //stackoverflow.com/a/24392281/1941552
@@ -1885,78 +1830,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 105 */
-/*!*******************************!*\
-  !*** ./scripts/AllPoints.jsx ***!
-  \*******************************/
-/***/ function(module, exports, __webpack_require__) {
 
-	/* @flow */
-	"use strict";
-	
-	var React = __webpack_require__(/*! react/addons */ 1);
-	
-	
-	var PointClass = React.createClass({
-	  displayName: "PointClass",
-	  render: function()                {
-	    return (React.createElement("g", null, 
-	       this.props.points
-	          .map(function(p)  {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x, cy: p.y, r: "3", fill: this.props.color});}.bind(this))
-	    ));
-	  }
-	});
-	
-	
-	var AllPoints = React.createClass({
-	  displayName: "AllPoints",
-	
-	  propTypes: {
-	    pointClasses: React.PropTypes.array.isRequired
-	  },
-	
-	  render: function()                {
-	    var $__0=   this.props.pointClasses,class0=$__0[0],class1=$__0[1];
-	    return (React.createElement("g", null, 
-	      React.createElement(PointClass, {points: class0, color: "red"}), 
-	      React.createElement(PointClass, {points: class1, color: "blue"})
-	    ));
-	  }
-	});
-	
-	
-	module.exports = AllPoints;
-
-
-/***/ },
-/* 106 */
-/*!**************************!*\
-  !*** ./scripts/Axes.jsx ***!
-  \**************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	/* @flow */
-	"use strict";
-	var React = __webpack_require__(/*! react/addons */ 1);
-	
-	var Axes = React.createClass({displayName: "Axes",
-	  render: function()                {
-	    var yAxis = ("M" +  0 + " " +  this.props.dim + " L" +  0 + " " + ( -this.props.dim));
-	    var xAxis = ("M" + ( -this.props.dim) + " " +  0 + " L" +  this.props.dim + " " +  0);
-	    return (
-	      React.createElement("g", null, 
-	        React.createElement("path", {d: xAxis, strokeWidth: "3", stroke: "#d0d0d0"}), 
-	        React.createElement("path", {d: yAxis, strokeWidth: "3", stroke: "#d0d0d0"})
-	      )
-	    );
-	  }
-	});
-	
-	module.exports = Axes;
-
-
-/***/ },
-/* 107 */
+/***/ 168:
 /*!*********************************!*\
   !*** ./scripts/VectorUtils.jsx ***!
   \*********************************/
@@ -2080,7 +1955,81 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 108 */
+
+/***/ 169:
+/*!*******************************!*\
+  !*** ./scripts/AllPoints.jsx ***!
+  \*******************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	var React = __webpack_require__(/*! react/addons */ 1);
+	
+	
+	var PointClass = React.createClass({
+	  displayName: "PointClass",
+	  render: function()                {
+	    return (React.createElement("g", null, 
+	       this.props.points
+	          .map(function(p)  {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x, cy: p.y, r: "3", fill: this.props.color});}.bind(this))
+	    ));
+	  }
+	});
+	
+	
+	var AllPoints = React.createClass({
+	  displayName: "AllPoints",
+	
+	  propTypes: {
+	    pointClasses: React.PropTypes.array.isRequired
+	  },
+	
+	  render: function()                {
+	    var $__0=   this.props.pointClasses,class0=$__0[0],class1=$__0[1];
+	    return (React.createElement("g", null, 
+	      React.createElement(PointClass, {points: class0, color: "red"}), 
+	      React.createElement(PointClass, {points: class1, color: "blue"})
+	    ));
+	  }
+	});
+	
+	
+	module.exports = AllPoints;
+
+
+/***/ },
+
+/***/ 170:
+/*!**************************!*\
+  !*** ./scripts/Axes.jsx ***!
+  \**************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	var React = __webpack_require__(/*! react/addons */ 1);
+	
+	var Axes = React.createClass({displayName: "Axes",
+	  render: function()                {
+	    var yAxis = ("M" +  0 + " " +  this.props.dim + " L" +  0 + " " + ( -this.props.dim));
+	    var xAxis = ("M" + ( -this.props.dim) + " " +  0 + " L" +  this.props.dim + " " +  0);
+	    return (
+	      React.createElement("g", null, 
+	        React.createElement("path", {d: xAxis, strokeWidth: "3", stroke: "#d0d0d0"}), 
+	        React.createElement("path", {d: yAxis, strokeWidth: "3", stroke: "#d0d0d0"})
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = Axes;
+
+
+/***/ },
+
+/***/ 171:
 /*!*******************************!*\
   !*** ./data/overlapPoints.js ***!
   \*******************************/
@@ -2091,5 +2040,6 @@ webpackJsonp([0],[
 	module.exports = [[{"x":-69.91981426253915,"y":4.750457964837551},{"x":-106.71077957376838,"y":34.54018207266927},{"x":-75.78700138255954,"y":39.27134918048978},{"x":-53.5,"y":87.703125},{"x":-60.5,"y":39.703125},{"x":-45.5,"y":61.703125},{"x":-85.5,"y":10.703125},{"x":-98.5,"y":-19.296875},{"x":-38.5,"y":24.703125},{"x":-23.5,"y":37.703125},{"x":-3.5,"y":63.703125},{"x":-25.5,"y":64.703125},{"x":-26.5,"y":5.703125},{"x":-34.5,"y":-4.296875},{"x":-49.5,"y":-40.296875},{"x":-51.5,"y":-9.296875},{"x":-72.5,"y":-31.296875},{"x":-96.5,"y":-45.296875},{"x":-115.5,"y":-62.296875},{"x":-90.5,"y":-70.296875},{"x":-23.5,"y":114.703125},{"x":-23.5,"y":96.703125},{"x":-32.5,"y":-37.296875},{"x":-43.5,"y":-71.296875},{"x":-6.5,"y":26.703125},{"x":-8.5,"y":-20.296875},{"x":9.5,"y":30.703125},{"x":-0.5,"y":-6.296875},{"x":17.5,"y":73.703125}],[{"x":53.5,"y":-79.296875},{"x":64.5,"y":-55.296875},{"x":69.5,"y":0.703125},{"x":35.5,"y":-3.296875},{"x":9.5,"y":-21.296875},{"x":6.5,"y":-79.296875},{"x":-11.5,"y":-82.296875},{"x":1.5,"y":-118.296875},{"x":12.5,"y":-115.296875},{"x":2.5,"y":-49.296875},{"x":62.5,"y":-36.296875},{"x":35.5,"y":-45.296875},{"x":36.5,"y":11.703125},{"x":52.5,"y":45.703125},{"x":64.5,"y":91.703125},{"x":59.5,"y":52.703125},{"x":31.5,"y":29.703125},{"x":64.5,"y":34.703125},{"x":60.5,"y":8.703125},{"x":43.5,"y":-20.296875},{"x":18.5,"y":-50.296875},{"x":18.5,"y":-86.296875},{"x":29.5,"y":-98.296875},{"x":1.5,"y":-143.296875},{"x":50.5,"y":-15.296875},{"x":50.5,"y":60.703125},{"x":58.5,"y":99.703125},{"x":-14.5,"y":-118.296875},{"x":40.5,"y":-71.296875},{"x":-48.5,"y":-63.296875},{"x":-22.5,"y":-60.296875},{"x":-22.5,"y":-7.296875},{"x":-22.5,"y":35.703125},{"x":-6.5,"y":72.703125},{"x":18.5,"y":86.703125},{"x":31.5,"y":95.703125},{"x":13.5,"y":44.703125},{"x":-4.5,"y":11.703125},{"x":-27.5,"y":-52.296875},{"x":-27.5,"y":-89.296875},{"x":-47.5,"y":-103.296875}]]
 
 /***/ }
-]);
+
+});
 //# sourceMappingURL=bundle.js.map
