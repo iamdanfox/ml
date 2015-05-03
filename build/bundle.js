@@ -13,6 +13,23 @@ webpackJsonp([0],{
 	var Article = __webpack_require__(/*! ./Article.jsx */ 10);
 	
 	React.render(React.createElement(Article, null), document.body);
+	
+	
+	
+	alert(1)
+	
+	// in your main js file
+	var worker = new Worker('./build/worker.bundle.js');
+	
+	worker.postMessage({
+	  some_data: 'foo',
+	  some_more_data: 'bar'
+	});
+	
+	// in main js file
+	worker.onmessage = function(event) {
+	  console.log(event.data)
+	}
 
 
 /***/ },
