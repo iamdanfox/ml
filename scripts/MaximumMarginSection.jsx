@@ -2,7 +2,7 @@
 "use strict";
 
 var React = require("react");
-var MainPage = require("./MainPage.jsx");
+var MainVis = require("./MainVis.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 var K = require('./Katex.jsx');
 
@@ -27,7 +27,7 @@ var MaximumMarginSection = React.createClass({
       </p>
 
       <div style={{width: "850px"}}>
-        <MainPage dim={400} projectedError={MaximumMargin.objective}  />
+        <MainVis dim={400} projectedError={MaximumMargin.objective}  />
       </div>
 
       <p>Describe lagrangian/KKT method for solving this (?!?! needs work to understand this)</p>

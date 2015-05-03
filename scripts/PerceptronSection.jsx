@@ -2,9 +2,60 @@
 "use strict";
 
 var React = require("react");
+var HyperplaneVis = require("./HyperplaneVis.jsx");
+var Perceptron = require("./Perceptron.jsx");
+
+var INITIAL_POINTS = require('../data/points.js');
+var INITIAL_W = {x: 80, y: 60};
+var perceptronSteps = Perceptron.computePerceptronWeight(INITIAL_W, INITIAL_POINTS);
+
 
 
 var PerceptronSection = React.createClass({
+  getInitialState: function() {
+    return {
+      nextStep: null, // null implies animation isn't started.
+      timer: null
+    };
+  },
+
+  componentDidMount: function() {
+    window.addEventListener('scroll', this.onScroll, false);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('scroll', this.onScroll, false);
+    clearTimeout(this.state.timer);
+  },
+
+  onScroll: function() {
+    if (this.state.nextStep === null) {
+      var el = React.findDOMNode(this.refs.container);
+      var {top, bottom} = el.getBoundingClientRect();
+      var isVisible = (top >= 0) && (bottom <= window.innerHeight);
+
+      if (isVisible) {
+        this.startAnimation();
+      }
+    }
+  },
+
+  startAnimation: function() {
+    clearTimeout(this.state.timer);
+    this.setState({
+      nextStep: 0,
+      timer: setInterval(this.advanceStep.bind(this), 800)
+    });
+  },
+
+  advanceStep: function() {
+    if (this.state.nextStep == perceptronSteps.length) {
+      clearTimeout(this.state.timer);
+    } else {
+      this.setState({nextStep: this.state.nextStep + 1 % perceptronSteps.length});
+    }
+  },
+
   render: function(): ?ReactElement {
     return (<div style={{
         display: "flex",
@@ -22,7 +73,17 @@ var PerceptronSection = React.createClass({
       repeat until w makes no mistakes
       </code>
 
-      <p>[[[ANIMATION ALG VIS. AUto start when you scroll down.]]]</p>
+      <div ref="container">
+        <HyperplaneVis
+          dim={400}
+          mode={0}
+          highlightW={function() {}}
+          pointClasses={INITIAL_POINTS}
+          highlightedW={perceptronSteps[this.state.nextStep - 1]} />
+        <div>
+          <button onClick={this.startAnimation}>Start again</button>
+        </div>
+      </div>
 
       <p>The perceptron is not perfect however.  Since it can choose any
       hyperplane that makes no mistakes, it will sometimes give you one that

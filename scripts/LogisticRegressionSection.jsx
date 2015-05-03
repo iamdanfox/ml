@@ -2,7 +2,7 @@
 "use strict";
 
 var React = require("react");
-var MainPage = require("./MainPage.jsx");
+var MainVis = require("./MainVis.jsx");
 
 var {objective, optimise} = require("./LogisticRegression.jsx");
 var K = require('./Katex.jsx');
@@ -75,7 +75,7 @@ var LogisticRegressionSection = React.createClass({
 
 
       <div style={{width: "850px"}}>
-        <MainPage dim={400} projectedError={objective} optimiserFunction={optimise} />
+        <MainVis dim={400} projectedError={objective} optimiserFunction={optimise} />
       </div>
 
       <p>

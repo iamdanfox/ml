@@ -3,7 +3,7 @@
 
 var React = require("react");
 
-var MainPage = require("./MainPage.jsx");
+var MainVis = require("./MainVis.jsx");
 var K = require('./Katex.jsx');
 var {perceptronError} = require("./LeastSquares.jsx");
 var {computePerceptronWeight} = require("./Perceptron.jsx");
@@ -34,7 +34,7 @@ var ObjectiveFunctionSection = React.createClass({
       of <K>w</K> looks like.</p>
 
       <div style={{width: "850px"}}>
-        <MainPage dim={400} projectedError={perceptronError}
+        <MainVis dim={400} projectedError={perceptronError}
           optimiserFunction={computePerceptronWeight} />
       </div>
 

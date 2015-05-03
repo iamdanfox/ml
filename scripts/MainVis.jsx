@@ -16,7 +16,7 @@ type P2 = {x: number; y: number};
 
 
 
-var MainPage = React.createClass({
+var MainVis = React.createClass({
   propTypes: {
     dim: React.PropTypes.number.isRequired,
     projectedError: React.PropTypes.func.isRequired,
@@ -120,4 +120,4 @@ var MainPage = React.createClass({
 });
 
 
-module.exports = MainPage;
+module.exports = MainVis;
