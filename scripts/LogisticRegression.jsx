@@ -62,10 +62,10 @@ function optimise(startW: P2, pointClasses: PointClasses): Array<P2> {
 
   var w = startW;
   var grad;
-  var stops = [];
+  var stops = [w];
   while (grad = gradient(w, pointClasses), modulus(grad) > ACCEPTING_GRAD && stops.length < MAX_STOPS) {
-    stops.push(w);
     w = add(w)(scale(-1 * NU)(grad));
+    stops.push(w);
   }
   return stops;
 }

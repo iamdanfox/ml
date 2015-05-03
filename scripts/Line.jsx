@@ -74,7 +74,8 @@ var Line = React.createClass({
     return (
       <path d={`M ${-boundaryPoint.x} ${-boundaryPoint.y} L ${boundaryPoint.x} ${boundaryPoint.y}`}
         strokeWidth="1.5"
-        stroke="rgba(30, 30, 30, 0.3)" />
+        stroke="rgba(30, 30, 30, 0.3)"
+        style={this.props.style} />
     );
   }
 });

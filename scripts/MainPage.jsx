@@ -93,7 +93,8 @@ var MainPage = React.createClass({
             pointClasses={this.state.pointClasses}
             updatePointClasses={this.updatePointClasses}
             highlightedW={this.state.highlightedW}
-            highlightW={this.highlightW} />
+            highlightW={this.highlightW}
+            optimiserLine={this.state.optimiserLine} />
 
           <div style={{position: "absolute", bottom: 0, left: 0}}>
             <button

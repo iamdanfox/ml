@@ -24,6 +24,7 @@ var HyperplaneVis = React.createClass({
     updatePointClasses: React.PropTypes.func.isRequired,
     highlightedW: React.PropTypes.array.isRequired,
     highlightW: React.PropTypes.func.isRequired,
+    optimiserLine: React.PropTypes.array
   },
 
   mouseMove: function(e: React.SyntheticEvent): void {
@@ -80,6 +81,16 @@ var HyperplaneVis = React.createClass({
     }
   },
 
+  makeOptimisedHyperplane: function(): ReactElement | boolean {
+    var line = this.props.optimiserLine;
+    if (typeof line !== "undefined" && line !== null && line.length > 0) {
+      var lastW = line[line.length - 1];
+      return <Line w={lastW} dim={this.props.dim} style={{stroke: "green", opacity: 0.3}}/>;
+    } else {
+      return false;
+    }
+  },
+
   render: function(): ?ReactElement {
     var style = {background: "#e0e0e0", width: this.props.dim, height: this.props.dim};
     return (
@@ -88,7 +99,9 @@ var HyperplaneVis = React.createClass({
           <Axes dim={this.props.dim} />
           <AllPoints pointClasses={this.props.pointClasses} />
           { this.makeHyperplane() }
+          { this.makeOptimisedHyperplane() }
           { (this.props.mode === Modes.REMOVE_DATA) && this.renderEraserCircle() }
+
         </g>
       </svg>
     );
