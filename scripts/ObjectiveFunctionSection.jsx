@@ -1,12 +1,80 @@
 /* @flow */
 "use strict";
 
-var React = require("react");
+type P2 = {x: number; y: number};
 
-var MainVis = require("./MainVis.jsx");
+
+var CursorSphere = require('./CursorSphere.jsx');
+var DisplayWNumbers = require("./DisplayWNumbers.jsx");
+var Draggable3DScene = require("./Draggable3DScene.jsx");
+var HyperplaneVis = require("./HyperplaneVis.jsx");
 var K = require('./Katex.jsx');
-var {perceptronError} = require("./LeastSquares.jsx");
+var Modes = require("./Modes.js");
+var ParametricGraph = require('./ParametricGraph.jsx');
+var OptimiserLine = require('./OptimiserLine.jsx');
+var React = require("react");
 var {computePerceptronWeight} = require("./Perceptron.jsx");
+var {perceptronError} = require("./LeastSquares.jsx");
+var {ReplacePointsBar} = require("./ReplacePointsButton.jsx");
+
+
+
+var PerceptronVis = React.createClass({
+  getInitialState: function(): {highlightedW: ?P2} {
+    return {
+      highlightedW: null,
+      pointClasses: require("../data/closePoints.js"),
+    };
+  },
+
+  highlightW: function(point: P2): void {
+    this.setState({highlightedW: point});
+  },
+
+  updatePointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): void {
+    this.setState({pointClasses: newPointClasses});
+  },
+
+  render: function() {
+    var dim = 400;
+
+    var optimiserLine;
+    if (typeof this.state.highlightedW !== "undefined" &&
+       this.state.highlightedW !== null) {
+      optimiserLine = computePerceptronWeight(this.state.highlightedW, this.state.pointClasses);
+    }
+
+    return <div style={{width: "850px"}}>
+      <div style={{display: "flex", justifyContent: "space-between"}}>
+
+        <div style={{position: "relative"}}>
+          <HyperplaneVis dim={dim} mode={Modes.TRY_HYPERPLANE}
+            pointClasses={this.state.pointClasses} updatePointClasses={this.updatePointClasses}
+            highlightedW={this.state.highlightedW} highlightW={this.highlightW}
+            optimiserLine={optimiserLine} />
+
+          <ReplacePointsBar callback={this.updatePointClasses}
+            style={{position: "absolute", bottom: 0, left: 0}} />
+        </div>
+
+        <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
+            projectedError={perceptronError} highlightW={this.highlightW}>
+          <ParametricGraph thetaResolution={120} rResolution={40} />
+          {optimiserLine && <OptimiserLine vertices={optimiserLine} />}
+          {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
+        </Draggable3DScene>
+      </div>
+
+      <div>
+        { this.state.highlightedW && <DisplayWNumbers w={this.state.highlightedW} />}
+      </div>
+    </div>;
+  }
+});
+
+
+
+
 
 var ObjectiveFunctionSection = React.createClass({
   render: function(): ?ReactElement {
@@ -33,10 +101,7 @@ var ObjectiveFunctionSection = React.createClass({
       left to see what one particular choice
       of <K>w</K> looks like.</p>
 
-      <div style={{width: "850px"}}>
-        <MainVis dim={400} projectedError={perceptronError}
-          optimiserFunction={computePerceptronWeight} />
-      </div>
+      <PerceptronVis />
 
       <p>As you can see from the right hand diagram, there are a large
       number of possibilities for the
