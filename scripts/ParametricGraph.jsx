@@ -16,10 +16,6 @@ type State = {
   graph: ?THREE.Mesh;
 }
 
-var MESH_MATERIAL = new THREE.MeshBasicMaterial({
-  side: THREE.DoubleSide,
-  vertexColors: THREE.FaceColors
-});
 
 
 var ParametricGraph = React.createClass({
@@ -34,23 +30,35 @@ var ParametricGraph = React.createClass({
     return {graph: null};
   },
 
+  componentWillMount: function() {
+    this.buildGraph(this.props);
+  },
+
   shouldComponentUpdate: function(nextProps: Props): bool {
     return (nextProps.pointClasses !== this.props.pointClasses ||
       nextProps.projectedError !== this.props.projectedError);
   },
 
   componentWillReceiveProps: function(nextProps: Props) {
+    if (this.shouldComponentUpdate(nextProps)) {
+      this.buildGraph(nextProps);
+    }
+  },
+
+  buildGraph: function(props: Props): void {
     this.props.scene.remove(this.state.graph);
 
     var newGraph = new THREE.Mesh(
-      this.colourGraphGeometry(this.buildGraphGeometry(nextProps)),
-      MESH_MATERIAL
+      this.colourGraphGeometry(this.buildGraphGeometry(props)),
+      new THREE.MeshBasicMaterial({
+        side: THREE.DoubleSide,
+        vertexColors: THREE.FaceColors
+      })
     );
 
     this.setState({graph: newGraph});
     this.props.scene.add( newGraph );
   },
-
 
   buildGraphGeometry: function(props: Props): THREE.ParametricGeometry {
     var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {

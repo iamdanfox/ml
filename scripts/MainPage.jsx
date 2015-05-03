@@ -2,7 +2,7 @@
 "use strict";
 
 var React = require("react");
-var Surface = require("./Surface.jsx");
+var Draggable3DScene = require("./Draggable3DScene.jsx");
 var {projectedError, projectedError2} = require("./LeastSquares.jsx");
 var Modes = require("./Modes.js");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
@@ -115,7 +115,7 @@ var MainPage = React.createClass({
           </div>
         </div>
 
-        <Surface
+        <Draggable3DScene
             dim={this.props.dim}
             pointClasses={this.state.pointClasses}
             projectedError={this.props.projectedError}
@@ -125,7 +125,7 @@ var MainPage = React.createClass({
           <OptimiserLine vertices={this.state.optimiserLine} />
           {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
 
-        </Surface>
+        </Draggable3DScene>
 
 
         { false && <div>
@@ -142,16 +142,16 @@ var MainPage = React.createClass({
           </div>
 
 
-          <Surface dim={this.props.dim}
+          <Draggable3DScene dim={this.props.dim}
             pointClasses={this.state.pointClasses} projectedError={projectedError2}
             highlightedW={this.state.highlightedW} highlightW={this.highlightW}
             optimiserFunction={computePerceptronWeight} />
 
-          <Surface dim={this.props.dim}
+          <Draggable3DScene dim={this.props.dim}
             pointClasses={this.state.pointClasses} projectedError={projectedError}
             highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
 
-          <Surface dim={this.props.dim}
+          <Draggable3DScene dim={this.props.dim}
             pointClasses={this.state.pointClasses} projectedError={MaximumMargin.objective}
             highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
 
