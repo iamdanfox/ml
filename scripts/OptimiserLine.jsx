@@ -9,11 +9,12 @@ var OptimiserLine = React.createClass({
   propTypes: {
     vertices: React.PropTypes.array.isRequired,
     projectedError: React.PropTypes.func.isRequired,
-    pointClasses: React.PropTypes.array.isRequired
+    pointClasses: React.PropTypes.array.isRequired,
+    scene: React.PropTypes.any.isRequired
   },
 
   getInitialState: function() {
-    return { line: null };
+    return {line: null};
   },
 
   componentWillMount: function() {

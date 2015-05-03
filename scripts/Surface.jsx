@@ -15,9 +15,7 @@ type State = {
   camera: THREE.PerspectiveCamera;
   graph: THREE.Mesh;
   scene: THREE.Scene;
-  sphere: THREE.Mesh;
   renderer: THREE.WebGLRenderer;
-  pathLine: ?THREE.Line;
 }
 type PointClasses = [Array<P2>, Array<P2>];
 type Props = {
@@ -44,10 +42,7 @@ var Surface = React.createClass({
     initialCamera.up = new THREE.Vector3( 0, 0, 1 );
     initialCamera.position.z = 180;
 
-    var initialSphere = new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() );
-
     var initialScene = new THREE.Scene();
-    initialScene.add(initialSphere);
 
     var initialRenderer = new THREE.WebGLRenderer({antialias: true});
     initialRenderer.setClearColor( 0x111111, 1 );
@@ -61,16 +56,13 @@ var Surface = React.createClass({
       camera: initialCamera,
       graph: this.buildGraphMesh(this.props),
       scene: initialScene,
-      sphere: initialSphere,
       renderer: initialRenderer,
-      pathLine: null,
     };
   },
 
   componentDidMount: function() {
     this.updateGraphMesh(this.props);
 
-    this.updateSpherePosition(this.props);
 
     this.updateCamera(this.state);
     this.state.renderer.setSize( this.props.dim, this.props.dim );
@@ -93,8 +85,6 @@ var Surface = React.createClass({
 
     }
 
-    this.updateSpherePosition(nextProps);
-
     this.state.renderer.render(this.state.scene, this.state.camera);
   },
 
@@ -102,14 +92,6 @@ var Surface = React.createClass({
     this.state.camera.position.x = Math.cos(state.angle) * 300;
     this.state.camera.position.y = Math.sin(state.angle) * 300;
     this.state.camera.lookAt(new THREE.Vector3(0, 0, 0));
-  },
-
-  updateSpherePosition: function(props: Props): void {
-    if (typeof props.highlightedW !== "undefined" && props.highlightedW !== null) {
-      var [x, y] = props.highlightedW;
-      var z = props.projectedError({x, y}, props.pointClasses);
-      this.state.sphere.position.set(x, y, z);
-    }
   },
 
   updateGraphMesh: function(props: Props): void {
@@ -232,7 +214,6 @@ var Surface = React.createClass({
       var {x, y} = intersections[0].point;
       this.props.highlightW(x, y);
     }
-
   },
 
   raycast: function(camera: THREE.Camera, e: React.SyntheticEvent): THREE.Raycaster {
@@ -247,6 +228,7 @@ var Surface = React.createClass({
 
   render: function(): ?ReactElement {
     var mergeInProps = {
+      highlightedW: this.props.highlightedW,
       pointClasses: this.props.pointClasses,
       projectedError: this.props.projectedError,
       scene: this.state.scene

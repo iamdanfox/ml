@@ -9,6 +9,7 @@ var HyperplaneVis = require("./HyperplaneVis.jsx");
 var {computePerceptronWeight} = require("./Perceptron.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 var OptimiserLine = require('./OptimiserLine.jsx');
+var CursorSphere = require('./CursorSphere.jsx');
 
 type P2 = {x: number; y: number};
 
@@ -116,7 +117,10 @@ var MainPage = React.createClass({
         <Surface dim={this.props.dim}
             pointClasses={this.state.pointClasses} projectedError={this.props.projectedError}
             highlightedW={this.state.highlightedW} highlightW={this.highlightW}>
+
           <OptimiserLine vertices={this.state.optimiserLine} />
+          <CursorSphere highlightedW={this.state.highlightedW} />
+
         </Surface>
 
 
