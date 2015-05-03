@@ -5,7 +5,7 @@
   "dependencies": {
     "katex": "^0.2.0",
     "react": "^0.13.2",
-    "three": "^0.69.0"
+    "three": "^0.71.0"
   },
   "devDependencies": {
     "gulp": "^3.8.10",
