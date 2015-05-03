@@ -1,11 +1,90 @@
 /* @flow */
 "use strict";
 
-var React = require("react");
-var MainVis = require("./MainVis.jsx");
+type P2 = {x: number; y: number};
 
-var {objective, optimise, fastOptimise} = require("./LogisticRegression.jsx");
+
+var CursorSphere = require('./CursorSphere.jsx');
+var DisplayWNumbers = require("./DisplayWNumbers.jsx");
+var Draggable3DScene = require("./Draggable3DScene.jsx");
+var HyperplaneVis = require("./HyperplaneVis.jsx");
 var K = require('./Katex.jsx');
+var Modes = require("./Modes.js");
+var OptimiserLine = require('./OptimiserLine.jsx');
+var ParametricGraph = require('./ParametricGraph.jsx');
+var React = require("react");
+var {objective, optimise, fastOptimise} = require("./LogisticRegression.jsx");
+var {ReplacePointsBar} = require("./ReplacePointsButton.jsx");
+
+
+
+var LogisticRegressionVis = React.createClass({
+  getInitialState: function(): {highlightedW: ?P2} {
+    return {
+      highlightedW: null,
+      pointClasses: require("../data/closePoints.js"),
+    };
+  },
+
+  highlightW: function(point: P2): void {
+    this.setState({highlightedW: point});
+  },
+
+  updatePointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): void {
+    this.setState({pointClasses: newPointClasses});
+  },
+
+  render: function() {
+    var dim = 500;
+
+    var optimiserLine;
+    if (typeof this.state.highlightedW !== "undefined" &&
+       this.state.highlightedW !== null) {
+      optimiserLine = optimise(this.state.highlightedW, this.state.pointClasses);
+    }
+
+    var colourFunction = (function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor): void {
+      var zMin = boundingBox.min.z;
+      var zRange = boundingBox.max.z - zMin;
+      var totalZ = vertex1.z + vertex2.z + vertex3.z;
+      var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+
+      var stops = fastOptimise(vertex1, this.state.pointClasses) / 250; // should match MAX_STOPS
+
+      mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
+    }).bind(this);
+
+    return <div style={{width: "1000px"}}>
+      <div style={{display: "flex", justifyContent: "space-between"}}>
+
+        <div style={{position: "relative"}}>
+          <HyperplaneVis dim={dim} mode={Modes.TRY_HYPERPLANE}
+            pointClasses={this.state.pointClasses} updatePointClasses={this.updatePointClasses}
+            highlightedW={this.state.highlightedW} highlightW={this.highlightW}
+            optimiserLine={optimiserLine} />
+
+          <ReplacePointsBar callback={this.updatePointClasses}
+            style={{position: "absolute", bottom: 0, left: 0}} />
+        </div>
+
+        <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
+            projectedError={objective} highlightW={this.highlightW}>
+          <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction}/>
+          {optimiserLine && <OptimiserLine vertices={optimiserLine} />}
+          {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
+        </Draggable3DScene>
+      </div>
+
+      <div>
+        { this.state.highlightedW && <DisplayWNumbers w={this.state.highlightedW} />}
+      </div>
+    </div>;
+  }
+});
+
+
+
+
 
 
 var LogisticRegressionSection = React.createClass({
@@ -73,11 +152,7 @@ var LogisticRegressionSection = React.createClass({
           "log( \\sigma(w \\cdot x_i) ) + ( 1 - y_i ) log( 1 - \\sigma ( w \\cdot x_i ) )"} />
       </p>
 
-
-      <div style={{width: "1000px"}}>
-        <MainVis dim={500} projectedError={objective}
-          optimiserFunction={optimise} fastOptimise={fastOptimise} />
-      </div>
+      <LogisticRegressionVis />
 
       <p>
         (<a href={"https://www.cs.ox.ac.uk/" +
