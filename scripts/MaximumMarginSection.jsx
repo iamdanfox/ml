@@ -6,10 +6,9 @@ type P2 = {x: number; y: number};
 var CursorSphere = require('./CursorSphere.jsx');
 var DisplayWNumbers = require("./DisplayWNumbers.jsx");
 var Draggable3DScene = require("./Draggable3DScene.jsx");
-var HyperplaneVis = require("./HyperplaneVis.jsx");
+var {SimpleHyperplaneVis, Hyperplane} = require("./SimpleHyperplaneVis.jsx");
 var K = require('./Katex.jsx');
 var MaximumMargin = require("./MaximumMargin.jsx");
-var Modes = require("./Modes.js");
 var ParametricGraph = require('./ParametricGraph.jsx');
 var React = require("react");
 var {ReplacePointsBar} = require("./ReplacePointsButton.jsx");
@@ -38,9 +37,10 @@ var MaxMarginVis = React.createClass({
       <div style={{display: "flex", justifyContent: "space-between"}}>
 
         <div style={{position: "relative"}}>
-          <HyperplaneVis dim={dim} mode={Modes.TRY_HYPERPLANE}
-            pointClasses={this.state.pointClasses} updatePointClasses={this.updatePointClasses}
-            highlightedW={this.state.highlightedW} highlightW={this.highlightW} />
+          <SimpleHyperplaneVis dim={dim} pointClasses={this.state.pointClasses}
+            highlightW={this.highlightW}>
+            { this.state.highlightedW && <Hyperplane w={this.state.highlightedW} /> }
+          </SimpleHyperplaneVis>
 
           <ReplacePointsBar callback={this.updatePointClasses}
             style={{position: "absolute", bottom: 0, left: 0}} />

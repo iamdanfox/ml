@@ -4,6 +4,7 @@
 type P2 = {x: number; y: number};
 
 var CursorSphere = require('./CursorSphere.jsx');
+var Default2DVis = require("./Default2DVis.jsx");
 var DisplayWNumbers = require("./DisplayWNumbers.jsx");
 var Draggable3DScene = require("./Draggable3DScene.jsx");
 var K = require('./Katex.jsx');
@@ -11,7 +12,6 @@ var OptimiserLine = require('./OptimiserLine.jsx');
 var ParametricGraph = require('./ParametricGraph.jsx');
 var React = require("react");
 var {objective, optimise, fastOptimise} = require("./LogisticRegression.jsx");
-var {Default2DVis} = require("./SimpleHyperplaneVis.jsx");
 
 
 

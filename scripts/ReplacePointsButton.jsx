@@ -15,7 +15,7 @@ var ReplacePointsButton = React.createClass({
 });
 
 var ReplacePointsBar = React.createClass({
-  render: function() {
+  render: function(): ?ReactElement {
     return <div style={this.props.style}>
       <ReplacePointsButton callback={this.props.callback} points={require("../data/points.js")}>
         Default
