@@ -93,6 +93,10 @@ gulp.task('jshint', function() {
       "indent": 2,
       "latedef": true,
       "loopfunc": true,
+      "maxcomplexity": 4,
+      "maxdepth": 3,
+      "maxparams": 5,
+      "maxstatements": 10,
       "newcap": true,
       "noarg": true,
       "node": true,
@@ -100,14 +104,11 @@ gulp.task('jshint', function() {
       "nonbsp": true,
       "nonew": true,
       "plusplus": true,
-      // "quotmark": "double",
+      "predef": [ "window" ],
       "strict": true,
       "undef": true,
       "unused": true,
-      "maxcomplexity": 4,
-      "maxdepth": 3,
-      "maxparams": 5,
-      "maxstatements": 10
+      // "quotmark": "double",
     }))
     .pipe(jshint.reporter('default'))
 })

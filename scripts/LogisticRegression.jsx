@@ -72,13 +72,12 @@ function optimise(startW: P2, pointClasses: PointClasses): Array<P2> {
 
 function fastOptimise(startW: P2, pointClasses: PointClasses): number {
   var points = pointClassesTransformZeroOne(pointClasses);
-  var len = points.length;
 
   function gradient(w: P2): P2 {
     var smallerW = {x: ANTI_OVERFLOW_FUDGE * w.x, y: ANTI_OVERFLOW_FUDGE * w.y};
     var grad = {x: 0, y: 0};
 
-    for (var i = 0; i < len; i = i + 1) {
+    for (var i = 0; i < points.length; i = i + 1) {
       var point = points[i];
       var scaleFactor = sigmoid(smallerW.x * point.x + smallerW.y * point.y) - point.t;
       grad.x = grad.x + scaleFactor * point.x;
@@ -87,7 +86,7 @@ function fastOptimise(startW: P2, pointClasses: PointClasses): number {
     return grad;
   }
 
-  var w = startW.clone();
+  var w = {x: startW.x, y: startW.y};
   var grad;
   var stops = 1;
   while (grad = gradient(w, pointClasses), modulus(grad) > ACCEPTING_GRAD && stops < MAX_STOPS) {

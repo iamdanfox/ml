@@ -1,18 +1,19 @@
 /* @flow */
 "use strict";
 
+type P2 = {x: number; y: number};
+type State = {
+  nextStep: ?number;
+  timer: ?number;
+}
+
 var React = require("react");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
 var Perceptron = require("./Perceptron.jsx");
 
 var INITIAL_POINTS = require('../data/points.js');
 var INITIAL_W = {x: 80, y: 60};
-var perceptronSteps = Perceptron.computePerceptronWeight(INITIAL_W, INITIAL_POINTS);
-
-type State = {
-  nextStep: ?number;
-  timer: ?number;
-}
+var perceptronSteps:Array<P2> = Perceptron.computePerceptronWeight(INITIAL_W, INITIAL_POINTS);
 
 
 
@@ -57,11 +58,13 @@ var PerceptronSection = React.createClass({
     if (this.state.nextStep === perceptronSteps.length) {
       clearTimeout(this.state.timer);
     } else {
-      this.setState({nextStep: this.state.nextStep + 1});
+      this.setState({nextStep: 1 + this.state.nextStep});
     }
   },
 
   render: function(): ?ReactElement {
+    var currentStep: number = this.state.nextStep - 1;
+
     return (<div style={{
         display: "flex",
         flexDirection: "column",
@@ -84,7 +87,7 @@ var PerceptronSection = React.createClass({
           mode={0}
           highlightW={function() {}}
           pointClasses={INITIAL_POINTS}
-          highlightedW={perceptronSteps[this.state.nextStep - 1]} />
+          highlightedW={perceptronSteps[currentStep]} />
         <div>
           <button onClick={this.startAnimation}>Start again</button>
         </div>

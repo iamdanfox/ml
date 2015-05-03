@@ -69,13 +69,14 @@ var LogisticRegressionSection = React.createClass({
       particular <K>w</K> that we want to try out:</p>
 
       <p>
-        <K tex="\displaystyle
-        -\sum _i ~ y_i log( \sigma(w \cdot x_i) ) + ( 1 - y_i ) log( 1 - \sigma ( w \cdot x_i ) )" />
+        <K tex={"\\displaystyle -\\sum _i ~ y_i " +
+          "log( \\sigma(w \\cdot x_i) ) + ( 1 - y_i ) log( 1 - \\sigma ( w \\cdot x_i ) )"} />
       </p>
 
 
       <div style={{width: "1000px"}}>
-        <MainVis dim={500} projectedError={objective} optimiserFunction={optimise} fastOptimise={fastOptimise} />
+        <MainVis dim={500} projectedError={objective}
+          optimiserFunction={optimise} fastOptimise={fastOptimise} />
       </div>
 
       <p>

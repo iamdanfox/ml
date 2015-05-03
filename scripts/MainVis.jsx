@@ -63,16 +63,16 @@ var MainVis = React.createClass({
   render: function(): ?ReactElement {
     var optimiserLine;
     var colourFunction;
-    if (typeof this.props.optimiserFunction !== "undefined" &&
-        this.props.optimiserFunction !== null) {
+    var optimiserFunction = this.props.optimiserFunction;
+    if (typeof optimiserFunction !== "undefined" &&
+        optimiserFunction !== null) {
 
-      var numStops;
+      var numStops = function(startW, pointClasses) {
+        var stops = optimiserFunction(startW, pointClasses);
+        return stops.length;
+      };
       if (this.props.fastOptimise) {
         numStops = this.props.fastOptimise;
-      } else {
-        numStops = (function(startW, pointClasses) {
-          return this.props.optimiserFunction(startW, this.state.pointClasses).length;
-        }).bind(this);
       }
 
 
@@ -90,7 +90,7 @@ var MainVis = React.createClass({
 
       if (typeof this.state.highlightedW !== "undefined" &&
          this.state.highlightedW !== null) {
-        optimiserLine = this.props.optimiserFunction(this.state.highlightedW, this.state.pointClasses);
+        optimiserLine = optimiserFunction(this.state.highlightedW, this.state.pointClasses);
       }
     }
 
@@ -142,8 +142,11 @@ var MainVis = React.createClass({
           <Draggable3DScene dim={this.props.dim} pointClasses={this.state.pointClasses}
               projectedError={this.props.projectedError} highlightW={this.highlightW}>
 
-            <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction} fastOptimise={this.props.fastOptimise} />
+            <ParametricGraph thetaResolution={24} rResolution={8}
+              colourFunction={colourFunction} fastOptimise={this.props.fastOptimise} />
+
             <OptimiserLine vertices={optimiserLine} />
+
             {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
 
           </Draggable3DScene>
@@ -151,9 +154,11 @@ var MainVis = React.createClass({
         </div>
 
         <div>
-        { this.state.highlightedW  && <div><K tex={"initial~~ \\large w_0 = [" + formatW(this.state.highlightedW) + "]"} /></div>}
+        { this.state.highlightedW  && <div><K tex={"initial~~" +
+          " \\large w_0 = [" + formatW(this.state.highlightedW) + "]"} /></div>}
 
-          {optimiserLine && <div><K tex={"output~~ \\large w = [" + formatW(optimiserLine[optimiserLine.length - 1]) + "]"} /></div> }
+          {optimiserLine && <div><K tex={"output~~ " +
+            "\\large w = [" + formatW(optimiserLine[optimiserLine.length - 1]) + "]"} /></div> }
         </div>
       </div>
     );
