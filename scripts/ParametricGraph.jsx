@@ -16,7 +16,16 @@ type State = {
   graph: THREE.Mesh;
 }
 
-var COLOUR_CURVE = (z) => 0.07 + 0.93 * Math.pow(z, 2);
+
+
+var COLOUR_CURVE = (z) => 0.08 + 0.82 * Math.pow(z, 2);
+var MATERIAL = new THREE.MeshBasicMaterial({
+  side: THREE.DoubleSide,
+  vertexColors: THREE.FaceColors,
+  opacity: 0.94,
+  transparent: true,
+});
+
 
 var ParametricGraph = React.createClass({
   propTypes: {
@@ -28,13 +37,7 @@ var ParametricGraph = React.createClass({
 
   getInitialState: function(): State {
     return {
-      graph: new THREE.Mesh(
-        this.colourGeometry(this.buildInitialGeometry(this.props)),
-        new THREE.MeshBasicMaterial({
-          side: THREE.DoubleSide,
-          vertexColors: THREE.FaceColors
-        })
-      )
+      graph: new THREE.Mesh(this.colourGeometry(this.buildInitialGeometry(this.props)), MATERIAL.clone())
     };
   },
 
