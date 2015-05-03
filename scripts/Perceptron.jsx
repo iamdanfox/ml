@@ -27,6 +27,7 @@ the algorithm's progression.  First w is the start weight, last w is the result 
 Maximum list length = 300 (for non-terminating stuff)
 */
 var PERCEPTRON_NU = 0.1;
+var EPOCHS = 2;
 /*
 The value of nu is interesting to observe.
 
@@ -39,13 +40,15 @@ function computePerceptronWeight(startWeight: P2, pointClasses: PointClasses): A
   var trainingData = pointClassesTransform(pointClasses);
 
   var resultantWeights = [startWeight];
-  for (var i = 0; i < trainingData.length; i = i + 1){
-    var trainingVector = trainingData[i];
-    var lastW = resultantWeights[resultantWeights.length - 1];
-    if (classTransform(classify(lastW, trainingVector)) !== trainingVector.t) {
-      // there was a classification error, so we should add or subtract the trainingVector.
-      var nextWeight = add(lastW)(scale(-1 * PERCEPTRON_NU * trainingVector.t)( trainingVector ));
-      resultantWeights.push(nextWeight);
+  for (var epoch = 0; epoch < EPOCHS; epoch = epoch + 1){
+    for (var i = 0; i < trainingData.length; i = i + 1){
+      var trainingVector = trainingData[i];
+      var lastW = resultantWeights[resultantWeights.length - 1];
+      if (classTransform(classify(lastW, trainingVector)) !== trainingVector.t) {
+        // there was a classification error, so we should add or subtract the trainingVector.
+        var nextWeight = add(lastW)(scale(-1 * PERCEPTRON_NU * trainingVector.t)( trainingVector ));
+        resultantWeights.push(nextWeight);
+      }
     }
   }
   return resultantWeights;
