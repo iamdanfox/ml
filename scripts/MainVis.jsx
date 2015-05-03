@@ -1,9 +1,6 @@
 /* @flow */
 "use strict";
 
-// var MaximumMargin = require("./MaximumMargin.jsx");
-// var {computePerceptronWeight} = require("./Perceptron.jsx");
-// var {projectedError, projectedError2} = require("./LeastSquares.jsx");
 var CursorSphere = require('./CursorSphere.jsx');
 var Draggable3DScene = require("./Draggable3DScene.jsx");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
@@ -12,6 +9,7 @@ var Modes = require("./Modes.js");
 var OptimiserLine = require('./OptimiserLine.jsx');
 var ParametricGraph = require('./ParametricGraph.jsx');
 var React = require("react");
+var {ReplacePointsBar} = require("./ReplacePointsButton.jsx");
 
 type P2 = {x: number; y: number};
 
@@ -27,37 +25,16 @@ var MainVis = React.createClass({
   getInitialState: function(): {highlightedW: ?P2} {
     return {
       highlightedW: null,
-      // mode: Modes.TRY_HYPERPLANE,
       pointClasses: require("../data/closePoints.js"),
     };
   },
 
   highlightW: function(point: P2): void {
-    this.setState({
-      highlightedW: point
-    });
+    this.setState({highlightedW: point});
   },
 
   updatePointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): void {
-    this.setState({
-      pointClasses: newPointClasses,
-    });
-  },
-
-  // updateMode: function(nextMode: number): () => void {
-  //   return () =>
-  //     this.setState({
-  //       mode: nextMode,
-  //     });
-  // },
-
-  replacePointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): () => void {
-    var callback = function() {
-      this.setState({
-        pointClasses: newPointClasses,
-      });
-    };
-    return callback.bind(this);
+    this.setState({pointClasses: newPointClasses});
   },
 
   render: function(): ?ReactElement {
@@ -94,15 +71,6 @@ var MainVis = React.createClass({
       }
     }
 
-    // <div>
-    //   <button disabled={this.state.mode === Modes.TRY_HYPERPLANE}
-    //     onClick={this.updateMode(Modes.TRY_HYPERPLANE)}>Try hyperplane</button>
-    //   <button disabled={this.state.mode === Modes.ADD_DATA}
-    //     onClick={this.updateMode(Modes.ADD_DATA)}>Add Data</button>
-    //   <button disabled={this.state.mode === Modes.REMOVE_DATA}
-    //     onClick={this.updateMode(Modes.REMOVE_DATA)}>Remove Data</button>
-    // </div>
-
     var formatW = (w) => {
       var {x, y} = w;
       var xVal = Math.floor(10 * x) / 10;
@@ -123,20 +91,8 @@ var MainVis = React.createClass({
               highlightW={this.highlightW}
               optimiserLine={optimiserLine} />
 
-            <div style={{position: "absolute", bottom: 0, left: 0}}>
-              <button
-                  onMouseOver={this.replacePointClasses(require('../data/points.js'))}>
-                Default
-              </button>
-              <button
-                  onMouseOver={this.replacePointClasses(require('../data/closePoints.js'))}>
-                Close
-              </button>
-              <button
-                  onMouseOver={this.replacePointClasses(require('../data/overlapPoints.js'))}>
-                Overlap
-              </button>
-            </div>
+            <ReplacePointsBar callback={this.updatePointClasses}
+              style={{position: "absolute", bottom: 0, left: 0}} />
           </div>
 
           <Draggable3DScene dim={this.props.dim} pointClasses={this.state.pointClasses}
