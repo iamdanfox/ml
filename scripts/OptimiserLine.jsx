@@ -4,6 +4,18 @@
 var React = require("react");
 var THREE = require('three');
 
+type P2 = {x: number; y: number};
+type PointClasses = [Array<P2>, Array<P2>];
+type Props = {
+  vertices: Array<P2>;
+  pointClasses: PointClasses;
+  projectedError: (w: P2, pointClasses: PointClasses) => number;
+  scene: THREE.Scene;
+}
+type State = {
+  line: ?THREE.Line;
+}
+
 
 var OptimiserLine = React.createClass({
   propTypes: {
@@ -13,28 +25,20 @@ var OptimiserLine = React.createClass({
     scene: React.PropTypes.any.isRequired
   },
 
-  getInitialState: function() {
+  getInitialState: function(): State {
     return {line: null};
   },
 
-  componentWillMount: function() {
-    // this.props.scene.add(this.state.line);
-  },
-
-  componentWillUnmount: function() {
-    // this.props.scene.remove(this.state.line);
-  },
-
-  shouldComponentUpdate: function(nextProps, nextState) {
+  shouldComponentUpdate: function(nextProps: Props): bool {
     return (nextProps.vertices !== this.props.vertices ||
       nextProps.pointClasses !== this.props.pointClasses ||
-      nextProps.projectedError !== this.props.projectedError)
+      nextProps.projectedError !== this.props.projectedError);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function(nextProps: Props) {
     var vertices = nextProps.vertices;
     if (typeof vertices !== "undefined" && vertices !== null) {
-      this.props.scene.remove(this.state.line)
+      this.props.scene.remove(this.state.line);
 
       var LINE_MATERIAL = new THREE.LineBasicMaterial({color: 0xffffff});
       var geometry = new THREE.Geometry();
@@ -48,9 +52,7 @@ var OptimiserLine = React.createClass({
       );
 
       nextProps.scene.add(line);
-      this.setState({
-        line: line
-      });
+      this.setState({line: line});
     }
   },
 

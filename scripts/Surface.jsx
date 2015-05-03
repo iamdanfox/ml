@@ -28,6 +28,12 @@ type Props = {
 
 
 var Surface = React.createClass({
+  propTypes: {
+    dim: React.PropTypes.number.isRequired,
+    highlightW: React.PropTypes.func.isRequired,
+    pointClasses: React.PropTypes.array.isRequired,
+    projectedError: React.PropTypes.func.isRequired
+  },
 
   getInitialState: function(): State {
     var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 ); // Field of view, aspect ratio, near clip, far clip
