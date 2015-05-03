@@ -7,9 +7,10 @@ type State = {
   timer: ?number;
 }
 
-var React = require("react");
-var {SimpleHyperplaneVis, Hyperplane} = require("./SimpleHyperplaneVis.jsx");
+var Hyperplane = require("./Hyperplane.jsx");
 var Perceptron = require("./Perceptron.jsx");
+var React = require("react");
+var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
 
 var INITIAL_POINTS = require('../data/points.js');
 var INITIAL_W = {x: 80, y: 60};

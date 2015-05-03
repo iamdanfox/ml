@@ -1,11 +1,12 @@
 /* @flow */
 "use strict";
 
+var Hyperplane = require("./Hyperplane.jsx");
 var Line = require("./Line.jsx");
 var React = require("react");
 var ReplacePointsBar = require("./ReplacePointsBar.jsx");
+var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
 var {PureRenderMixin} = require('react/addons').addons;
-var {SimpleHyperplaneVis, Hyperplane} = require("./SimpleHyperplaneVis.jsx");
 
 
 var Default2DVis = React.createClass({
