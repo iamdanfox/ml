@@ -44,7 +44,7 @@ var PerceptronSection = React.createClass({
     clearTimeout(this.state.timer);
     this.setState({
       nextStep: 0,
-      timer: setInterval(this.advanceStep.bind(this), 800)
+      timer: setInterval(this.advanceStep, 800)
     });
   },
 

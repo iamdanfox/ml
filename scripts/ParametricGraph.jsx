@@ -32,7 +32,16 @@ var ParametricGraph = React.createClass({
     dim: React.PropTypes.number.isRequired,
     projectedError: React.PropTypes.func.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
+    thetaResolution: React.PropTypes.number,
+    rResolution: React.PropTypes.number,
     scene: React.PropTypes.any.isRequired
+  },
+
+  getDefaultProps: function() {
+    return {
+      thetaResolution: 192,
+      rResolution: 12
+    }
   },
 
   getInitialState: function(): State {
@@ -78,8 +87,17 @@ var ParametricGraph = React.createClass({
       return new THREE.Vector3(x, y, z);
     };
 
-    var RESOLUTION = 24;
-    return new THREE.ParametricGeometry( polarMeshFunction.bind(this), 8 * RESOLUTION, 0.5 * RESOLUTION, true );
+    return new THREE.ParametricGeometry(polarMeshFunction,
+      this.props.thetaResolution, this.props.rResolution, true);
+  },
+
+  colourFunction: function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor): void {
+    var zMin = boundingBox.min.z;
+    var zRange = boundingBox.max.z - zMin;
+
+    var totalZ = vertex1.z + vertex2.z + vertex3.z;
+    var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+    mutableFaceColor.setHSL(0.54, 0.8, COLOUR_CURVE(normalizedZ));
   },
 
   colourGeometry: function(graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
@@ -89,11 +107,11 @@ var ParametricGraph = React.createClass({
 
     for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
       var face = graphGeometry.faces[i];
-      var totalZ = graphGeometry.vertices[face.a].z +
-        graphGeometry.vertices[face.b].z +
-        graphGeometry.vertices[face.c].z;
-      var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-      face.color.setHSL( 0.54, 0.8, COLOUR_CURVE(normalizedZ));
+      this.colourFunction(graphGeometry.boundingBox,
+        graphGeometry.vertices[face.a],
+        graphGeometry.vertices[face.b],
+        graphGeometry.vertices[face.c],
+        face.color);
     }
 
     graphGeometry.colorsNeedUpdate = true;

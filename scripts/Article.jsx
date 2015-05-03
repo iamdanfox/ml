@@ -11,6 +11,9 @@ var ObjectiveFunctionSection = require('./ObjectiveFunctionSection.jsx');
 var LogisticRegressionSection = require('./LogisticRegressionSection.jsx');
 var MaximumMarginSection = require('./MaximumMarginSection.jsx');
 
+var Draggable3DScene = require('./Draggable3DScene.jsx');
+var ParametricGraph = require('./ParametricGraph.jsx');
+var {objective, optimise} = require("./LogisticRegression.jsx");
 
 var Article = React.createClass({
   render: function(): ?ReactElement {
@@ -29,6 +32,16 @@ var Article = React.createClass({
         <div style={{width: "700px",
         lineHeight: "31px",
         paddingBottom: "10em"}}>
+
+
+          <Draggable3DScene dim={600} pointClasses={require('../data/points.js')}
+              projectedError={objective} highlightW={function() {}}>
+            <ParametricGraph rResolution={12} thetaResolution={120} />
+          </Draggable3DScene>
+
+
+          <HR />
+
 
           <BinaryClassifierSection />
           <HR />
