@@ -2,12 +2,12 @@
 "use strict";
 
 // var MaximumMargin = require("./MaximumMargin.jsx");
-// var Modes = require("./Modes.js");
 // var {computePerceptronWeight} = require("./Perceptron.jsx");
 // var {projectedError, projectedError2} = require("./LeastSquares.jsx");
 var CursorSphere = require('./CursorSphere.jsx');
 var Draggable3DScene = require("./Draggable3DScene.jsx");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
+var Modes = require("./Modes.js");
 var OptimiserLine = require('./OptimiserLine.jsx');
 var ParametricGraph = require('./ParametricGraph.jsx');
 var React = require("react");
@@ -82,7 +82,7 @@ var MainPage = React.createClass({
         <div style={{position: "relative"}}>
           <HyperplaneVis
             dim={this.props.dim}
-            mode={this.state.mode}
+            mode={Modes.TRY_HYPERPLANE}
             pointClasses={this.state.pointClasses}
             updatePointClasses={this.updatePointClasses}
             highlightedW={this.state.highlightedW}

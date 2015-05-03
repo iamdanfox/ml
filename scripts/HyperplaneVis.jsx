@@ -22,7 +22,7 @@ var HyperplaneVis = React.createClass({
     mode: React.PropTypes.number.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
     updatePointClasses: React.PropTypes.func.isRequired,
-    highlightedW: React.PropTypes.object.isRequired,
+    highlightedW: React.PropTypes.object,
     highlightW: React.PropTypes.func.isRequired,
     optimiserLine: React.PropTypes.array
   },
