@@ -30,4 +30,4 @@ var ReplacePointsBar = React.createClass({
   }
 });
 
-module.exports = {ReplacePointsButton, ReplacePointsBar};
+module.exports = ReplacePointsBar;
