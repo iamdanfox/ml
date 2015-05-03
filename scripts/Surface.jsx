@@ -20,22 +20,14 @@ type State = {
 type PointClasses = [Array<P2>, Array<P2>];
 type Props = {
   dim: number;
-  pointClasses: PointClasses;
-  highlightedW: ?[number, number];
   highlightW: F<[number, number], void>;
+  pointClasses: PointClasses;
   projectedError: (w: P2, pointClasses: PointClasses) => number;
 }
 
 
 
 var Surface = React.createClass({
-  propTypes: {
-    dim: React.PropTypes.number.isRequired,
-    highlightW: React.PropTypes.func.isRequired,
-    highlightedW: React.PropTypes.any, // technically a tuple...
-    pointClasses: React.PropTypes.array.isRequired,
-    projectedError: React.PropTypes.func.isRequired
-  },
 
   getInitialState: function(): State {
     var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 ); // Field of view, aspect ratio, near clip, far clip
@@ -72,20 +64,13 @@ var Surface = React.createClass({
   },
 
   componentWillUpdate: function(nextProps: Props, nextState?: State): void {
-    // console.log('Surface componentWillUpdate', this.props.children);
-
-
-
     if ((nextProps.pointClasses[0].length !== this.props.pointClasses[0].length) ||
       (nextProps.pointClasses[1].length !== this.props.pointClasses[1].length)) {
       this.updateGraphMesh(nextProps);
     }
     if (typeof nextState !== "undefined" && nextState !== null) {
       this.updateCamera(nextState);
-
     }
-
-    this.state.renderer.render(this.state.scene, this.state.camera);
   },
 
   updateCamera: function(state: State): void {
@@ -228,13 +213,16 @@ var Surface = React.createClass({
 
   render: function(): ?ReactElement {
     var mergeInProps = {
-      highlightedW: this.props.highlightedW,
       pointClasses: this.props.pointClasses,
       projectedError: this.props.projectedError,
       scene: this.state.scene
     };
     var children = React.Children.map(this.props.children, function(childElement) {
-      return React.cloneElement(childElement, mergeInProps);
+      if (React.isValidElement(childElement)) {
+        return React.cloneElement(childElement, mergeInProps);
+      } else {
+        return null;
+      }
     });
 
     this.state.renderer.render(this.state.scene, this.state.camera);

@@ -15,13 +15,6 @@ type Props = {
 
 
 var CursorSphere = React.createClass({
-  propTypes: {
-    highlightedW: React.PropTypes.any.isRequired,
-    pointClasses: React.PropTypes.array.isRequired,
-    projectedError: React.PropTypes.func.isRequired,
-    scene: React.PropTypes.any.isRequired
-  },
-
   getInitialState: function() {
     return {
       sphere: new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() )

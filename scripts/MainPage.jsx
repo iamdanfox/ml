@@ -114,12 +114,14 @@ var MainPage = React.createClass({
           </div>
         </div>
 
-        <Surface dim={this.props.dim}
-            pointClasses={this.state.pointClasses} projectedError={this.props.projectedError}
-            highlightedW={this.state.highlightedW} highlightW={this.highlightW}>
+        <Surface
+            dim={this.props.dim}
+            pointClasses={this.state.pointClasses}
+            projectedError={this.props.projectedError}
+            highlightW={this.highlightW}>
 
           <OptimiserLine vertices={this.state.optimiserLine} />
-          <CursorSphere highlightedW={this.state.highlightedW} />
+          {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
 
         </Surface>
 
