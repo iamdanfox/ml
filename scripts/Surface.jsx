@@ -238,25 +238,25 @@ var Surface = React.createClass({
   },
 
   updateOptimiserLineIfNecessary: function(props: Props): void {
-    var optimiserLine = props.optimiserLine; // makes flowtype happy...
-    if (optimiserLine !== this.props.optimiserLine &&
-      (typeof optimiserLine !== "undefined" && optimiserLine !== null)) {
+    // var optimiserLine = props.optimiserLine; // makes flowtype happy...
+    // if (optimiserLine !== this.props.optimiserLine &&
+    //   (typeof optimiserLine !== "undefined" && optimiserLine !== null)) {
 
-      var geometry = new THREE.Geometry();
-      this.state.scene.remove(this.state.pathLine);
+    //   var geometry = new THREE.Geometry();
+    //   this.state.scene.remove(this.state.pathLine);
 
-      geometry.vertices = optimiserLine.map(
-        (w) => {
-          var z = this.props.projectedError(w, this.props.pointClasses);
-          return new THREE.Vector3(w.x, w.y, z + 3); // hack to keep the line above the surface. (better would be smart interpolation)
-        }
-      );
+    //   geometry.vertices = optimiserLine.map(
+    //     (w) => {
+    //       var z = this.props.projectedError(w, this.props.pointClasses);
+    //       return new THREE.Vector3(w.x, w.y, z + 3); // hack to keep the line above the surface. (better would be smart interpolation)
+    //     }
+    //   );
 
-      var lineMaterial = new THREE.LineBasicMaterial({color: 0xffffff});
-      var newPathLine = new THREE.Line(geometry, lineMaterial);
-      this.setState({pathLine: newPathLine});
-      this.state.scene.add( newPathLine );
-    }
+    //   var lineMaterial = new THREE.LineBasicMaterial({color: 0xffffff});
+    //   var newPathLine = new THREE.Line(geometry, lineMaterial);
+    //   this.setState({pathLine: newPathLine});
+    //   this.state.scene.add( newPathLine );
+    // }
   },
 
   raycast: function(camera: THREE.Camera, e: React.SyntheticEvent): THREE.Raycaster {
@@ -270,9 +270,6 @@ var Surface = React.createClass({
   },
 
   render: function(): ?ReactElement {
-    console.log('Surface.render')
-    // maybe map over children with React.cloneElement to inject extra props??
-
     var mergeInProps = {
       pointClasses: this.props.pointClasses,
       projectedError: this.props.projectedError,
@@ -281,6 +278,9 @@ var Surface = React.createClass({
     var children = React.Children.map(this.props.children, function(childElement) {
       return React.cloneElement(childElement, mergeInProps);
     });
+
+    console.log('rendering scene', this.state.scene)
+    this.state.renderer.render(this.state.scene, this.state.camera);
 
     return (
       <div ref="container" style={{display: "inline-block"}}

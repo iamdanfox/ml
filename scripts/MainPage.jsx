@@ -23,18 +23,17 @@ var OptimiserLine = React.createClass({
 
   getInitialState: function() {
     return {
-      geometry: new THREE.Geometry()
+      line: null
     };
   },
 
   componentWillMount: function() {
-    console.log('mount');
-    // TODO add to scene
+    // console.log('adding to scene', this.props.scene, this.state.line)
+    // this.props.scene.add(this.state.line);
   },
 
   componentWillUnmount: function() {
-    console.log('unmount');
-    // TODO remove from scene
+    // this.props.scene.remove(this.state.line);
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
@@ -46,17 +45,28 @@ var OptimiserLine = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     var vertices = nextProps.vertices;
     if (typeof vertices !== "undefined" && vertices !== null) {
-      this.state.geometry.vertices = vertices.map(
+      console.log('updating vertices', vertices.length)
+      this.props.scene.remove(this.state.line)
+
+      var LINE_MATERIAL = new THREE.LineBasicMaterial({color: 0xffffff});
+      var geometry = new THREE.Geometry();
+      var line = new THREE.Line(geometry, LINE_MATERIAL);
+
+      geometry.vertices = vertices.map(
         (w) => {
           var z = nextProps.projectedError(w, nextProps.pointClasses);
           return new THREE.Vector3(w.x, w.y, z + 3); // hack to keep the line above the surface. (better would be smart interpolation)
         }
-      )
+      );
+
+      nextProps.scene.add(line);
+      this.setState({
+        line: line
+      });
     }
   },
 
   render: function(): ?ReactElement {
-    console.log('Line.render');
     return null;
   }
 });
