@@ -60,13 +60,9 @@ var Surface = React.createClass({
 
   componentDidMount: function() {
     this.updateGraphMesh(this.props);
-
-
     this.updateCamera(this.state);
     this.state.renderer.setSize( this.props.dim, this.props.dim );
     this.refs.container.getDOMNode().appendChild(this.state.renderer.domElement);
-
-    this.state.renderer.render(this.state.scene, this.state.camera);
   },
 
   componentWillUpdate: function(nextProps: Props, nextState?: State): void {
@@ -135,7 +131,7 @@ var Surface = React.createClass({
   },
 
   mouseDown: function(e: React.SyntheticEvent): void {
-    var intersections = this.raycast(this.state.camera, e).intersectObject(this.state.graph);
+    var intersections = this.raycast(this.state.camera, e).intersectObjects(this.state.scene.children);
     if (intersections.length > 0){ // try to drag
       this.setState({
         mouseDownCamera: this.state.camera.clone(),
@@ -200,7 +196,7 @@ var Surface = React.createClass({
   },
 
   handleHover: function(e: React.SyntheticEvent): void {
-    var intersections = this.raycast(this.state.camera, e).intersectObject(this.state.graph);
+    var intersections = this.raycast(this.state.camera, e).intersectObjects(this.state.scene.children);
     if (intersections.length > 0) {
       var {x, y} = intersections[0].point;
       this.props.highlightW(x, y);
@@ -219,6 +215,7 @@ var Surface = React.createClass({
 
   render: function(): ?ReactElement {
     var mergeInProps = {
+      dim: this.props.dim,
       pointClasses: this.props.pointClasses,
       projectedError: this.props.projectedError,
       scene: this.state.scene

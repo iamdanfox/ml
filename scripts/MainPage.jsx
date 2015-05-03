@@ -10,6 +10,7 @@ var {computePerceptronWeight} = require("./Perceptron.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 var OptimiserLine = require('./OptimiserLine.jsx');
 var CursorSphere = require('./CursorSphere.jsx');
+var ParametricGraph = require('./ParametricGraph.jsx');
 
 type P2 = {x: number; y: number};
 
@@ -120,6 +121,7 @@ var MainPage = React.createClass({
             projectedError={this.props.projectedError}
             highlightW={this.highlightW}>
 
+          <ParametricGraph />
           <OptimiserLine vertices={this.state.optimiserLine} />
           {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
 
