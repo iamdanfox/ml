@@ -7,6 +7,7 @@
 var CursorSphere = require('./CursorSphere.jsx');
 var Draggable3DScene = require("./Draggable3DScene.jsx");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
+var K = require("./Katex.jsx")
 var Modes = require("./Modes.js");
 var OptimiserLine = require('./OptimiserLine.jsx');
 var ParametricGraph = require('./ParametricGraph.jsx');
@@ -77,43 +78,58 @@ var MainVis = React.createClass({
     //     onClick={this.updateMode(Modes.REMOVE_DATA)}>Remove Data</button>
     // </div>
 
-    return (
-      <div style={{display: "flex", justifyContent: "space-between" }}>
-        <div style={{position: "relative"}}>
-          <HyperplaneVis
-            dim={this.props.dim}
-            mode={Modes.TRY_HYPERPLANE}
-            pointClasses={this.state.pointClasses}
-            updatePointClasses={this.updatePointClasses}
-            highlightedW={this.state.highlightedW}
-            highlightW={this.highlightW}
-            optimiserLine={optimiserLine} />
+    var formatW = (w) => {
+      var {x, y} = w;
+      var xVal = Math.floor(10 * x) / 10;
+      var yVal = Math.floor(10 * y) / 10;
+      return xVal + ", " + yVal;
+    }
 
-          <div style={{position: "absolute", bottom: 0, left: 0}}>
-            <button
-                onMouseOver={this.replacePointClasses(require('../data/points.js'))}>
-              Default
-            </button>
-            <button
-                onMouseOver={this.replacePointClasses(require('../data/closePoints.js'))}>
-              Close
-            </button>
-            <button
-                onMouseOver={this.replacePointClasses(require('../data/overlapPoints.js'))}>
-              Overlap
-            </button>
+    return (
+      <div>
+        <div style={{display: "flex", justifyContent: "space-between" }}>
+          <div style={{position: "relative"}}>
+            <HyperplaneVis
+              dim={this.props.dim}
+              mode={Modes.TRY_HYPERPLANE}
+              pointClasses={this.state.pointClasses}
+              updatePointClasses={this.updatePointClasses}
+              highlightedW={this.state.highlightedW}
+              highlightW={this.highlightW}
+              optimiserLine={optimiserLine} />
+
+            <div style={{position: "absolute", bottom: 0, left: 0}}>
+              <button
+                  onMouseOver={this.replacePointClasses(require('../data/points.js'))}>
+                Default
+              </button>
+              <button
+                  onMouseOver={this.replacePointClasses(require('../data/closePoints.js'))}>
+                Close
+              </button>
+              <button
+                  onMouseOver={this.replacePointClasses(require('../data/overlapPoints.js'))}>
+                Overlap
+              </button>
+            </div>
           </div>
+
+          <Draggable3DScene dim={this.props.dim} pointClasses={this.state.pointClasses}
+              projectedError={this.props.projectedError} highlightW={this.highlightW}>
+
+            <ParametricGraph />
+            <OptimiserLine vertices={optimiserLine} />
+            {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
+
+          </Draggable3DScene>
+
         </div>
 
-        <Draggable3DScene dim={this.props.dim} pointClasses={this.state.pointClasses}
-            projectedError={this.props.projectedError} highlightW={this.highlightW}>
+        <div>
+        { this.state.highlightedW  && <div><K tex={"initial~~ \\large w_0 = [" + formatW(this.state.highlightedW) + "]"} /></div>}
 
-          <ParametricGraph />
-          <OptimiserLine vertices={optimiserLine} />
-          {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
-
-        </Draggable3DScene>
-
+          {optimiserLine && <div><K tex={"output~~ \\large w = [" + formatW(optimiserLine[optimiserLine.length - 1]) + "]"} /></div> }
+        </div>
       </div>
     );
   }
