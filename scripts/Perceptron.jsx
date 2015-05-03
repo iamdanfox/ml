@@ -6,7 +6,7 @@ type PointClasses = [Array<P2>,Array<P2>];
 "use strict";
 
 
-var {add, scale, pointClassesTransform, classify, classTransform} = require("./VectorUtils.jsx");
+var {add, scale, pointClassesTransform, classify, classTransform, dotProduct} = require("./VectorUtils.jsx");
 
 /*
 The Perceptron training algorithm cycles through each training
@@ -55,5 +55,18 @@ function computePerceptronWeight(startWeight: P2, pointClasses: PointClasses): A
 }
 
 module.exports = {
+
+  objective: function(w: P2, pointClasses: [Array<P2>, Array<P2>]): number {
+    var class0 = pointClasses[0].filter(function(p) { return dotProduct(p, w) <= 0; });
+    var class1 = pointClasses[1].filter(function(p) { return dotProduct(p, w) > 0; });
+    var misclassifieds = class0.concat(class1);
+
+    if (misclassifieds.length === 0) {
+      return 100; // incorporates prettiness scaling...
+    } else {
+      return 0;
+    }
+  },
+
   computePerceptronWeight: computePerceptronWeight
 };

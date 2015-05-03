@@ -1,7 +1,7 @@
 /* @flow */
 type P2 = {x: number; y: number};
 type P2t = {x: number; y: number; t: number};
-type PointClasses = [Array<P2>,Array<P2>];
+type PointClasses = [Array<P2>, Array<P2>];
 
 "use strict";
 
@@ -18,6 +18,8 @@ function logSigmoid(wx): number {
 function logOneMinusSigmoid(wx): number {
   return -Math.log(Math.exp(wx) + 1); // "equivalent" formulations of this don't give same results!
 }
+
+
 
 var ANTI_OVERFLOW_FUDGE = 1 / 200;
 
@@ -37,6 +39,7 @@ function objective(w: P2, pointClasses: PointClasses): number {
   // flip representation because Surface.jsx shows maximisation
   return 100 - Math.log(1 + sum) * 10;
 }
+
 
 
 var NU = 0.03;
@@ -70,6 +73,8 @@ function optimise(startW: P2, pointClasses: PointClasses): Array<P2> {
   return stops;
 }
 
+
+
 function fastOptimise(startW: P2, pointClasses: PointClasses): number {
   var points = pointClassesTransformZeroOne(pointClasses);
 
@@ -97,6 +102,8 @@ function fastOptimise(startW: P2, pointClasses: PointClasses): number {
 
   return stops;
 }
+
+
 
 module.exports = {
   objective: objective,

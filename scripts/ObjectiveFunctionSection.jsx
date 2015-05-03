@@ -11,10 +11,10 @@ var Draggable3DScene = require("./Draggable3DScene.jsx");
 var K = require("./Katex.jsx");
 var OptimiserLine = require("./OptimiserLine.jsx");
 var ParametricGraph = require("./ParametricGraph.jsx");
+var perceptronError = require("./Perceptron.jsx").objective;
 var React = require("react");
 var ReplacePointsBar = require("./ReplacePointsBar.jsx");
 var {computePerceptronWeight} = require("./Perceptron.jsx");
-var {perceptronError} = require("./LeastSquares.jsx");
 
 
 
