@@ -41,11 +41,13 @@ var CursorSphere = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps: Props) {
-    var highlightedW = nextProps.highlightedW;
-    if (typeof highlightedW !== "undefined" && highlightedW !== null) {
-      var [x, y] = highlightedW;
-      var z = nextProps.projectedError({x, y}, nextProps.pointClasses);
-      this.state.sphere.position.set(x, y, z);
+    if (this.shouldComponentUpdate(nextProps)) {
+      var highlightedW = nextProps.highlightedW;
+      if (typeof highlightedW !== "undefined" && highlightedW !== null) {
+        var [x, y] = highlightedW;
+        var z = nextProps.projectedError({x, y}, nextProps.pointClasses);
+        this.state.sphere.position.set(x, y, z);
+      }
     }
   },
 

@@ -13,10 +13,10 @@ type Props = {
   scene: THREE.Scene;
 }
 type State = {
-  graph: ?THREE.Mesh;
+  graph: THREE.Mesh;
 }
 
-
+var COLOUR_CURVE = (z) => 0.07 + 0.93 * Math.pow(z, 2);
 
 var ParametricGraph = React.createClass({
   propTypes: {
@@ -27,11 +27,23 @@ var ParametricGraph = React.createClass({
   },
 
   getInitialState: function(): State {
-    return {graph: null};
+    return {
+      graph: new THREE.Mesh(
+        this.colourGeometry(this.buildInitialGeometry(this.props)),
+        new THREE.MeshBasicMaterial({
+          side: THREE.DoubleSide,
+          vertexColors: THREE.FaceColors
+        })
+      )
+    };
   },
 
   componentWillMount: function() {
-    this.buildGraph(this.props);
+    this.props.scene.add(this.state.graph);
+  },
+
+  componentWillUnmount: function() {
+    this.props.scene.remove(this.state.graph);
   },
 
   shouldComponentUpdate: function(nextProps: Props): bool {
@@ -41,26 +53,19 @@ var ParametricGraph = React.createClass({
 
   componentWillReceiveProps: function(nextProps: Props) {
     if (this.shouldComponentUpdate(nextProps)) {
-      this.buildGraph(nextProps);
+      var geometry = this.state.graph.geometry;
+
+      for (var i = 0; i < geometry.vertices.length; i = i + 1) {
+        var vertex = geometry.vertices[i];
+        vertex.setZ(nextProps.projectedError(vertex, nextProps.pointClasses));
+      }
+
+      this.colourGeometry(geometry);
+      this.state.graph.geometry.verticesNeedUpdate = true;
     }
   },
 
-  buildGraph: function(props: Props): void {
-    this.props.scene.remove(this.state.graph);
-
-    var newGraph = new THREE.Mesh(
-      this.colourGraphGeometry(this.buildGraphGeometry(props)),
-      new THREE.MeshBasicMaterial({
-        side: THREE.DoubleSide,
-        vertexColors: THREE.FaceColors
-      })
-    );
-
-    this.setState({graph: newGraph});
-    this.props.scene.add( newGraph );
-  },
-
-  buildGraphGeometry: function(props: Props): THREE.ParametricGeometry {
+  buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
     var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var theta = i * 2 * Math.PI;
       var r = Math.pow(1.8, j * j) - 1; // this ensures there are lots of samples near the origin and gets close to 0!
@@ -74,12 +79,10 @@ var ParametricGraph = React.createClass({
     return new THREE.ParametricGeometry( polarMeshFunction.bind(this), 8 * RESOLUTION, 0.5 * RESOLUTION, true );
   },
 
-  colourGraphGeometry: function(graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
+  colourGeometry: function(graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
     graphGeometry.computeBoundingBox();
     var zMin = graphGeometry.boundingBox.min.z;
     var zRange = graphGeometry.boundingBox.max.z - zMin;
-
-    var colourCurve = (z) => 0.07 + 0.93 * Math.pow(z, 2);
 
     for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
       var face = graphGeometry.faces[i];
@@ -87,8 +90,10 @@ var ParametricGraph = React.createClass({
         graphGeometry.vertices[face.b].z +
         graphGeometry.vertices[face.c].z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-      face.color.setHSL( 0.54, 0.8, colourCurve(normalizedZ));
+      face.color.setHSL( 0.54, 0.8, COLOUR_CURVE(normalizedZ));
     }
+
+    graphGeometry.colorsNeedUpdate = true;
     return graphGeometry;
   },
 

@@ -36,23 +36,26 @@ var OptimiserLine = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps: Props) {
-    var vertices = nextProps.vertices;
-    if (typeof vertices !== "undefined" && vertices !== null) {
+    if (this.shouldComponentUpdate(nextProps)) {
+      var vertices = nextProps.vertices;
       this.props.scene.remove(this.state.line);
 
-      var LINE_MATERIAL = new THREE.LineBasicMaterial({color: 0xffffff});
-      var geometry = new THREE.Geometry();
-      var line = new THREE.Line(geometry, LINE_MATERIAL);
+      if (typeof vertices !== "undefined" && vertices !== null) {
 
-      geometry.vertices = vertices.map(
-        (w) => {
-          var z = nextProps.projectedError(w, nextProps.pointClasses);
-          return new THREE.Vector3(w.x, w.y, z + 3); // hack to keep the line above the surface. (better would be smart interpolation)
-        }
-      );
+        var LINE_MATERIAL = new THREE.LineBasicMaterial({color: 0xffffff});
+        var geometry = new THREE.Geometry();
+        var line = new THREE.Line(geometry, LINE_MATERIAL);
 
-      nextProps.scene.add(line);
-      this.setState({line: line});
+        geometry.vertices = vertices.map(
+          (w) => {
+            var z = nextProps.projectedError(w, nextProps.pointClasses);
+            return new THREE.Vector3(w.x, w.y, z + 3); // hack to keep the line above the surface. (better would be smart interpolation)
+          }
+        );
+
+        nextProps.scene.add(line);
+        this.setState({line: line});
+      }
     }
   },
 
