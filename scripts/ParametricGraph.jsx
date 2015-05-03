@@ -7,7 +7,9 @@ var THREE = require('three');
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
 type Props = {
-  colourFunction: (boundingBox: any, v1: THREE.Vector3, v2: THREE.Vector3, v3: THREE.Vector3, mutableFaceColor: THREE.Color) => void;
+  colourFunction: (boundingBox: any,
+    v1: THREE.Vector3, v2: THREE.Vector3, v3: THREE.Vector3,
+    mutableFaceColor: THREE.Color) => void;
   dim: number;
   pointClasses: PointClasses;
   projectedError: (w: P2, pointClasses: PointClasses) => number;
@@ -57,7 +59,7 @@ var ParametricGraph = React.createClass({
         var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
         mutableFaceColor.setHSL(0.54, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
       }
-    }
+    };
   },
 
   getInitialState: function(): State {
@@ -109,8 +111,6 @@ var ParametricGraph = React.createClass({
 
   colourGeometry: function(graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
     graphGeometry.computeBoundingBox();
-    var zMin = graphGeometry.boundingBox.min.z;
-    var zRange = graphGeometry.boundingBox.max.z - zMin;
 
     for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
       var face = graphGeometry.faces[i];

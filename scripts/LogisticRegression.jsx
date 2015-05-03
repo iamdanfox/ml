@@ -70,7 +70,37 @@ function optimise(startW: P2, pointClasses: PointClasses): Array<P2> {
   return stops;
 }
 
+function fastOptimise(startW: P2, pointClasses: PointClasses): number {
+  var points = pointClassesTransformZeroOne(pointClasses);
+  var len = points.length;
+
+  function gradient(w: P2): P2 {
+    var smallerW = {x: ANTI_OVERFLOW_FUDGE * w.x, y: ANTI_OVERFLOW_FUDGE * w.y};
+    var grad = {x: 0, y: 0};
+
+    for (var i = 0; i < len; i = i + 1) {
+      var point = points[i];
+      var scaleFactor = sigmoid(smallerW.x * point.x + smallerW.y * point.y) - point.t;
+      grad.x = grad.x + scaleFactor * point.x;
+      grad.y = grad.y + scaleFactor * point.y; // inlined scale factor and dot products here to reduce GC
+    }
+    return grad;
+  }
+
+  var w = startW.clone();
+  var grad;
+  var stops = 1;
+  while (grad = gradient(w, pointClasses), modulus(grad) > ACCEPTING_GRAD && stops < MAX_STOPS) {
+    w.x = w.x - NU * grad.x;
+    w.y = w.y - NU * grad.y;
+    stops = stops + 1;
+  }
+
+  return stops;
+}
+
 module.exports = {
   objective: objective,
-  optimise: optimise
+  optimise: optimise,
+  fastOptimise: fastOptimise
 };

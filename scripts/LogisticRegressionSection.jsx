@@ -4,7 +4,7 @@
 var React = require("react");
 var MainVis = require("./MainVis.jsx");
 
-var {objective, optimise} = require("./LogisticRegression.jsx");
+var {objective, optimise, fastOptimise} = require("./LogisticRegression.jsx");
 var K = require('./Katex.jsx');
 
 
@@ -75,7 +75,7 @@ var LogisticRegressionSection = React.createClass({
 
 
       <div style={{width: "1000px"}}>
-        <MainVis dim={500} projectedError={objective} optimiserFunction={optimise} />
+        <MainVis dim={500} projectedError={objective} optimiserFunction={optimise} fastOptimise={fastOptimise} />
       </div>
 
       <p>

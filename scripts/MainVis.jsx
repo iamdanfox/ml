@@ -7,7 +7,7 @@
 var CursorSphere = require('./CursorSphere.jsx');
 var Draggable3DScene = require("./Draggable3DScene.jsx");
 var HyperplaneVis = require("./HyperplaneVis.jsx");
-var K = require("./Katex.jsx")
+var K = require("./Katex.jsx");
 var Modes = require("./Modes.js");
 var OptimiserLine = require('./OptimiserLine.jsx');
 var ParametricGraph = require('./ParametricGraph.jsx');
@@ -66,18 +66,25 @@ var MainVis = React.createClass({
     if (typeof this.props.optimiserFunction !== "undefined" &&
         this.props.optimiserFunction !== null) {
 
+      var numStops;
+      if (this.props.fastOptimise) {
+        numStops = this.props.fastOptimise;
+      } else {
+        numStops = (function(startW, pointClasses) {
+          return this.props.optimiserFunction(startW, this.state.pointClasses).length;
+        }).bind(this);
+      }
+
+
       colourFunction = (function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor): void {
         var zMin = boundingBox.min.z;
         var zRange = boundingBox.max.z - zMin;
         var totalZ = vertex1.z + vertex2.z + vertex3.z;
         var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
 
-        var steps = this.props.optimiserFunction(vertex1, this.state.pointClasses);
-        var l = steps.length / 500;
+        var stops = numStops(vertex1, this.state.pointClasses) / 500;
 
-
-        mutableFaceColor.setHSL(0.54 + l * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
-        // mutableFaceColor.setHSL(0.54 + l * 0.2, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
+        mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
       }).bind(this);
 
 
@@ -101,7 +108,7 @@ var MainVis = React.createClass({
       var xVal = Math.floor(10 * x) / 10;
       var yVal = Math.floor(10 * y) / 10;
       return xVal + ", " + yVal;
-    }
+    };
 
     return (
       <div>
@@ -135,7 +142,7 @@ var MainVis = React.createClass({
           <Draggable3DScene dim={this.props.dim} pointClasses={this.state.pointClasses}
               projectedError={this.props.projectedError} highlightW={this.highlightW}>
 
-            <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction} />
+            <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction} fastOptimise={this.props.fastOptimise} />
             <OptimiserLine vertices={optimiserLine} />
             {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
 
