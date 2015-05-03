@@ -82,6 +82,10 @@ var Surface = React.createClass({
   },
 
   componentWillUpdate: function(nextProps: Props, nextState?: State): void {
+    // console.log('Surface componentWillUpdate', this.props.children);
+
+
+
     if ((nextProps.pointClasses[0].length !== this.props.pointClasses[0].length) ||
       (nextProps.pointClasses[1].length !== this.props.pointClasses[1].length)) {
       this.updateGraphMesh(nextProps);
@@ -266,11 +270,25 @@ var Surface = React.createClass({
   },
 
   render: function(): ?ReactElement {
+    console.log('Surface.render')
+    // maybe map over children with React.cloneElement to inject extra props??
+
+    var mergeInProps = {
+      pointClasses: this.props.pointClasses,
+      projectedError: this.props.projectedError,
+      scene: this.state.scene
+    };
+    var children = React.Children.map(this.props.children, function(childElement) {
+      return React.cloneElement(childElement, mergeInProps);
+    });
+
     return (
       <div ref="container" style={{display: "inline-block"}}
-        onMouseDown={this.mouseDown}
-        onMouseUp={this.mouseUp}
-        onMouseMove={this.mouseMove}></div>
+          onMouseDown={this.mouseDown}
+          onMouseUp={this.mouseUp}
+          onMouseMove={this.mouseMove}>
+        {children}
+      </div>
     );
   }
 });

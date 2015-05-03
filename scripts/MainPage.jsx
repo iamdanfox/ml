@@ -11,6 +11,55 @@ var MaximumMargin = require("./MaximumMargin.jsx");
 
 type P2 = {x: number; y: number};
 
+var THREE = require('three');
+
+
+var OptimiserLine = React.createClass({
+  propTypes: {
+    vertices: React.PropTypes.array.isRequired,
+    projectedError: React.PropTypes.func.isRequired,
+    pointClasses: React.PropTypes.array.isRequired
+  },
+
+  getInitialState: function() {
+    return {
+      geometry: new THREE.Geometry()
+    };
+  },
+
+  componentWillMount: function() {
+    console.log('mount');
+    // TODO add to scene
+  },
+
+  componentWillUnmount: function() {
+    console.log('unmount');
+    // TODO remove from scene
+  },
+
+  shouldComponentUpdate: function(nextProps, nextState) {
+    return (nextProps.vertices !== this.props.vertices ||
+      nextProps.pointClasses !== this.props.pointClasses ||
+      nextProps.projectedError !== this.props.projectedError)
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    var vertices = nextProps.vertices;
+    if (typeof vertices !== "undefined" && vertices !== null) {
+      this.state.geometry.vertices = vertices.map(
+        (w) => {
+          var z = nextProps.projectedError(w, nextProps.pointClasses);
+          return new THREE.Vector3(w.x, w.y, z + 3); // hack to keep the line above the surface. (better would be smart interpolation)
+        }
+      )
+    }
+  },
+
+  render: function(): ?ReactElement {
+    console.log('Line.render');
+    return null;
+  }
+});
 
 
 var MainPage = React.createClass({
@@ -113,9 +162,11 @@ var MainPage = React.createClass({
         </div>
 
         <Surface dim={this.props.dim}
-          pointClasses={this.state.pointClasses} projectedError={this.props.projectedError}
-          highlightedW={this.state.highlightedW} highlightW={this.highlightW}
-          optimiserLine={this.state.optimiserLine} />
+            pointClasses={this.state.pointClasses} projectedError={this.props.projectedError}
+            highlightedW={this.state.highlightedW} highlightW={this.highlightW}
+            optimiserLine={this.state.optimiserLine}>
+          <OptimiserLine vertices={this.state.optimiserLine} />
+        </Surface>
 
 
         { false && <div>
