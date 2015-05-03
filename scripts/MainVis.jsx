@@ -82,7 +82,7 @@ var MainVis = React.createClass({
         var totalZ = vertex1.z + vertex2.z + vertex3.z;
         var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
 
-        var stops = numStops(vertex1, this.state.pointClasses) / 500;
+        var stops = numStops(vertex1, this.state.pointClasses) / 250; // should match MAX_STOPS
 
         mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
       }).bind(this);
