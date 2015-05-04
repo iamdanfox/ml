@@ -8,12 +8,12 @@ var worker = new Worker("./build/worker.bundle.js");
 var subscribers = {};
 
 worker.onmessage = function(event: any) {
-  var {reactElementId, mesh} = event.data;
+  var {reactElementId, result} = event.data;
 
   if (reactElementId in subscribers) {
-    subscribers[reactElementId](mesh);
+    subscribers[reactElementId](result);
   } else {
-    console.log("no subscriber for: ", reactElementId, mesh, event);
+    console.log("no subscriber for: ", reactElementId, result, event);
   }
 };
 
@@ -31,7 +31,7 @@ module.exports = {
         typeof thetaResolution === "number" &&
         typeof rResolution === "number" &&
         pointClasses instanceof Array);
-      console.log('sending', reactElementId);
+      console.log('sending', reactElementId, pointClasses);
       worker.postMessage({reactElementId, thetaResolution, rResolution, dim, pointClasses});
     };
   },

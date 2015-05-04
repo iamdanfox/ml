@@ -1,10 +1,10 @@
 /* @flow */
 "use strict";
 
-var workerSlug = require("./WebWorkerGraphSlug.jsx");
+var {respond} = require("./WebWorkerGraphSlug.jsx");
 
 self.addEventListener('message', function(event) {
   var {reactElementId, thetaResolution, rResolution, dim, pointClasses} = event.data;
-  var mesh = workerSlug(thetaResolution, rResolution, dim, pointClasses);
-  self.postMessage({reactElementId, mesh});
+  var result = respond(thetaResolution, rResolution, dim, pointClasses);
+  self.postMessage({reactElementId, result});
 });

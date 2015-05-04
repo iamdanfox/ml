@@ -2,7 +2,7 @@
 "use strict";
 
 var React = require("react/addons");
-var workerSlug = require("./WebWorkerGraphSlug.jsx");
+var WebWorkerGraphSlug = require("./WebWorkerGraphSlug.jsx");
 var WorkerBridge = require("./WorkerBridge.jsx");
 
 type P2 = {x: number; y: number};
@@ -42,18 +42,22 @@ var WebWorkerGraph = React.createClass({
   componentWillMount: function() {
     // synchronously compute the first graph.
     var {thetaResolution, rResolution, dim, pointClasses} = this.props;
-    var graph = workerSlug(thetaResolution, rResolution, dim, pointClasses)
+    var result = WebWorkerGraphSlug.respond(thetaResolution, rResolution, dim, pointClasses)
+    var graph = WebWorkerGraphSlug.reconstruct(result);
     this.setState({graph});
     this.props.scene.add(graph);
 
     // set up worker connection
     var reactElementId = this._reactInternalInstance._rootNodeID; // maybe cache a UUID instead?
     var webWorkerChannel = WorkerBridge.subscribe(reactElementId, this.receiveWebWorkerResponse);
-    webWorkerChannel(120, 40, 400, this.props.pointClasses);
+    webWorkerChannel(120, 40, 400, this.props.pointClasses); // real version
   },
 
-  receiveWebWorkerResponse: function(mesh): void {
-    console.log('reactElement received', mesh);
+  receiveWebWorkerResponse: function(result): void {
+    var newGraph = WebWorkerGraphSlug.reconstruct(result);
+    this.props.scene.remove(this.state.graph);
+    this.props.scene.add(newGraph);
+    this.setState({graph: newGraph});
   },
 
   componentWillUnmount: function() {

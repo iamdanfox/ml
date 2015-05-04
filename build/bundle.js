@@ -1571,7 +1571,7 @@ webpackJsonp([0],{
 	"use strict";
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var workerSlug = __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 172);
+	var WebWorkerGraphSlug = __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 172);
 	var WorkerBridge = __webpack_require__(/*! ./WorkerBridge.jsx */ 173);
 	
 	                                 
@@ -1611,18 +1611,22 @@ webpackJsonp([0],{
 	  componentWillMount: function() {
 	    // synchronously compute the first graph.
 	    var $__0=     this.props,thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,dim=$__0.dim,pointClasses=$__0.pointClasses;
-	    var graph = workerSlug(thetaResolution, rResolution, dim, pointClasses)
+	    var result = WebWorkerGraphSlug.respond(thetaResolution, rResolution, dim, pointClasses)
+	    var graph = WebWorkerGraphSlug.reconstruct(result);
 	    this.setState({graph:graph});
 	    this.props.scene.add(graph);
 	
 	    // set up worker connection
 	    var reactElementId = this._reactInternalInstance._rootNodeID; // maybe cache a UUID instead?
 	    var webWorkerChannel = WorkerBridge.subscribe(reactElementId, this.receiveWebWorkerResponse);
-	    webWorkerChannel(120, 40, 400, this.props.pointClasses);
+	    webWorkerChannel(120, 40, 400, this.props.pointClasses); // real version
 	  },
 	
-	  receiveWebWorkerResponse: function(mesh)       {
-	    console.log('reactElement received', mesh);
+	  receiveWebWorkerResponse: function(result)       {
+	    var newGraph = WebWorkerGraphSlug.reconstruct(result);
+	    this.props.scene.remove(this.state.graph);
+	    this.props.scene.add(newGraph);
+	    this.setState({graph: newGraph});
 	  },
 	
 	  componentWillUnmount: function() {
@@ -2174,11 +2178,25 @@ webpackJsonp([0],{
 	  graphGeometry.colorsNeedUpdate = true;
 	}
 	
-	module.exports = function respond(thetaResolution        , rResolution        , dim        , pointClasses              ) {
-	  var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
-	  colour(graphGeometry, pointClasses);
-	  return new THREE.Mesh(graphGeometry, MATERIAL.clone());
+	module.exports = {
+	  respond: function(thetaResolution        , rResolution        , dim        , pointClasses              ) {
+	    var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
+	    colour(graphGeometry, pointClasses);
+	    var $__0=   graphGeometry,faces=$__0.faces,vertices=$__0.vertices;
+	    return {faces:faces, vertices:vertices}; // clonable to send back!
+	  },
+	
+	  reconstruct: function(result)             {
+	    var $__0=   result,faces=$__0.faces,vertices=$__0.vertices;
+	    var geometry = new THREE.Geometry();
+	    geometry.vertices = vertices;
+	    geometry.verticesNeedUpdate = true;
+	    geometry.faces = faces;
+	    geometry.facesNeedUpdate = true;
+	    return new THREE.Mesh(geometry, MATERIAL.clone());
+	  }
 	};
+	
 
 
 /***/ },
@@ -2199,12 +2217,12 @@ webpackJsonp([0],{
 	var subscribers = {};
 	
 	worker.onmessage = function(event     ) {
-	  var $__0=   event.data,reactElementId=$__0.reactElementId,mesh=$__0.mesh;
+	  var $__0=   event.data,reactElementId=$__0.reactElementId,result=$__0.result;
 	
 	  if (reactElementId in subscribers) {
-	    subscribers[reactElementId](mesh);
+	    subscribers[reactElementId](result);
 	  } else {
-	    console.log("no subscriber for: ", reactElementId, mesh, event);
+	    console.log("no subscriber for: ", reactElementId, result, event);
 	  }
 	};
 	
@@ -2222,7 +2240,7 @@ webpackJsonp([0],{
 	        typeof thetaResolution === "number" &&
 	        typeof rResolution === "number" &&
 	        pointClasses instanceof Array);
-	      console.log('sending', reactElementId);
+	      console.log('sending', reactElementId, pointClasses);
 	      worker.postMessage({reactElementId:reactElementId, thetaResolution:thetaResolution, rResolution:rResolution, dim:dim, pointClasses:pointClasses});
 	    };
 	  },

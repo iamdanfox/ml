@@ -50,12 +50,12 @@
 	/* @flow */
 	"use strict";
 	
-	var workerSlug = __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 1);
+	var $__0=  __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 1),respond=$__0.respond;
 	
 	self.addEventListener('message', function(event) {
 	  var $__0=      event.data,reactElementId=$__0.reactElementId,thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,dim=$__0.dim,pointClasses=$__0.pointClasses;
-	  var mesh = workerSlug(thetaResolution, rResolution, dim, pointClasses);
-	  self.postMessage({reactElementId:reactElementId, mesh:mesh});
+	  var result = respond(thetaResolution, rResolution, dim, pointClasses);
+	  self.postMessage({reactElementId:reactElementId, result:result});
 	});
 
 
@@ -120,11 +120,25 @@
 	  graphGeometry.colorsNeedUpdate = true;
 	}
 	
-	module.exports = function respond(thetaResolution        , rResolution        , dim        , pointClasses              ) {
-	  var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
-	  colour(graphGeometry, pointClasses);
-	  return new THREE.Mesh(graphGeometry, MATERIAL.clone());
+	module.exports = {
+	  respond: function(thetaResolution        , rResolution        , dim        , pointClasses              ) {
+	    var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
+	    colour(graphGeometry, pointClasses);
+	    var $__0=   graphGeometry,faces=$__0.faces,vertices=$__0.vertices;
+	    return {faces:faces, vertices:vertices}; // clonable to send back!
+	  },
+	
+	  reconstruct: function(result)             {
+	    var $__0=   result,faces=$__0.faces,vertices=$__0.vertices;
+	    var geometry = new THREE.Geometry();
+	    geometry.vertices = vertices;
+	    geometry.verticesNeedUpdate = true;
+	    geometry.faces = faces;
+	    geometry.facesNeedUpdate = true;
+	    return new THREE.Mesh(geometry, MATERIAL.clone());
+	  }
 	};
+	
 
 
 /***/ },

@@ -52,8 +52,22 @@ function colour(graphGeometry, pointClasses): void {
   graphGeometry.colorsNeedUpdate = true;
 }
 
-module.exports = function respond(thetaResolution: number, rResolution: number, dim: number, pointClasses: PointClasses) {
-  var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
-  colour(graphGeometry, pointClasses);
-  return new THREE.Mesh(graphGeometry, MATERIAL.clone());
+module.exports = {
+  respond: function(thetaResolution: number, rResolution: number, dim: number, pointClasses: PointClasses) {
+    var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
+    colour(graphGeometry, pointClasses);
+    var {faces, vertices} = graphGeometry;
+    return {faces, vertices}; // clonable to send back!
+  },
+
+  reconstruct: function(result): THREE.Mesh {
+    var {faces, vertices} = result;
+    var geometry = new THREE.Geometry();
+    geometry.vertices = vertices;
+    geometry.verticesNeedUpdate = true;
+    geometry.faces = faces;
+    geometry.facesNeedUpdate = true;
+    return new THREE.Mesh(geometry, MATERIAL.clone());
+  }
 };
+
