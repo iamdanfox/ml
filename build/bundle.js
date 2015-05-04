@@ -2071,21 +2071,23 @@ webpackJsonp([0],{
 	  } else {
 	    console.log("no subscriber for: ", reactElementId, mesh);
 	  }
-	}
+	};
 	
 	
 	module.exports = {
 	
-	  subscribe: function(reactElementId        , callback              )                                                   {
+	  subscribe: function(
+	      reactElementId        ,
+	      callback              )                                                              {
 	    console.assert(!(reactElementId in subscribers), "No repeat subscribing: " + reactElementId);
 	    subscribers[reactElementId] = callback;
 	
-	    return function(thetaResolution        , rResolution        , pointClasses              ) {
+	    return function(thetaResolution        , rResolution        , dim        , pointClasses              ) {
 	      console.assert(
 	        typeof thetaResolution === "number" &&
 	        typeof rResolution === "number" &&
 	        pointClasses instanceof Array);
-	      worker.postMessage({reactElementId:reactElementId, thetaResolution:thetaResolution, rResolution:rResolution, pointClasses:pointClasses});
+	      worker.postMessage({reactElementId:reactElementId, thetaResolution:thetaResolution, rResolution:rResolution, dim:dim, pointClasses:pointClasses});
 	    };
 	  },
 	
@@ -2094,7 +2096,7 @@ webpackJsonp([0],{
 	    delete subscribers[reactElementId];
 	  }
 	
-	}
+	};
 
 
 /***/ }

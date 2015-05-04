@@ -17,21 +17,23 @@ worker.onmessage = function(event: any) {
   } else {
     console.log("no subscriber for: ", reactElementId, mesh);
   }
-}
+};
 
 
 module.exports = {
 
-  subscribe: function(reactElementId: string, callback: F<any, void>): (t: number, r: number, pc: PointClasses) => void {
+  subscribe: function(
+      reactElementId: string,
+      callback: F<any, void>): (t: number, r: number, d: number, pc: PointClasses) => void {
     console.assert(!(reactElementId in subscribers), "No repeat subscribing: " + reactElementId);
     subscribers[reactElementId] = callback;
 
-    return function(thetaResolution: number, rResolution: number, pointClasses: PointClasses) {
+    return function(thetaResolution: number, rResolution: number, dim: number, pointClasses: PointClasses) {
       console.assert(
         typeof thetaResolution === "number" &&
         typeof rResolution === "number" &&
         pointClasses instanceof Array);
-      worker.postMessage({reactElementId, thetaResolution, rResolution, pointClasses});
+      worker.postMessage({reactElementId, thetaResolution, rResolution, dim, pointClasses});
     };
   },
 
@@ -40,4 +42,4 @@ module.exports = {
     delete subscribers[reactElementId];
   }
 
-}
+};
