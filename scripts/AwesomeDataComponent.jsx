@@ -1,8 +1,13 @@
 /* @flow */
 "use strict";
-
+type F<U, V> = (x: U) => V;
+type P2 = {x: number; y: number};
+type PointGrp = {label: number; points: Array<P2>; generatedBy: any; mouseDownDiff: ?P2};
+type State = {
+  pointGroups: Array<PointGrp>
+}
 var React = require("react/addons");
-
+var {add, subtract} = require("./VectorUtils.jsx");
 
 
 
@@ -11,13 +16,14 @@ var PointGroup = React.createClass({
     label: React.PropTypes.number.isRequired, // 0 or 1
     points: React.PropTypes.array.isRequired,
     generatedBy: React.PropTypes.object.isRequired,
+    isMouseDown: React.PropTypes.bool.isRequired,
   },
 
   render: function(): ?ReactElement {
     var {x, y} = this.props.generatedBy.center;
     var {x: rx, y: ry} = this.props.generatedBy.skew;
     var fill = ["red", "blue"][this.props.label];
-    var opacity = (this.props.mouseDown) ? 0.6 : 0.3;
+    var opacity = (this.props.isMouseDown) ? 0.6 : 0.3;
     return (
       <g>
 
@@ -36,7 +42,7 @@ var PointGroup = React.createClass({
 
 var AwesomeDataComponent = React.createClass({
 
-  getInitialState: function() {
+  getInitialState: function(): State {
     return {
       pointGroups: [
         {
@@ -46,7 +52,7 @@ var AwesomeDataComponent = React.createClass({
             center: {x: 0.10, y: 0.10},
             skew: {x: 0.05, y: 0.4},
           },
-          mouseDown: false,
+          mouseDownDiff: null,
         },
         {
           points: [{x: 0.50, y: 0.50}],
@@ -55,30 +61,24 @@ var AwesomeDataComponent = React.createClass({
             center: {x: 0.50, y: 0.50},
             skew: {x: 0.2, y: 0.2},
           },
-          mouseDown: false,
+          mouseDownDiff: null,
         }
-      ],
-      context: null
+      ]
     };
   },
 
-  makeMouseDownHandler: function(mouseDownPointGroup) {
-    return (function (e: React.SyntheticEvent) {
-      mouseDownPointGroup.mouseDown = true;
-      var pointGroups = this.state.pointGroups.map((pg) => pg); // changed identity of list.
-      this.setState({pointGroups});
-    }).bind(this);
-  },
 
-  makeMouseUpHandler: function(mouseDownPointGroup) {
-    return (function (e: React.SyntheticEvent) {
-      mouseDownPointGroup.mouseDown = false;
-      console.log(mouseDownPointGroup.generatedBy.center, this.getMouseXY(e))
-      mouseDownPointGroup.generatedBy.center = this.getMouseXY(e);
-
-      var pointGroups = this.state.pointGroups.map((pg) => pg); // changed identity of list.
+  mouseMove: function(e: React.SyntheticEvent) {
+    if (this.state.pointGroups.some((pg) => pg.mouseDownDiff)) {
+      var pointGroups = this.state.pointGroups.map((pg) => {
+        var diff = pg.mouseDownDiff;
+        if (typeof diff !== "undefined" && diff !== null) {
+          pg.generatedBy.center = add(this.getMouseXY(e))(diff);
+        }
+        return pg;
+      });
       this.setState({pointGroups});
-    }).bind(this);
+    }
   },
 
   getMouseXY: function(e: React.SyntheticEvent): {x: number; y: number} {
@@ -89,17 +89,34 @@ var AwesomeDataComponent = React.createClass({
   },
 
   render: function(): ?ReactElement {
+
+    var children = this.state.pointGroups.map((pg) => {
+      var onMouseDown = (e) => {
+        pg.mouseDownDiff = subtract(pg.generatedBy.center)(this.getMouseXY(e));
+        var pointGroups = this.state.pointGroups.map((v) => v); // changed identity of list.
+        this.setState({pointGroups});
+      };
+
+      var onMouseUp = () => {
+        pg.mouseDownDiff = null;
+        this.setState({pointGroups: this.state.pointGroups.map((v) => v)});
+      };
+
+      var isMouseDown = typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null;
+
+      return <PointGroup {...pg}
+        onMouseDown={onMouseDown} isMouseDown={isMouseDown} onMouseUp={onMouseUp} />;
+    });
+
     return <svg
       ref="canvas"
       width={this.props.dim} height={this.props.dim}
-      style={{border: "1px solid red"}}>
+      style={{border: "1px solid red"}} onMouseMove={this.mouseMove}>
+
         <g transform={`translate(${this.props.dim / 2} ${this.props.dim / 2})
           scale(${this.props.dim / 2} ${-this.props.dim / 2})`}>
 
-        { this.state.pointGroups.map((pg) =>
-          <PointGroup onMouseDown={this.makeMouseDownHandler(pg)} mouseDown={pg.mouseDown}
-            onMouseUp={this.makeMouseUpHandler(pg)}
-            label={pg.label} points={pg.points} generatedBy={pg.generatedBy} />) }
+        { children }
 
         </g>
       </svg>;
