@@ -22,37 +22,56 @@ type State = {
 
 var WebWorkerGraph = React.createClass({
   propTypes: {
-    dim: React.PropTypes.number.isRequired, // 400
+    dim: React.PropTypes.number.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
     rResolution: React.PropTypes.number.isRequired, // 8
     scene: React.PropTypes.any.isRequired,
     thetaResolution: React.PropTypes.number.isRequired, // 24
   },
 
-  // 120 * 40 looks great... 4800 computations
-  // 96 * 32
-  // 72 * 24
-  // 36 * 12
-  // 24 * 8 is pretty much a minimum.
-
   getInitialState: function(): State {
-    return {graph: null};
+    return {
+      graph: null,
+      uuid: null,
+    };
   },
 
-  componentWillMount: function() {
-    // synchronously compute the first graph.
-    var {thetaResolution, rResolution, dim, pointClasses} = this.props;
+  componentWillReceiveProps: function(nextProps): void {
+    if (this.shouldComponentUpdate(nextProps)) {
+      this.unsubscribeFromWebWorker(); // ignore outstanding responses
+      this.synchronouslyComputeInitialGraph(nextProps);
+
+      var webWorkerChannel = this.subscribeToWebWorker();
+      this.asyncRequestGraphs(webWorkerChannel, nextProps);
+    }
+  },
+
+  shouldComponentUpdate: function(nextProps): bool {
+    return (nextProps.pointClasses != this.props.pointClasses);
+  },
+
+  synchronouslyComputeInitialGraph: function(props) {
+    if (this.state.graph) {
+      this.props.scene.remove(this.state.graph);
+    }
+    var {thetaResolution, rResolution, dim, pointClasses} = props;
     var result = WebWorkerGraphSlug.respond(thetaResolution, rResolution, dim, pointClasses)
     var graph = WebWorkerGraphSlug.reconstruct(result);
-    this.setState({graph});
-    this.props.scene.add(graph);
+    this.setState({graph: graph});
+    props.scene.add(graph);
+  },
 
-    // set up worker connection
-    var reactElementId = this._reactInternalInstance._rootNodeID; // maybe cache a UUID instead?
-    var webWorkerChannel = WorkerBridge.subscribe(reactElementId, this.receiveWebWorkerResponse);
-    webWorkerChannel(36, 12, this.props.dim, this.props.pointClasses);
-    webWorkerChannel(72, 24, this.props.dim, this.props.pointClasses);
-    webWorkerChannel(120, 40, this.props.dim, this.props.pointClasses);
+  asyncRequestGraphs: function(webWorkerChannel, props) {
+    webWorkerChannel(36, 12, props.dim, props.pointClasses);
+    webWorkerChannel(72, 24, props.dim, props.pointClasses);
+    webWorkerChannel(120, 40, props.dim, props.pointClasses);
+  },
+
+  subscribeToWebWorker: function() {
+    var uuid = this._reactInternalInstance._rootNodeID + Math.random().toString();
+    var webWorkerChannel = WorkerBridge.subscribe(uuid, this.receiveWebWorkerResponse);
+    this.setState({uuid});
+    return webWorkerChannel;
   },
 
   receiveWebWorkerResponse: function(result): void {
@@ -62,13 +81,20 @@ var WebWorkerGraph = React.createClass({
     this.setState({graph: newGraph});
   },
 
-  componentWillUnmount: function() {
-    this.props.scene.remove(this.state.graph);
+  unsubscribeFromWebWorker: function() {
+    WorkerBridge.unsubscribe(this.state.uuid);
+    this.setState({uuid: null, webWorkerChannel: null});
   },
 
-  shouldComponentUpdate: function(): bool {
-    // console.log('TODO');
-    return false;
+  componentWillMount: function() {
+    this.synchronouslyComputeInitialGraph(this.props);
+    var webWorkerChannel = this.subscribeToWebWorker();
+    this.asyncRequestGraphs(webWorkerChannel, this.props);
+  },
+
+  componentWillUnmount: function() {
+    this.unsubscribeFromWebWorker()
+    this.props.scene.remove(this.state.graph);
   },
 
   render: function(): ?ReactElement {
