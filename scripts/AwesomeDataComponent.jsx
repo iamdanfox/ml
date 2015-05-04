@@ -17,11 +17,11 @@ type State = {
 }
 
 var React = require("react/addons");
-var {add, subtract, rotate} = require("./VectorUtils.jsx");
+var {add, subtract, rotate, modulus} = require("./VectorUtils.jsx");
 
 
 
-var ELLIPSE_FIXED_RADIUS = 0.4;
+var ELLIPSE_FIXED_RADIUS = 0.35;
 
 var POINTS_PER_AREA = 15;
 var labelToColour = (c) => ["red", "blue"][c];
@@ -52,10 +52,15 @@ var PointGroup = React.createClass({
     isMouseDown: React.PropTypes.bool.isRequired,
     updatePoints: React.PropTypes.func.isRequired,
     destroy: React.PropTypes.func.isRequired,
+    getMouseXY: React.PropTypes.func.isRequired,
+    updateParams: React.PropTypes.func.isRequired,
   },
 
   getInitialState: function() {
-    return {mouseOver: false};
+    return {
+      mouseOver: false,
+      paramsAtHandleMouseDown: null,
+    };
   },
 
   onMouseEnter: function() {
@@ -71,15 +76,55 @@ var PointGroup = React.createClass({
     this.props.updatePoints(newPoints);
   },
 
+  onMouseMove: function(e: React.SyntheticEvent) {
+    if (typeof this.state.paramsAtHandleMouseDown !== "undefined" &&
+        this.state.paramsAtHandleMouseDown !== null) {
+
+      var mousePos = this.props.getMouseXY(e);
+      var diff = subtract(mousePos)(this.props.generatedBy.center);
+
+      var theta = Math.atan(diff.y / diff.x) - (Math.PI / 2);
+      if (Math.sign(diff.x) !== Math.sign(diff.y)) {
+        theta = theta + Math.PI;
+      }
+      if (diff.y < 0) {
+        theta = theta + Math.PI;
+      }
+
+      this.props.updateParams({l: 2 * modulus(diff), theta});
+
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  },
+
+  onHandleMouseDown: function(e: React.SyntheticEvent) {
+    var {l, theta} = this.props.generatedBy.params;
+    this.setState({paramsAtHandleMouseDown: {l, theta}});
+    e.stopPropagation();
+    e.preventDefault();
+  },
+
+  // getMouseXY: function(e: React.SyntheticEvent): {x: number; y: number} {
+  //   var {left, top} = this.refs.canvas.getDOMNode().getBoundingClientRect();
+  //   var x = e.pageX - left;
+  //   var y = this.props.dim - (e.pageY - top);
+  //   return {x: (2 * x) / this.props.dim - 1, y: (2 * y) / this.props.dim - 1};
+  // },
+
   render: function(): ?ReactElement {
     var {x, y} = this.props.generatedBy.center;
     var {l, theta} = this.props.generatedBy.params;
     var fill = labelToColour(this.props.label);
     var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.1;
+
+    var paramHandle = rotate(theta, {x: 0, y: l / 2});
+
     return (
       <g style={{cursor: "move"}}
         onMouseDown={this.props.onMouseDown} onMouseUp={this.props.onMouseUp}
         onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}
+        onMouseMove={this.onMouseMove}
         transform={`translate(${x} ${y})`}>
 
         <ellipse cx={0} cy={0} rx={ELLIPSE_FIXED_RADIUS} ry={l} style={{fill, opacity}}
@@ -89,8 +134,10 @@ var PointGroup = React.createClass({
             <circle key={p.x + ":" + p.y} cx={p.x - x} cy={p.y - y} r={0.03} fill={fill} />) }
 
         {this.state.mouseOver &&
-          <circle cx={0} cy={l / 2} r={0.06} fill="white"
-            style={{cursor: "pointer"}} /> }
+          <circle cx={paramHandle.x} cy={paramHandle.y} r={0.06} fill="white"
+            onMouseDown={this.onHandleMouseDown}
+            onMouseUp={() => this.setState({paramsAtHandleMouseDown: null})}
+            style={{cursor: "ew-resize"}} /> }
 
         {this.state.mouseOver &&
           <circle cx={0} cy={0} r={0.06} fill="grey"
@@ -191,12 +238,20 @@ var AwesomeDataComponent = React.createClass({
         this.setState({pointGroups: this.state.pointGroups.map((v) => v)});
       };
 
+      var updateParams = (params) => {
+        var center = pg.generatedBy.center;
+        pg.generatedBy = {center, params};
+        this.setState({pointGroups: this.state.pointGroups.map((v) => v)});
+      };
+
       var destroy = () => {
         this.setState({pointGroups: this.state.pointGroups.filter((v) => v !== pg)});
       };
 
-      return <PointGroup {...pg} updatePoints={updatePoints} destroy={destroy}
-        onMouseDown={onMouseDown} isMouseDown={isMouseDown} onMouseUp={onMouseUp} />;
+      return <PointGroup {...pg}
+        updatePoints={updatePoints} updateParams={updateParams} destroy={destroy}
+        onMouseDown={onMouseDown} isMouseDown={isMouseDown} onMouseUp={onMouseUp}
+        getMouseXY={this.getMouseXY} />;
     });
 
     return <svg

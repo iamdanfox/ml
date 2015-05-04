@@ -176,11 +176,11 @@ webpackJsonp([0],{
 	 
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var $__0=    __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract,rotate=$__0.rotate;
+	var $__0=     __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract,rotate=$__0.rotate,modulus=$__0.modulus;
 	
 	
 	
-	var ELLIPSE_FIXED_RADIUS = 0.4;
+	var ELLIPSE_FIXED_RADIUS = 0.35;
 	
 	var POINTS_PER_AREA = 15;
 	var labelToColour = function(c)  {return ["red", "blue"][c];};
@@ -211,10 +211,15 @@ webpackJsonp([0],{
 	    isMouseDown: React.PropTypes.bool.isRequired,
 	    updatePoints: React.PropTypes.func.isRequired,
 	    destroy: React.PropTypes.func.isRequired,
+	    getMouseXY: React.PropTypes.func.isRequired,
+	    updateParams: React.PropTypes.func.isRequired,
 	  },
 	
 	  getInitialState: function() {
-	    return {mouseOver: false};
+	    return {
+	      mouseOver: false,
+	      paramsAtHandleMouseDown: null,
+	    };
 	  },
 	
 	  onMouseEnter: function() {
@@ -230,15 +235,55 @@ webpackJsonp([0],{
 	    this.props.updatePoints(newPoints);
 	  },
 	
+	  onMouseMove: function(e                      ) {
+	    if (typeof this.state.paramsAtHandleMouseDown !== "undefined" &&
+	        this.state.paramsAtHandleMouseDown !== null) {
+	
+	      var mousePos = this.props.getMouseXY(e);
+	      var diff = subtract(mousePos)(this.props.generatedBy.center);
+	
+	      var theta = Math.atan(diff.y / diff.x) - (Math.PI / 2);
+	      if (Math.sign(diff.x) !== Math.sign(diff.y)) {
+	        theta = theta + Math.PI;
+	      }
+	      if (diff.y < 0) {
+	        theta = theta + Math.PI;
+	      }
+	
+	      this.props.updateParams({l: 2 * modulus(diff), theta:theta});
+	
+	      e.stopPropagation();
+	      e.preventDefault();
+	    }
+	  },
+	
+	  onHandleMouseDown: function(e                      ) {
+	    var $__0=   this.props.generatedBy.params,l=$__0.l,theta=$__0.theta;
+	    this.setState({paramsAtHandleMouseDown: {l:l, theta:theta}});
+	    e.stopPropagation();
+	    e.preventDefault();
+	  },
+	
+	  // getMouseXY: function(e: React.SyntheticEvent): {x: number; y: number} {
+	  //   var {left, top} = this.refs.canvas.getDOMNode().getBoundingClientRect();
+	  //   var x = e.pageX - left;
+	  //   var y = this.props.dim - (e.pageY - top);
+	  //   return {x: (2 * x) / this.props.dim - 1, y: (2 * y) / this.props.dim - 1};
+	  // },
+	
 	  render: function()                {
 	    var $__0=   this.props.generatedBy.center,x=$__0.x,y=$__0.y;
 	    var $__1=   this.props.generatedBy.params,l=$__1.l,theta=$__1.theta;
 	    var fill = labelToColour(this.props.label);
 	    var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.1;
+	
+	    var paramHandle = rotate(theta, {x: 0, y: l / 2});
+	
 	    return (
 	      React.createElement("g", {style: {cursor: "move"}, 
 	        onMouseDown: this.props.onMouseDown, onMouseUp: this.props.onMouseUp, 
 	        onMouseEnter: this.onMouseEnter, onMouseLeave: this.onMouseLeave, 
+	        onMouseMove: this.onMouseMove, 
 	        transform: ("translate(" + x + " " + y + ")")}, 
 	
 	        React.createElement("ellipse", {cx: 0, cy: 0, rx: ELLIPSE_FIXED_RADIUS, ry: l, style: {fill:fill, opacity:opacity}, 
@@ -248,8 +293,10 @@ webpackJsonp([0],{
 	            {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x - x, cy: p.y - y, r: 0.03, fill: fill});}), 
 	
 	        this.state.mouseOver &&
-	          React.createElement("circle", {cx: 0, cy: l / 2, r: 0.06, fill: "white", 
-	            style: {cursor: "pointer"}}), 
+	          React.createElement("circle", {cx: paramHandle.x, cy: paramHandle.y, r: 0.06, fill: "white", 
+	            onMouseDown: this.onHandleMouseDown, 
+	            onMouseUp: function()  {return this.setState({paramsAtHandleMouseDown: null});}.bind(this), 
+	            style: {cursor: "ew-resize"}}), 
 	
 	        this.state.mouseOver &&
 	          React.createElement("circle", {cx: 0, cy: 0, r: 0.06, fill: "grey", 
@@ -350,12 +397,20 @@ webpackJsonp([0],{
 	        this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
 	      }.bind(this);
 	
+	      var updateParams = function(params)  {
+	        var center = pg.generatedBy.center;
+	        pg.generatedBy = {center:center, params:params};
+	        this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
+	      }.bind(this);
+	
 	      var destroy = function()  {
 	        this.setState({pointGroups: this.state.pointGroups.filter(function(v)  {return v !== pg;})});
 	      }.bind(this);
 	
-	      return React.createElement(PointGroup, React.__spread({},  pg, {updatePoints: updatePoints, destroy: destroy, 
-	        onMouseDown: onMouseDown, isMouseDown: isMouseDown, onMouseUp: onMouseUp}));
+	      return React.createElement(PointGroup, React.__spread({},  pg, 
+	        {updatePoints: updatePoints, updateParams: updateParams, destroy: destroy, 
+	        onMouseDown: onMouseDown, isMouseDown: isMouseDown, onMouseUp: onMouseUp, 
+	        getMouseXY: this.getMouseXY}));
 	    }.bind(this));
 	
 	    return React.createElement("svg", {
