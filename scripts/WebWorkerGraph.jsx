@@ -35,15 +35,15 @@ var WebWorkerGraph = React.createClass({
   // 24 * 8 is pretty much a minimum.
 
   getInitialState: function(): State {
-    // synchronously compute the first graph.
-    var {thetaResolution, rResolution, dim, pointClasses} = this.props;
-    return {
-      graph: workerSlug(thetaResolution, rResolution, dim, pointClasses)
-    };
+    return {graph: null};
   },
 
   componentWillMount: function() {
-    this.props.scene.add(this.state.graph);
+    // synchronously compute the first graph.
+    var {thetaResolution, rResolution, dim, pointClasses} = this.props;
+    var graph = workerSlug(thetaResolution, rResolution, dim, pointClasses)
+    this.setState({graph});
+    this.props.scene.add(graph);
   },
 
   componentWillUnmount: function() {

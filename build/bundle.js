@@ -487,7 +487,7 @@ webpackJsonp([0],{
 	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 97);
 	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
 	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 98);
-	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 99);
+	var WebWorkerGraph = __webpack_require__(/*! ./WebWorkerGraph.jsx */ 224);
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var $__0=    __webpack_require__(/*! ./LogisticRegression.jsx */ 101),objective=$__0.objective,optimise=$__0.optimise,fastOptimise=$__0.fastOptimise;
 	
@@ -538,7 +538,7 @@ webpackJsonp([0],{
 	
 	        React.createElement(Draggable3DScene, {dim: dim, pointClasses: this.state.pointClasses, 
 	            projectedError: objective, highlightW: this.highlightW}, 
-	          React.createElement(ParametricGraph, {thetaResolution: 24, rResolution: 8, colourFunction: colourFunction}), 
+	          React.createElement(WebWorkerGraph, {thetaResolution: 24, rResolution: 8}), 
 	          optimiserLine && React.createElement(OptimiserLine, {vertices: optimiserLine}), 
 	          this.state.highlightedW && React.createElement(CursorSphere, {highlightedW: this.state.highlightedW})
 	        )
@@ -2096,6 +2096,165 @@ webpackJsonp([0],{
 	    delete subscribers[reactElementId];
 	  }
 	
+	};
+
+
+/***/ },
+
+/***/ 224:
+/*!************************************!*\
+  !*** ./scripts/WebWorkerGraph.jsx ***!
+  \************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	var React = __webpack_require__(/*! react/addons */ 1);
+	var workerSlug = __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 225);
+	
+	                                 
+	                                           
+	              
+	              
+	                             
+	                      
+	                     
+	                          
+	 
+	              
+	                    
+	 
+	
+	
+	
+	var WebWorkerGraph = React.createClass({displayName: "WebWorkerGraph",
+	  propTypes: {
+	    dim: React.PropTypes.number.isRequired, // 400
+	    pointClasses: React.PropTypes.array.isRequired,
+	    rResolution: React.PropTypes.number.isRequired, // 8
+	    scene: React.PropTypes.any.isRequired,
+	    thetaResolution: React.PropTypes.number.isRequired, // 24
+	  },
+	
+	  // 120 * 40 looks great... 4800 computations
+	  // 96 * 32
+	  // 72 * 24
+	  // 36 * 12
+	  // 24 * 8 is pretty much a minimum.
+	
+	  getInitialState: function()        {
+	    return {graph: null};
+	  },
+	
+	  componentWillMount: function() {
+	    // synchronously compute the first graph.
+	    var $__0=     this.props,thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,dim=$__0.dim,pointClasses=$__0.pointClasses;
+	    var graph = workerSlug(thetaResolution, rResolution, dim, pointClasses)
+	    this.setState({graph:graph});
+	    this.props.scene.add(graph);
+	  },
+	
+	  componentWillUnmount: function() {
+	    this.props.scene.remove(this.state.graph);
+	  },
+	
+	  shouldComponentUpdate: function()       {
+	    console.log('TODO');
+	    return false;
+	  },
+	
+	  // componentWillReceiveProps: function(nextProps: Props) {
+	  //   if (this.shouldComponentUpdate(nextProps)) {
+	  //     var geometry = this.state.graph.geometry;
+	
+	  //     for (var i = 0; i < geometry.vertices.length; i = i + 1) {
+	  //       var vertex = geometry.vertices[i];
+	  //       vertex.setZ(nextProps.projectedError(vertex, nextProps.pointClasses));
+	  //     }
+	
+	  //     this.colourGeometry(geometry);
+	  //     this.state.graph.geometry.verticesNeedUpdate = true;
+	  //   }
+	  // },
+	
+	  render: function()                {
+	    return null;
+	  }
+	});
+	
+	module.exports = WebWorkerGraph;
+
+
+/***/ },
+
+/***/ 225:
+/*!****************************************!*\
+  !*** ./scripts/WebWorkerGraphSlug.jsx ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	                                 
+	                                           
+	
+	
+	var $__0=   __webpack_require__(/*! ./LogisticRegression.jsx */ 101),fastOptimise=$__0.fastOptimise,objective=$__0.objective;
+	var THREE = __webpack_require__(/*! three */ 2);
+	
+	
+	var MATERIAL = new THREE.MeshBasicMaterial({
+	  side: THREE.DoubleSide,
+	  vertexColors: THREE.FaceColors,
+	  opacity: 0.8,
+	  transparent: true,
+	});
+	
+	function build(thetaResolution, rResolution, dim, pointClasses)                           {
+	  console.log('build', thetaResolution, rResolution, dim, pointClasses);
+	
+	  var polarMeshFunction = function(i        , j        )                {
+	    var theta = i * 2 * Math.PI;
+	    var r = Math.pow(1.8, j * j) - 1; // this ensures there are lots of samples near the origin and gets close to 0!
+	    var x = r * Math.cos(theta) * dim;
+	    var y = r * Math.sin(theta) * dim;
+	    var z = objective({x:x, y:y}, pointClasses);
+	    return new THREE.Vector3(x, y, z);
+	  };
+	
+	  return new THREE.ParametricGeometry(polarMeshFunction, thetaResolution, rResolution, true);
+	}
+	
+	function colour(graphGeometry, pointClasses)       {
+	  graphGeometry.computeBoundingBox();
+	  var zMin = graphGeometry.boundingBox.min.z;
+	  var zRange = graphGeometry.boundingBox.max.z - zMin;
+	
+	  var colourFunction = function(vertex1, vertex2, vertex3, mutableFaceColor)       {
+	    var totalZ = vertex1.z + vertex2.z + vertex3.z;
+	    var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+	    var stops = fastOptimise(vertex1, pointClasses) / 250; // should match MAX_STOPS
+	    mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
+	  };
+	
+	  for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
+	    var face = graphGeometry.faces[i];
+	    colourFunction(
+	      graphGeometry.vertices[face.a],
+	      graphGeometry.vertices[face.b],
+	      graphGeometry.vertices[face.c],
+	      face.color);
+	  }
+	
+	  graphGeometry.colorsNeedUpdate = true;
+	}
+	
+	module.exports = function respond(thetaResolution        , rResolution        , dim        , pointClasses              ) {
+	  console.log('respond');
+	  var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
+	  colour(graphGeometry, pointClasses);
+	  return new THREE.Mesh(graphGeometry, MATERIAL.clone());
 	};
 
 

@@ -16,6 +16,8 @@ var MATERIAL = new THREE.MeshBasicMaterial({
 });
 
 function build(thetaResolution, rResolution, dim, pointClasses): THREE.ParametricGeometry {
+  console.log('build', thetaResolution, rResolution, dim, pointClasses);
+
   var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
     var theta = i * 2 * Math.PI;
     var r = Math.pow(1.8, j * j) - 1; // this ensures there are lots of samples near the origin and gets close to 0!
@@ -25,7 +27,7 @@ function build(thetaResolution, rResolution, dim, pointClasses): THREE.Parametri
     return new THREE.Vector3(x, y, z);
   };
 
-  return THREE.ParametricGeometry(polarMeshFunction, thetaResolution, rResolution, true);
+  return new THREE.ParametricGeometry(polarMeshFunction, thetaResolution, rResolution, true);
 }
 
 function colour(graphGeometry, pointClasses): void {
@@ -53,6 +55,7 @@ function colour(graphGeometry, pointClasses): void {
 }
 
 module.exports = function respond(thetaResolution: number, rResolution: number, dim: number, pointClasses: PointClasses) {
+  console.log('respond');
   var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
   colour(graphGeometry, pointClasses);
   return new THREE.Mesh(graphGeometry, MATERIAL.clone());

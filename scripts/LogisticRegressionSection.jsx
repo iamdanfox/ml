@@ -9,7 +9,7 @@ var DisplayWNumbers = require("./DisplayWNumbers.jsx");
 var Draggable3DScene = require("./Draggable3DScene.jsx");
 var K = require("./Katex.jsx");
 var OptimiserLine = require("./OptimiserLine.jsx");
-var ParametricGraph = require("./ParametricGraph.jsx");
+var WebWorkerGraph = require("./WebWorkerGraph.jsx");
 var React = require("react/addons");
 var {objective, optimise, fastOptimise} = require("./LogisticRegression.jsx");
 
@@ -60,7 +60,7 @@ var LogisticRegressionVis = React.createClass({
 
         <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
             projectedError={objective} highlightW={this.highlightW}>
-          <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction}/>
+          <WebWorkerGraph thetaResolution={24} rResolution={8} />
           {optimiserLine && <OptimiserLine vertices={optimiserLine} />}
           {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
         </Draggable3DScene>
