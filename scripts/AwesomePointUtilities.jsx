@@ -37,4 +37,4 @@ var generatePoints = function(generatedBy: GeneratedBy): Array<P2> {
   return newPoints;
 };
 
-module.exports = {generatePoints, ELLIPSE_FIXED_RADIUS, labelToColour, POINTS_PER_AREA};
+module.exports = {generatePoints, ELLIPSE_FIXED_RADIUS, labelToColour};

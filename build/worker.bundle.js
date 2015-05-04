@@ -35478,7 +35478,7 @@
 	    return {
 	      x: arg.x * Math.cos(theta) - arg.y * Math.sin(theta),
 	      y: arg.x * Math.sin(theta) + arg.y * Math.cos(theta),
-	    }
+	    };
 	  },
 	
 	  dotProduct: dotProduct,

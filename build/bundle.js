@@ -79,7 +79,7 @@ webpackJsonp([0],{
 	    return {
 	      x: arg.x * Math.cos(theta) - arg.y * Math.sin(theta),
 	      y: arg.x * Math.sin(theta) + arg.y * Math.cos(theta),
-	    }
+	    };
 	  },
 	
 	  dotProduct: dotProduct,
@@ -176,11 +176,215 @@ webpackJsonp([0],{
 	 
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
+	var AwesomePointGroup = __webpack_require__(/*! ./AwesomePointGroup.jsx */ 227);
+	var $__0=   __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract;
+	var $__1=  __webpack_require__(/*! ./AwesomePointUtilities.jsx */ 226),generatePoints=$__1.generatePoints;
+	
+	
+	
+	var AwesomeDataComponent = React.createClass({displayName: "AwesomeDataComponent",
+	  getInitialState: function()        {
+	    return {
+	      pointGroups: [
+	        {
+	          label: 0,
+	          points: [{x: 0, y: 0}, {x: 0.14, y: 0.6}, {x: 0.4, y: 0.20}],
+	          generatedBy: {
+	            center: {x: 0.10, y: 0.10},
+	            params: {l: 0.6, theta: 0},
+	          },
+	          mouseDownDiff: null,
+	        },
+	        {
+	          points: [{x: 0.50, y: 0.50}],
+	          label: 1,
+	          generatedBy: {
+	            center: {x: 0.50, y: 0.50},
+	            params: {l: 0.2, theta: Math.PI / 4},
+	          },
+	          mouseDownDiff: null,
+	        }
+	      ]
+	    };
+	  },
+	
+	  mouseMove: function(e                      ) {
+	    if (this.state.pointGroups.some(function(pg)  {return pg.mouseDownDiff;})) {
+	      var pointGroups = this.state.pointGroups.map(function(pg)  {
+	        var diff = pg.mouseDownDiff;
+	        if (typeof diff !== "undefined" && diff !== null) {
+	          var newCenter = subtract(this.getMouseXY(e))(diff);
+	          var move = subtract(newCenter)(pg.generatedBy.center);
+	          pg.generatedBy.center = newCenter;
+	          pg.points = pg.points.map(add(move));
+	        }
+	        return pg;
+	      }.bind(this));
+	      this.setState({pointGroups:pointGroups});
+	    }
+	  },
+	
+	  getMouseXY: function(e                      )                         {
+	    var $__0=   this.refs.canvas.getDOMNode().getBoundingClientRect(),left=$__0.left,top=$__0.top;
+	    var x = e.pageX - left;
+	    var y = this.props.dim - (e.pageY - top);
+	    return {x: (2 * x) / this.props.dim - 1, y: (2 * y) / this.props.dim - 1};
+	  },
+	
+	  newPointGroup: function(label        )             {
+	    return function()  {
+	      var generatedBy = {
+	        center: {x: Math.random() - 1, y: Math.random() - 1},
+	        params: {l: 0.5, theta: 0},
+	      };
+	      var points = generatePoints(generatedBy);
+	      var newGroup = {label:label, points:points, generatedBy:generatedBy, mouseDownDiff: null};
+	      this.setState({
+	        pointGroups: this.state.pointGroups.concat([newGroup])
+	      });
+	    }.bind(this);
+	  },
+	
+	  buildAwesomePointGroup: function(pg          )                    {
+	    var onMouseDown = function(e)  {
+	      pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
+	      this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
+	    }.bind(this);
+	
+	    var onMouseUp = function()  {
+	      pg.mouseDownDiff = null;
+	      this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
+	    }.bind(this);
+	
+	    var isMouseDown = typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null;
+	
+	    var updatePoints = function(newPoints)  {
+	      pg.points = newPoints;
+	      this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
+	    }.bind(this);
+	
+	    var updateParams = function(params)  {
+	      var center = pg.generatedBy.center;
+	      pg.generatedBy = {center:center, params:params};
+	      this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
+	    }.bind(this);
+	
+	    var destroy = function()  {
+	      this.setState({pointGroups: this.state.pointGroups.filter(function(v)  {return v !== pg;})});
+	    }.bind(this);
+	
+	    return React.createElement(AwesomePointGroup, React.__spread({},  pg, {dim: this.props.dim, 
+	      updatePoints: updatePoints, updateParams: updateParams, destroy: destroy, 
+	      onMouseDown: onMouseDown, isMouseDown: isMouseDown, onMouseUp: onMouseUp, 
+	      getMouseXY: this.getMouseXY}));
+	  },
+	
+	  render: function()                {
+	    return React.createElement("svg", {
+	      ref: "canvas", 
+	      width: this.props.dim, height: this.props.dim, 
+	      style: {border: "1px solid red"}, onMouseMove: this.mouseMove}, 
+	
+	        React.createElement("g", {transform: ("translate(" + (this.props.dim / 2) + " " + (this.props.dim / 2) + ")\n          scale(" + 
+	(this.props.dim / 2) + " " + (-this.props.dim / 2) + ")")}, 
+	
+	         this.state.pointGroups.map(this.buildAwesomePointGroup), 
+	
+	        React.createElement("rect", {x: -0.97, y: -0.97, height: 0.12, width: 0.12, 
+	          fill: "red", onClick: this.newPointGroup(0)}), 
+	        React.createElement("rect", {x: -0.82, y: -0.97, height: 0.12, width: 0.12, 
+	          fill: "blue", onClick: this.newPointGroup(1)})
+	
+	        )
+	      );
+	  }
+	});
+	
+	module.exports = AwesomeDataComponent;
+
+
+/***/ },
+
+/***/ 226:
+/*!*******************************************!*\
+  !*** ./scripts/AwesomePointUtilities.jsx ***!
+  \*******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	                           
+	                                 
+	                    
+	             
+	                                     
+	  
+	
+	var $__0=   __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,rotate=$__0.rotate;
+	
+	
+	
+	var ELLIPSE_FIXED_RADIUS = 0.35;
+	
+	var labelToColour                    = function(c)  {return ["red", "blue"][c];};
+	
+	var POINTS_PER_AREA = 20;
+	
+	var generatePoints = function(generatedBy             )            {
+	  var $__0=   generatedBy.params,l=$__0.l,theta=$__0.theta;
+	  var area = Math.PI * l * ELLIPSE_FIXED_RADIUS;
+	  var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
+	
+	  var project = function(rand)  {return 0.4 * (Math.pow(2 * rand - 1, 3) + 2 * rand - 1);};
+	
+	  var newPoints = [];
+	  for (var i = 0; i < numberOfPoints; i = i + 1) {
+	    var offset = {
+	      x: project(Math.random()) * ELLIPSE_FIXED_RADIUS,
+	      y: project(Math.random()) * l,
+	    };
+	    var rotatedOffset = rotate(theta, offset);
+	    newPoints.push(add(generatedBy.center)(rotatedOffset));
+	  }
+	  return newPoints;
+	};
+	
+	module.exports = {generatePoints:generatePoints, ELLIPSE_FIXED_RADIUS:ELLIPSE_FIXED_RADIUS, labelToColour:labelToColour};
+
+
+/***/ },
+
+/***/ 227:
+/*!***************************************!*\
+  !*** ./scripts/AwesomePointGroup.jsx ***!
+  \***************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	                           
+	                                 
+	                 
+	                
+	                    
+	                
+	               
+	                                       
+	    
+	                    
+	  
+	              
+	                              
+	 
+	
+	var React = __webpack_require__(/*! react/addons */ 1);
 	var $__0=       __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
-	var $__1=     __webpack_require__(/*! ./AwesomePointUtilities.jsx */ 226),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour,POINTS_PER_AREA=$__1.POINTS_PER_AREA;
+	var $__1=    __webpack_require__(/*! ./AwesomePointUtilities.jsx */ 226),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
 	
 	
-	var PointGroup = React.createClass({displayName: "PointGroup",
+	var AwesomePointGroup = React.createClass({displayName: "AwesomePointGroup",
 	  propTypes: {
 	    label: React.PropTypes.number.isRequired, // 0 or 1
 	    points: React.PropTypes.array.isRequired,
@@ -316,180 +520,7 @@ webpackJsonp([0],{
 	  },
 	});
 	
-	
-	
-	var AwesomeDataComponent = React.createClass({displayName: "AwesomeDataComponent",
-	
-	  getInitialState: function()        {
-	    return {
-	      pointGroups: [
-	        {
-	          label: 0,
-	          points: [{x: 0, y: 0}, {x: 0.14, y: 0.6}, {x: 0.4, y: 0.20}],
-	          generatedBy: {
-	            center: {x: 0.10, y: 0.10},
-	            params: {l: 0.6, theta: 0},
-	          },
-	          mouseDownDiff: null,
-	        },
-	        {
-	          points: [{x: 0.50, y: 0.50}],
-	          label: 1,
-	          generatedBy: {
-	            center: {x: 0.50, y: 0.50},
-	            params: {l: 0.2, theta: Math.PI / 4},
-	          },
-	          mouseDownDiff: null,
-	        }
-	      ]
-	    };
-	  },
-	
-	
-	  mouseMove: function(e                      ) {
-	    if (this.state.pointGroups.some(function(pg)  {return pg.mouseDownDiff;})) {
-	      var pointGroups = this.state.pointGroups.map(function(pg)  {
-	        var diff = pg.mouseDownDiff;
-	        if (typeof diff !== "undefined" && diff !== null) {
-	          var newCenter = subtract(this.getMouseXY(e))(diff);
-	          var move = subtract(newCenter)(pg.generatedBy.center);
-	          pg.generatedBy.center = newCenter;
-	          pg.points = pg.points.map(add(move));
-	        }
-	        return pg;
-	      }.bind(this));
-	      this.setState({pointGroups:pointGroups});
-	    }
-	  },
-	
-	  getMouseXY: function(e                      )                         {
-	    var $__0=   this.refs.canvas.getDOMNode().getBoundingClientRect(),left=$__0.left,top=$__0.top;
-	    var x = e.pageX - left;
-	    var y = this.props.dim - (e.pageY - top);
-	    return {x: (2 * x) / this.props.dim - 1, y: (2 * y) / this.props.dim - 1};
-	  },
-	
-	  newPointGroup: function(label        )             {
-	    return function()  {
-	      var generatedBy = {
-	        center: {x: Math.random() - 1, y: Math.random() - 1},
-	        params: {l: 0.5, theta: 0},
-	      };
-	      var points = generatePoints(generatedBy);
-	      var newGroup = {label:label, points:points, generatedBy:generatedBy, mouseDownDiff: null};
-	      this.setState({
-	        pointGroups: this.state.pointGroups.concat([newGroup])
-	      });
-	    }.bind(this);
-	  },
-	
-	  render: function()                {
-	
-	    var children = this.state.pointGroups.map(function(pg)  {
-	      var onMouseDown = function(e)  {
-	        pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
-	        this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
-	      }.bind(this);
-	
-	      var onMouseUp = function()  {
-	        pg.mouseDownDiff = null;
-	        this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
-	      }.bind(this);
-	
-	      var isMouseDown = typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null;
-	
-	      var updatePoints = function(newPoints)  {
-	        pg.points = newPoints;
-	        this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
-	      }.bind(this);
-	
-	      var updateParams = function(params)  {
-	        var center = pg.generatedBy.center;
-	        pg.generatedBy = {center:center, params:params};
-	        this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
-	      }.bind(this);
-	
-	      var destroy = function()  {
-	        this.setState({pointGroups: this.state.pointGroups.filter(function(v)  {return v !== pg;})});
-	      }.bind(this);
-	
-	      return React.createElement(PointGroup, React.__spread({},  pg, {dim: this.props.dim, 
-	        updatePoints: updatePoints, updateParams: updateParams, destroy: destroy, 
-	        onMouseDown: onMouseDown, isMouseDown: isMouseDown, onMouseUp: onMouseUp, 
-	        getMouseXY: this.getMouseXY}));
-	    }.bind(this));
-	
-	    return React.createElement("svg", {
-	      ref: "canvas", 
-	      width: this.props.dim, height: this.props.dim, 
-	      style: {border: "1px solid red"}, onMouseMove: this.mouseMove}, 
-	
-	        React.createElement("g", {transform: ("translate(" + (this.props.dim / 2) + " " + (this.props.dim / 2) + ")\n          scale(" + 
-	(this.props.dim / 2) + " " + (-this.props.dim / 2) + ")")}, 
-	
-	         children, 
-	
-	        React.createElement("rect", {x: -0.97, y: -0.97, height: 0.12, width: 0.12, 
-	          fill: "red", onClick: this.newPointGroup(0)}), 
-	        React.createElement("rect", {x: -0.82, y: -0.97, height: 0.12, width: 0.12, 
-	          fill: "blue", onClick: this.newPointGroup(1)})
-	
-	        )
-	      );
-	  }
-	});
-	
-	module.exports = AwesomeDataComponent;
-
-
-/***/ },
-
-/***/ 226:
-/*!*******************************************!*\
-  !*** ./scripts/AwesomePointUtilities.jsx ***!
-  \*******************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	/* @flow */
-	"use strict";
-	
-	                           
-	                                 
-	                    
-	             
-	                                     
-	  
-	
-	var $__0=   __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,rotate=$__0.rotate;
-	
-	
-	
-	var ELLIPSE_FIXED_RADIUS = 0.35;
-	
-	var labelToColour                    = function(c)  {return ["red", "blue"][c];};
-	
-	var POINTS_PER_AREA = 20;
-	
-	var generatePoints = function(generatedBy             )            {
-	  var $__0=   generatedBy.params,l=$__0.l,theta=$__0.theta;
-	  var area = Math.PI * l * ELLIPSE_FIXED_RADIUS;
-	  var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
-	
-	  var project = function(rand)  {return 0.4 * (Math.pow(2 * rand - 1, 3) + 2 * rand - 1);};
-	
-	  var newPoints = [];
-	  for (var i = 0; i < numberOfPoints; i = i + 1) {
-	    var offset = {
-	      x: project(Math.random()) * ELLIPSE_FIXED_RADIUS,
-	      y: project(Math.random()) * l,
-	    };
-	    var rotatedOffset = rotate(theta, offset);
-	    newPoints.push(add(generatedBy.center)(rotatedOffset));
-	  }
-	  return newPoints;
-	};
-	
-	module.exports = {generatePoints:generatePoints, ELLIPSE_FIXED_RADIUS:ELLIPSE_FIXED_RADIUS, labelToColour:labelToColour, POINTS_PER_AREA:POINTS_PER_AREA};
+	module.exports = AwesomePointGroup;
 
 
 /***/ }
