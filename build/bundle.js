@@ -52,7 +52,8 @@ webpackJsonp([0],{
 	            {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x, cy: p.y, r: 0.03, fill: fill});}), 
 	
 	        React.createElement("ellipse", {cx: x, cy: y, rx: rx, ry: ry, style: {fill:fill, opacity:opacity}, 
-	          onMouseDown: this.props.onMouseDown})
+	          onMouseDown: this.props.onMouseDown, 
+	          onMouseUp: this.props.onMouseUp})
 	      )
 	    );
 	  },
@@ -89,11 +90,21 @@ webpackJsonp([0],{
 	  },
 	
 	  makeMouseDownHandler: function(mouseDownPointGroup) {
-	    return (function(e                      ) {
-	      console.log('md', this.getMouseXY(e));
+	    return (function (e                      ) {
 	      mouseDownPointGroup.mouseDown = true;
 	      var pointGroups = this.state.pointGroups.map(function(pg)  {return pg;}); // changed identity of list.
-	      this.setState({pointGroups:pointGroups})
+	      this.setState({pointGroups:pointGroups});
+	    }).bind(this);
+	  },
+	
+	  makeMouseUpHandler: function(mouseDownPointGroup) {
+	    return (function (e                      ) {
+	      mouseDownPointGroup.mouseDown = false;
+	      console.log(mouseDownPointGroup.generatedBy.center, this.getMouseXY(e))
+	      mouseDownPointGroup.generatedBy.center = this.getMouseXY(e);
+	
+	      var pointGroups = this.state.pointGroups.map(function(pg)  {return pg;}); // changed identity of list.
+	      this.setState({pointGroups:pointGroups});
 	    }).bind(this);
 	  },
 	
@@ -114,6 +125,7 @@ webpackJsonp([0],{
 	
 	         this.state.pointGroups.map(function(pg) 
 	          {return React.createElement(PointGroup, {onMouseDown: this.makeMouseDownHandler(pg), mouseDown: pg.mouseDown, 
+	            onMouseUp: this.makeMouseUpHandler(pg), 
 	            label: pg.label, points: pg.points, generatedBy: pg.generatedBy});}.bind(this))
 	
 	        )

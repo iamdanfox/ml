@@ -25,7 +25,8 @@ var PointGroup = React.createClass({
             <circle key={p.x + ":" + p.y} cx={p.x} cy={p.y} r={0.03} fill={fill} />) }
 
         <ellipse cx={x} cy={y} rx={rx} ry={ry} style={{fill, opacity}}
-          onMouseDown={this.props.onMouseDown} />
+          onMouseDown={this.props.onMouseDown}
+          onMouseUp={this.props.onMouseUp} />
       </g>
     );
   },
@@ -62,11 +63,21 @@ var AwesomeDataComponent = React.createClass({
   },
 
   makeMouseDownHandler: function(mouseDownPointGroup) {
-    return (function(e: React.SyntheticEvent) {
-      console.log('md', this.getMouseXY(e));
+    return (function (e: React.SyntheticEvent) {
       mouseDownPointGroup.mouseDown = true;
       var pointGroups = this.state.pointGroups.map((pg) => pg); // changed identity of list.
-      this.setState({pointGroups})
+      this.setState({pointGroups});
+    }).bind(this);
+  },
+
+  makeMouseUpHandler: function(mouseDownPointGroup) {
+    return (function (e: React.SyntheticEvent) {
+      mouseDownPointGroup.mouseDown = false;
+      console.log(mouseDownPointGroup.generatedBy.center, this.getMouseXY(e))
+      mouseDownPointGroup.generatedBy.center = this.getMouseXY(e);
+
+      var pointGroups = this.state.pointGroups.map((pg) => pg); // changed identity of list.
+      this.setState({pointGroups});
     }).bind(this);
   },
 
@@ -87,6 +98,7 @@ var AwesomeDataComponent = React.createClass({
 
         { this.state.pointGroups.map((pg) =>
           <PointGroup onMouseDown={this.makeMouseDownHandler(pg)} mouseDown={pg.mouseDown}
+            onMouseUp={this.makeMouseUpHandler(pg)}
             label={pg.label} points={pg.points} generatedBy={pg.generatedBy} />) }
 
         </g>
