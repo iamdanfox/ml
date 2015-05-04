@@ -5,25 +5,29 @@ var React = require("react/addons");
 
 
 
+
 var PointGroup = React.createClass({
   propTypes: {
-    context: React.PropTypes.object.isRequired,
+    label: React.PropTypes.number.isRequired, // 0 or 1
     points: React.PropTypes.array.isRequired,
+    generatedBy: React.PropTypes.object.isRequired,
   },
 
   render: function(): ?ReactElement {
-    var {context} = this.props;
+    var {x, y} = this.props.generatedBy.center;
+    var {x: rx, y: ry} = this.props.generatedBy.skew;
+    var color = ["red", "blue"][this.props.label];
 
-    for (var point of this.props.points) {
-      context.beginPath();
-      context.arc(point.x, point.y, 5, 0, 2 * Math.PI, false);
-      context.fillStyle = 'green';
-      context.fill();
-      context.lineWidth = 1;
-      context.strokeStyle = '#003300';
-      context.stroke();
-    }
-    return null
+    return (
+      <g>
+
+        { this.props.points.map((p) =>
+            <circle key={p.x + ":" + p.y} cx={p.x} cy={p.y} r={0.03} fill={color} />) }
+
+        <ellipse cx={x} cy={y} rx={rx} ry={ry} style={{fill: color, opacity: 0.3}}
+          onMouseDown={this.props.onMouseDown} />
+      </g>
+    );
   },
 });
 
@@ -36,16 +40,18 @@ var AwesomeDataComponent = React.createClass({
       pointGroups: [
         {
           label: 0,
-          points: [{x: 10, y: 10}, {x: 14, y: 6}, {x: 4, y: 20}],
+          points: [{x: 0, y: 0}, {x: 0.14, y: 0.6}, {x: 0.4, y: 0.20}],
           generatedBy: {
-            center: {x: 10, y: 10},
+            center: {x: 0.10, y: 0.10},
+            skew: {x: 0.05, y: 0.4},
           },
         },
         {
-          points: [{x: 50, y: 50}],
+          points: [{x: 0.50, y: 0.50}],
           label: 1,
           generatedBy: {
-            center: {x: 50, y: 50},
+            center: {x: 0.50, y: 0.50},
+            skew: {x: 0.2, y: 0.2},
           },
         }
       ],
@@ -53,22 +59,31 @@ var AwesomeDataComponent = React.createClass({
     };
   },
 
-  componentDidMount: function() {
-    var elem = React.findDOMNode(this.refs.canvas);
-    this.setState({context: elem.getContext("2d")});
+  onMouseDown: function(e: React.SyntheticEvent) {
+    console.log('md', this.getMouseXY(e));
+  },
+
+  getMouseXY: function(e: React.SyntheticEvent): {x: number; y: number} {
+    var {left, top} = this.refs.canvas.getDOMNode().getBoundingClientRect();
+    var x = e.pageX - left;
+    var y = this.props.dim - (e.pageY - top);
+    return {x: (2 * x) / this.props.dim - 1, y: (2 * y) / this.props.dim - 1};
   },
 
   render: function(): ?ReactElement {
-    return <canvas
+    return <svg
       ref="canvas"
-      width={this.props.width} height={this.props.height}
+      width={this.props.dim} height={this.props.dim}
       style={{border: "1px solid red"}}>
+        <g transform={`translate(${this.props.dim / 2} ${this.props.dim / 2})
+          scale(${this.props.dim / 2} ${-this.props.dim / 2})`}>
 
-        { this.isMounted() && this.state.pointGroups.map((pg) =>
-          <PointGroup context={this.state.context}
+        { this.state.pointGroups.map((pg) =>
+          <PointGroup onMouseDown={this.onMouseDown}
             label={pg.label} points={pg.points} generatedBy={pg.generatedBy} />) }
 
-      </canvas>;
+        </g>
+      </svg>;
   }
 });
 

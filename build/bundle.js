@@ -14,7 +14,7 @@ webpackJsonp([0],{
 	
 	window.React = React;
 	
-	React.render(React.createElement(AwesomeDataComponent, {width: 400, height: 400}), document.body);
+	React.render(React.createElement(AwesomeDataComponent, {dim: 600}), document.body);
 
 
 /***/ },
@@ -32,25 +32,29 @@ webpackJsonp([0],{
 	
 	
 	
+	
 	var PointGroup = React.createClass({displayName: "PointGroup",
 	  propTypes: {
-	    context: React.PropTypes.object.isRequired,
+	    label: React.PropTypes.number.isRequired, // 0 or 1
 	    points: React.PropTypes.array.isRequired,
+	    generatedBy: React.PropTypes.object.isRequired,
 	  },
 	
-	  render: function()                {var $__1, $__2, $__3;
-	    var $__0=  this.props,context=$__0.context;
+	  render: function()                {
+	    var $__0=   this.props.generatedBy.center,x=$__0.x,y=$__0.y;
+	    var $__1=     this.props.generatedBy.skew,rx=$__1.x,ry=$__1.y;
+	    var color = ["red", "blue"][this.props.label];
 	
-	    var point;for($__1=this.props.points,$__2=Array.isArray($__1),$__3=0,$__1=$__2?$__1:$__1[/*global Symbol*/typeof Symbol=="function"?Symbol.iterator:"@@iterator"]();;) {if($__2){if($__3>=$__1.length) break;point=$__1[$__3++];}else{$__3=$__1.next();if($__3.done) break;point=$__3.value;}
-	      context.beginPath();
-	      context.arc(point.x, point.y, 5, 0, 2 * Math.PI, false);
-	      context.fillStyle = 'green';
-	      context.fill();
-	      context.lineWidth = 1;
-	      context.strokeStyle = '#003300';
-	      context.stroke();
-	    }
-	    return null
+	    return (
+	      React.createElement("g", null, 
+	
+	         this.props.points.map(function(p) 
+	            {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x, cy: p.y, r: 0.03, fill: color});}), 
+	
+	        React.createElement("ellipse", {cx: x, cy: y, rx: rx, ry: ry, style: {fill: color, opacity: 0.3}, 
+	          onMouseDown: this.props.onMouseDown})
+	      )
+	    );
 	  },
 	});
 	
@@ -63,16 +67,18 @@ webpackJsonp([0],{
 	      pointGroups: [
 	        {
 	          label: 0,
-	          points: [{x: 10, y: 10}, {x: 14, y: 6}, {x: 4, y: 20}],
+	          points: [{x: 0, y: 0}, {x: 0.14, y: 0.6}, {x: 0.4, y: 0.20}],
 	          generatedBy: {
-	            center: {x: 10, y: 10},
+	            center: {x: 0.10, y: 0.10},
+	            skew: {x: 0.05, y: 0.4},
 	          },
 	        },
 	        {
-	          points: [{x: 50, y: 50}],
+	          points: [{x: 0.50, y: 0.50}],
 	          label: 1,
 	          generatedBy: {
-	            center: {x: 50, y: 50},
+	            center: {x: 0.50, y: 0.50},
+	            skew: {x: 0.2, y: 0.2},
 	          },
 	        }
 	      ],
@@ -80,21 +86,30 @@ webpackJsonp([0],{
 	    };
 	  },
 	
-	  componentDidMount: function() {
-	    var elem = React.findDOMNode(this.refs.canvas);
-	    this.setState({context: elem.getContext("2d")});
+	  onMouseDown: function(e                      ) {
+	    console.log('md', this.getMouseXY(e));
+	  },
+	
+	  getMouseXY: function(e                      )                         {
+	    var $__0=   this.refs.canvas.getDOMNode().getBoundingClientRect(),left=$__0.left,top=$__0.top;
+	    var x = e.pageX - left;
+	    var y = this.props.dim - (e.pageY - top);
+	    return {x: (2 * x) / this.props.dim - 1, y: (2 * y) / this.props.dim - 1};
 	  },
 	
 	  render: function()                {
-	    return React.createElement("canvas", {
+	    return React.createElement("svg", {
 	      ref: "canvas", 
-	      width: this.props.width, height: this.props.height, 
+	      width: this.props.dim, height: this.props.dim, 
 	      style: {border: "1px solid red"}}, 
+	        React.createElement("g", {transform: ("translate(" + (this.props.dim / 2) + " " + (this.props.dim / 2) + ")\n          scale(" + 
+	(this.props.dim / 2) + " " + (-this.props.dim / 2) + ")")}, 
 	
-	         this.isMounted() && this.state.pointGroups.map(function(pg) 
-	          {return React.createElement(PointGroup, {context: this.state.context, 
+	         this.state.pointGroups.map(function(pg) 
+	          {return React.createElement(PointGroup, {onMouseDown: this.onMouseDown, 
 	            label: pg.label, points: pg.points, generatedBy: pg.generatedBy});}.bind(this))
 	
+	        )
 	      );
 	  }
 	});
