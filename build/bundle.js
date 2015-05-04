@@ -225,7 +225,10 @@ webpackJsonp([0],{
 	      var pointGroups = this.state.pointGroups.map(function(pg)  {
 	        var diff = pg.mouseDownDiff;
 	        if (typeof diff !== "undefined" && diff !== null) {
-	          pg.generatedBy.center = add(this.getMouseXY(e))(diff);
+	          var newCenter = subtract(this.getMouseXY(e))(diff);
+	          var move = subtract(newCenter)(pg.generatedBy.center);
+	          pg.generatedBy.center = newCenter;
+	          pg.points = pg.points.map(add(move));
 	        }
 	        return pg;
 	      }.bind(this));
@@ -244,7 +247,7 @@ webpackJsonp([0],{
 	
 	    var children = this.state.pointGroups.map(function(pg)  {
 	      var onMouseDown = function(e)  {
-	        pg.mouseDownDiff = subtract(pg.generatedBy.center)(this.getMouseXY(e));
+	        pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
 	        var pointGroups = this.state.pointGroups.map(function(v)  {return v;}); // changed identity of list.
 	        this.setState({pointGroups:pointGroups});
 	      }.bind(this);
