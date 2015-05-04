@@ -249,8 +249,29 @@ webpackJsonp([0],{
 	      if (diff.y < 0) {
 	        theta = theta + Math.PI;
 	      }
+	      var l = 2 * modulus(diff);
 	
-	      this.props.updateParams({l: 2 * modulus(diff), theta:theta});
+	      // points fit these
+	      var $__0=     this.props.generatedBy.params,oldL=$__0.l,oldTheta=$__0.theta;
+	
+	      // need to make match {l, theta} instead.
+	      var thetaDiff = theta - oldTheta;
+	
+	
+	      // var lDiff = l - oldL;
+	
+	      // console.log(thetaDiff, lDiff);
+	
+	      // update all points
+	      var $__1=  this.props.generatedBy,center=$__1.center;
+	      var newPoints = this.props.points.map(function(p)  {
+	        var fromCenter = subtract(p)(center);
+	        var rotatedFromCenter = rotate(thetaDiff, fromCenter);
+	        return add(center)(rotatedFromCenter);
+	      });
+	      this.props.updatePoints(newPoints);
+	
+	      this.props.updateParams({l:l, theta:theta});
 	
 	      e.stopPropagation();
 	      e.preventDefault();

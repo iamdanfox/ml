@@ -90,8 +90,29 @@ var PointGroup = React.createClass({
       if (diff.y < 0) {
         theta = theta + Math.PI;
       }
+      var l = 2 * modulus(diff);
 
-      this.props.updateParams({l: 2 * modulus(diff), theta});
+      // points fit these
+      var {l: oldL, theta: oldTheta} = this.props.generatedBy.params;
+
+      // need to make match {l, theta} instead.
+      var thetaDiff = theta - oldTheta;
+
+
+      // var lDiff = l - oldL;
+
+      // console.log(thetaDiff, lDiff);
+
+      // update all points
+      var {center} = this.props.generatedBy;
+      var newPoints = this.props.points.map((p) => {
+        var fromCenter = subtract(p)(center);
+        var rotatedFromCenter = rotate(thetaDiff, fromCenter);
+        return add(center)(rotatedFromCenter);
+      });
+      this.props.updatePoints(newPoints);
+
+      this.props.updateParams({l, theta});
 
       e.stopPropagation();
       e.preventDefault();
