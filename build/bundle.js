@@ -2195,21 +2195,17 @@ webpackJsonp([0],{
 	                                 
 	                                           
 	
-	
 	var worker = new Worker("./build/worker.bundle.js");
 	var subscribers = {};
 	
-	console.log('hi')
-	
 	worker.onmessage = function(event     ) {
-	  console.log('onMessage', event);
-	  // var {reactElementId, mesh} = event.data;
+	  var $__0=   event.data,reactElementId=$__0.reactElementId,mesh=$__0.mesh;
 	
-	  // if (reactElementId in subscribers) {
-	  //   subscribers[reactElementId](mesh);
-	  // } else {
-	  //   console.log("no subscriber for: ", event, reactElementId, mesh);
-	  // }
+	  if (reactElementId in subscribers) {
+	    subscribers[reactElementId](mesh);
+	  } else {
+	    console.log("no subscriber for: ", reactElementId, mesh, event);
+	  }
 	};
 	
 	

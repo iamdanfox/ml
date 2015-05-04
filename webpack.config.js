@@ -26,7 +26,6 @@ module.exports = [
     }
   },
   {
-    // TODO: how to get THREEjs into the worker ?!?!?
     entry: './scripts/Worker.jsx',
     output: {
       filename: 'worker.bundle.js',

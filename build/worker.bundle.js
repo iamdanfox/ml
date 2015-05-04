@@ -54,14 +54,8 @@
 	
 	self.addEventListener('message', function(event) {
 	  var $__0=      event.data,reactElementId=$__0.reactElementId,thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,dim=$__0.dim,pointClasses=$__0.pointClasses;
-	  // var mesh = workerSlug(thetaResolution, rResolution, dim, pointClasses);
-	  // self.postMessage({reactElementId, mesh});
-	  self.postMessage({
-	    type: 'results',
-	    data: {
-	      a: 1234
-	    }
-	  });
+	  var mesh = workerSlug(thetaResolution, rResolution, dim, pointClasses);
+	  self.postMessage({reactElementId:reactElementId, mesh:mesh});
 	});
 
 

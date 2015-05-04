@@ -4,21 +4,17 @@ type F<U, V> = (x: U) => V;
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
 
-
 var worker = new Worker("./build/worker.bundle.js");
 var subscribers = {};
 
-console.log('hi')
-
 worker.onmessage = function(event: any) {
-  console.log('onMessage', event);
-  // var {reactElementId, mesh} = event.data;
+  var {reactElementId, mesh} = event.data;
 
-  // if (reactElementId in subscribers) {
-  //   subscribers[reactElementId](mesh);
-  // } else {
-  //   console.log("no subscriber for: ", event, reactElementId, mesh);
-  // }
+  if (reactElementId in subscribers) {
+    subscribers[reactElementId](mesh);
+  } else {
+    console.log("no subscriber for: ", reactElementId, mesh, event);
+  }
 };
 
 
