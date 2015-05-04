@@ -75,6 +75,13 @@ webpackJsonp([0],{
 	    };
 	  },
 	
+	  rotate: function(theta        , arg    )     {
+	    return {
+	      x: arg.x * Math.cos(theta) - arg.y * Math.sin(theta),
+	      y: arg.x * Math.sin(theta) + arg.y * Math.cos(theta),
+	    }
+	  },
+	
 	  dotProduct: dotProduct,
 	
 	  scale: scale,
@@ -152,23 +159,35 @@ webpackJsonp([0],{
 
 	/* @flow */
 	"use strict";
+	
 	                           
 	                                 
-	                                                                                         
+	                 
+	                
+	                    
+	                
+	               
+	                                       
+	    
+	                    
+	  
 	              
 	                              
 	 
-	var React = __webpack_require__(/*! react/addons */ 1);
-	var $__0=   __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract;
 	
+	var React = __webpack_require__(/*! react/addons */ 1);
+	var $__0=    __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract,rotate=$__0.rotate;
+	
+	
+	
+	var ELLIPSE_FIXED_RADIUS = 0.4;
 	
 	var POINTS_PER_AREA = 15;
-	
 	var labelToColour = function(c)  {return ["red", "blue"][c];};
 	
 	var generatePoints = function(generatedBy)            {
-	  var $__0=   generatedBy.axes,x=$__0.x,y=$__0.y;
-	  var area = Math.PI * x * y;
+	  var $__0=   generatedBy.params,l=$__0.l,theta=$__0.theta;
+	  var area = Math.PI * l * ELLIPSE_FIXED_RADIUS;
 	  var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
 	  // TODO randomise this slightly.
 	
@@ -177,7 +196,8 @@ webpackJsonp([0],{
 	  for (var i = 0; i < numberOfPoints; i = i + 1) {
 	    var r1 = 2 * Math.random() - 1;
 	    var r2 = 2 * Math.random() - 1;
-	    newPoints.push({x: cx + r1 * x, y: cy + r2 * y});
+	    var plainPoint = {x: cx + r1 * ELLIPSE_FIXED_RADIUS, y: cy + r2 * l}
+	    newPoints.push(rotate(theta, plainPoint));
 	  }
 	  return newPoints;
 	};
@@ -212,7 +232,7 @@ webpackJsonp([0],{
 	
 	  render: function()                {
 	    var $__0=   this.props.generatedBy.center,x=$__0.x,y=$__0.y;
-	    var $__1=     this.props.generatedBy.axes,rx=$__1.x,ry=$__1.y;
+	    var $__1=   this.props.generatedBy.params,l=$__1.l,theta=$__1.theta;
 	    var fill = labelToColour(this.props.label);
 	    var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.1;
 	    return (
@@ -220,17 +240,22 @@ webpackJsonp([0],{
 	        onMouseDown: this.props.onMouseDown, onMouseUp: this.props.onMouseUp, 
 	        onMouseEnter: this.onMouseEnter, onMouseLeave: this.onMouseLeave}, 
 	
-	        React.createElement("ellipse", {cx: x, cy: y, rx: rx, ry: ry, style: {fill:fill, opacity:opacity}}), 
+	        React.createElement("ellipse", {cx: x, cy: y, rx: ELLIPSE_FIXED_RADIUS, ry: l, style: {fill:fill, opacity:opacity}, 
+	          transform: ("rotate(" + (theta * 180 / Math.PI) + " " + x + " " + y + ")")}), 
 	
 	         this.props.points.map(function(p) 
 	            {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x, cy: p.y, r: 0.03, fill: fill});}), 
 	
 	        this.state.mouseOver &&
-	          React.createElement("circle", {cx: x, cy: y, r: 0.06, fill: "white", ref: "control", 
+	          React.createElement("circle", {cx: x, cy: y + l / 2, r: 0.06, fill: "white", 
+	            style: {cursor: "pointer"}}), 
+	
+	        this.state.mouseOver &&
+	          React.createElement("circle", {cx: x, cy: y, r: 0.06, fill: "grey", 
 	            onClick: this.refresh, style: {cursor: "pointer"}}), 
 	
 	        this.state.mouseOver &&
-	          React.createElement("circle", {cx: x + 0.12, cy: y, r: 0.06, fill: "grey", ref: "control", 
+	          React.createElement("circle", {cx: x + 0.12, cy: y, r: 0.06, fill: "black", 
 	            onClick: this.props.destroy, style: {cursor: "pointer"}})
 	      )
 	    );
@@ -249,7 +274,7 @@ webpackJsonp([0],{
 	          points: [{x: 0, y: 0}, {x: 0.14, y: 0.6}, {x: 0.4, y: 0.20}],
 	          generatedBy: {
 	            center: {x: 0.10, y: 0.10},
-	            axes: {x: 0.5, y: 0.7},
+	            params: {l: 0.6, theta: 0},
 	          },
 	          mouseDownDiff: null,
 	        },
@@ -258,7 +283,7 @@ webpackJsonp([0],{
 	          label: 1,
 	          generatedBy: {
 	            center: {x: 0.50, y: 0.50},
-	            axes: {x: 0.2, y: 0.2},
+	            params: {l: 0.2, theta: 1},
 	          },
 	          mouseDownDiff: null,
 	        }
@@ -294,7 +319,7 @@ webpackJsonp([0],{
 	    return function()  {
 	      var generatedBy = {
 	        center: {x: Math.random() - 1, y: Math.random() - 1},
-	        axes: {x: 0.5, y: 0.5},
+	        params: {l: 0.5, theta: 0},
 	      };
 	      var points = generatePoints(generatedBy);
 	      var newGroup = {label:label, points:points, generatedBy:generatedBy, mouseDownDiff: null};

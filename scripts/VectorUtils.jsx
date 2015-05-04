@@ -48,6 +48,13 @@ module.exports = {
     };
   },
 
+  rotate: function(theta: number, arg: P2): P2 {
+    return {
+      x: arg.x * Math.cos(theta) - arg.y * Math.sin(theta),
+      y: arg.x * Math.sin(theta) + arg.y * Math.cos(theta),
+    }
+  },
+
   dotProduct: dotProduct,
 
   scale: scale,

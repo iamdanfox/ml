@@ -1,22 +1,34 @@
 /* @flow */
 "use strict";
+
 type F<U, V> = (x: U) => V;
 type P2 = {x: number; y: number};
-type PointGrp = {label: number; points: Array<P2>; generatedBy: any; mouseDownDiff: ?P2};
+type PointGrp = {
+  label: number;
+  points: Array<P2>;
+  generatedBy: {
+    center: P2;
+    params: {l: number; theta: number};
+  };
+  mouseDownDiff: ?P2
+};
 type State = {
   pointGroups: Array<PointGrp>
 }
-var React = require("react/addons");
-var {add, subtract} = require("./VectorUtils.jsx");
 
+var React = require("react/addons");
+var {add, subtract, rotate} = require("./VectorUtils.jsx");
+
+
+
+var ELLIPSE_FIXED_RADIUS = 0.4;
 
 var POINTS_PER_AREA = 15;
-
 var labelToColour = (c) => ["red", "blue"][c];
 
 var generatePoints = function(generatedBy): Array<P2> {
-  var {x, y} = generatedBy.axes;
-  var area = Math.PI * x * y;
+  var {l, theta} = generatedBy.params;
+  var area = Math.PI * l * ELLIPSE_FIXED_RADIUS;
   var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
   // TODO randomise this slightly.
 
@@ -25,7 +37,8 @@ var generatePoints = function(generatedBy): Array<P2> {
   for (var i = 0; i < numberOfPoints; i = i + 1) {
     var r1 = 2 * Math.random() - 1;
     var r2 = 2 * Math.random() - 1;
-    newPoints.push({x: cx + r1 * x, y: cy + r2 * y});
+    var plainPoint = {x: cx + r1 * ELLIPSE_FIXED_RADIUS, y: cy + r2 * l}
+    newPoints.push(rotate(theta, plainPoint));
   }
   return newPoints;
 };
@@ -60,7 +73,7 @@ var PointGroup = React.createClass({
 
   render: function(): ?ReactElement {
     var {x, y} = this.props.generatedBy.center;
-    var {x: rx, y: ry} = this.props.generatedBy.axes;
+    var {l, theta} = this.props.generatedBy.params;
     var fill = labelToColour(this.props.label);
     var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.1;
     return (
@@ -68,17 +81,22 @@ var PointGroup = React.createClass({
         onMouseDown={this.props.onMouseDown} onMouseUp={this.props.onMouseUp}
         onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
 
-        <ellipse cx={x} cy={y} rx={rx} ry={ry} style={{fill, opacity}} />
+        <ellipse cx={x} cy={y} rx={ELLIPSE_FIXED_RADIUS} ry={l} style={{fill, opacity}}
+          transform={`rotate(${theta * 180 / Math.PI} ${x} ${y})`} />
 
         { this.props.points.map((p) =>
             <circle key={p.x + ":" + p.y} cx={p.x} cy={p.y} r={0.03} fill={fill} />) }
 
         {this.state.mouseOver &&
-          <circle cx={x} cy={y} r={0.06} fill="white" ref="control"
+          <circle cx={x} cy={y + l / 2} r={0.06} fill="white"
+            style={{cursor: "pointer"}} /> }
+
+        {this.state.mouseOver &&
+          <circle cx={x} cy={y} r={0.06} fill="grey"
             onClick={this.refresh} style={{cursor: "pointer"}} /> }
 
         {this.state.mouseOver &&
-          <circle cx={x + 0.12} cy={y} r={0.06} fill="grey" ref="control"
+          <circle cx={x + 0.12} cy={y} r={0.06} fill="black"
             onClick={this.props.destroy} style={{cursor: "pointer"}} /> }
       </g>
     );
@@ -97,7 +115,7 @@ var AwesomeDataComponent = React.createClass({
           points: [{x: 0, y: 0}, {x: 0.14, y: 0.6}, {x: 0.4, y: 0.20}],
           generatedBy: {
             center: {x: 0.10, y: 0.10},
-            axes: {x: 0.5, y: 0.7},
+            params: {l: 0.6, theta: 0},
           },
           mouseDownDiff: null,
         },
@@ -106,7 +124,7 @@ var AwesomeDataComponent = React.createClass({
           label: 1,
           generatedBy: {
             center: {x: 0.50, y: 0.50},
-            axes: {x: 0.2, y: 0.2},
+            params: {l: 0.2, theta: 1},
           },
           mouseDownDiff: null,
         }
@@ -142,7 +160,7 @@ var AwesomeDataComponent = React.createClass({
     return () => {
       var generatedBy = {
         center: {x: Math.random() - 1, y: Math.random() - 1},
-        axes: {x: 0.5, y: 0.5},
+        params: {l: 0.5, theta: 0},
       };
       var points = generatePoints(generatedBy);
       var newGroup = {label, points, generatedBy, mouseDownDiff: null};
