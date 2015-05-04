@@ -10,6 +10,8 @@ var React = require("react/addons");
 var {add, subtract} = require("./VectorUtils.jsx");
 
 
+var POINTS_PER_AREA = 15;
+
 
 var PointGroup = React.createClass({
   propTypes: {
@@ -17,22 +19,56 @@ var PointGroup = React.createClass({
     points: React.PropTypes.array.isRequired,
     generatedBy: React.PropTypes.object.isRequired,
     isMouseDown: React.PropTypes.bool.isRequired,
+    updatePoints: React.PropTypes.func.isRequired,
+  },
+
+  getInitialState: function () {
+    return {mouseOver: false};
+  },
+
+  onMouseEnter: function() {
+    this.setState({mouseOver: true});
+  },
+
+  onMouseLeave: function(e: React.SyntheticEvent) {
+    this.setState({mouseOver: false});
+  },
+
+  refresh: function() {
+    var {x, y} = this.props.generatedBy.axes;
+    var area = Math.PI * x * y;
+    var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
+    // TODO randomise this slightly.
+
+    var newPoints = [];
+    var {x: cx, y: cy} = this.props.generatedBy.center;
+    for (var i = 0; i < numberOfPoints; i = i + 1) {
+      var r1 = 2 * Math.random() - 1;
+      var r2 = 2 * Math.random() - 1;
+      newPoints.push({x: cx + r1 * x, y: cy + r2 * y});
+    }
+
+    this.props.updatePoints(newPoints);
   },
 
   render: function(): ?ReactElement {
     var {x, y} = this.props.generatedBy.center;
-    var {x: rx, y: ry} = this.props.generatedBy.skew;
+    var {x: rx, y: ry} = this.props.generatedBy.axes;
     var fill = ["red", "blue"][this.props.label];
-    var opacity = (this.props.isMouseDown) ? 0.6 : 0.3;
+    var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.1;
     return (
-      <g>
+      <g style={{cursor: "move"}}
+        onMouseDown={this.props.onMouseDown} onMouseUp={this.props.onMouseUp}
+        onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+
+        <ellipse cx={x} cy={y} rx={rx} ry={ry} style={{fill, opacity}} />
 
         { this.props.points.map((p) =>
             <circle key={p.x + ":" + p.y} cx={p.x} cy={p.y} r={0.03} fill={fill} />) }
 
-        <ellipse cx={x} cy={y} rx={rx} ry={ry} style={{fill, opacity}}
-          onMouseDown={this.props.onMouseDown}
-          onMouseUp={this.props.onMouseUp} />
+        {this.state.mouseOver &&
+          <circle cx={x} cy={y} r={0.06} fill="white" ref="control"
+            onClick={this.refresh} style={{cursor: "pointer"}} /> }
       </g>
     );
   },
@@ -50,7 +86,7 @@ var AwesomeDataComponent = React.createClass({
           points: [{x: 0, y: 0}, {x: 0.14, y: 0.6}, {x: 0.4, y: 0.20}],
           generatedBy: {
             center: {x: 0.10, y: 0.10},
-            skew: {x: 0.05, y: 0.4},
+            axes: {x: 0.5, y: 0.7},
           },
           mouseDownDiff: null,
         },
@@ -59,7 +95,7 @@ var AwesomeDataComponent = React.createClass({
           label: 1,
           generatedBy: {
             center: {x: 0.50, y: 0.50},
-            skew: {x: 0.2, y: 0.2},
+            axes: {x: 0.2, y: 0.2},
           },
           mouseDownDiff: null,
         }
@@ -96,8 +132,7 @@ var AwesomeDataComponent = React.createClass({
     var children = this.state.pointGroups.map((pg) => {
       var onMouseDown = (e) => {
         pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
-        var pointGroups = this.state.pointGroups.map((v) => v); // changed identity of list.
-        this.setState({pointGroups});
+        this.setState({pointGroups: this.state.pointGroups.map((v) => v)});
       };
 
       var onMouseUp = () => {
@@ -107,7 +142,12 @@ var AwesomeDataComponent = React.createClass({
 
       var isMouseDown = typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null;
 
-      return <PointGroup {...pg}
+      var updatePoints = (newPoints) => {
+        pg.points = newPoints;
+        this.setState({pointGroups: this.state.pointGroups.map((v) => v)});
+      }
+
+      return <PointGroup {...pg} updatePoints={updatePoints}
         onMouseDown={onMouseDown} isMouseDown={isMouseDown} onMouseUp={onMouseUp} />;
     });
 

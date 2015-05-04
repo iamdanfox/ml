@@ -162,6 +162,8 @@ webpackJsonp([0],{
 	var $__0=   __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract;
 	
 	
+	var POINTS_PER_AREA = 15;
+	
 	
 	var PointGroup = React.createClass({displayName: "PointGroup",
 	  propTypes: {
@@ -169,22 +171,56 @@ webpackJsonp([0],{
 	    points: React.PropTypes.array.isRequired,
 	    generatedBy: React.PropTypes.object.isRequired,
 	    isMouseDown: React.PropTypes.bool.isRequired,
+	    updatePoints: React.PropTypes.func.isRequired,
+	  },
+	
+	  getInitialState: function () {
+	    return {mouseOver: false};
+	  },
+	
+	  onMouseEnter: function() {
+	    this.setState({mouseOver: true});
+	  },
+	
+	  onMouseLeave: function(e                      ) {
+	    this.setState({mouseOver: false});
+	  },
+	
+	  refresh: function() {
+	    var $__0=   this.props.generatedBy.axes,x=$__0.x,y=$__0.y;
+	    var area = Math.PI * x * y;
+	    var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
+	    // TODO randomise this slightly.
+	
+	    var newPoints = [];
+	    var $__1=     this.props.generatedBy.center,cx=$__1.x,cy=$__1.y;
+	    for (var i = 0; i < numberOfPoints; i = i + 1) {
+	      var r1 = 2 * Math.random() - 1;
+	      var r2 = 2 * Math.random() - 1;
+	      newPoints.push({x: cx + r1 * x, y: cy + r2 * y});
+	    }
+	
+	    this.props.updatePoints(newPoints);
 	  },
 	
 	  render: function()                {
 	    var $__0=   this.props.generatedBy.center,x=$__0.x,y=$__0.y;
-	    var $__1=     this.props.generatedBy.skew,rx=$__1.x,ry=$__1.y;
+	    var $__1=     this.props.generatedBy.axes,rx=$__1.x,ry=$__1.y;
 	    var fill = ["red", "blue"][this.props.label];
-	    var opacity = (this.props.isMouseDown) ? 0.6 : 0.3;
+	    var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.1;
 	    return (
-	      React.createElement("g", null, 
+	      React.createElement("g", {style: {cursor: "move"}, 
+	        onMouseDown: this.props.onMouseDown, onMouseUp: this.props.onMouseUp, 
+	        onMouseEnter: this.onMouseEnter, onMouseLeave: this.onMouseLeave}, 
+	
+	        React.createElement("ellipse", {cx: x, cy: y, rx: rx, ry: ry, style: {fill:fill, opacity:opacity}}), 
 	
 	         this.props.points.map(function(p) 
 	            {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x, cy: p.y, r: 0.03, fill: fill});}), 
 	
-	        React.createElement("ellipse", {cx: x, cy: y, rx: rx, ry: ry, style: {fill:fill, opacity:opacity}, 
-	          onMouseDown: this.props.onMouseDown, 
-	          onMouseUp: this.props.onMouseUp})
+	        this.state.mouseOver &&
+	          React.createElement("circle", {cx: x, cy: y, r: 0.06, fill: "white", ref: "control", 
+	            onClick: this.refresh, style: {cursor: "pointer"}})
 	      )
 	    );
 	  },
@@ -202,7 +238,7 @@ webpackJsonp([0],{
 	          points: [{x: 0, y: 0}, {x: 0.14, y: 0.6}, {x: 0.4, y: 0.20}],
 	          generatedBy: {
 	            center: {x: 0.10, y: 0.10},
-	            skew: {x: 0.05, y: 0.4},
+	            axes: {x: 0.5, y: 0.7},
 	          },
 	          mouseDownDiff: null,
 	        },
@@ -211,7 +247,7 @@ webpackJsonp([0],{
 	          label: 1,
 	          generatedBy: {
 	            center: {x: 0.50, y: 0.50},
-	            skew: {x: 0.2, y: 0.2},
+	            axes: {x: 0.2, y: 0.2},
 	          },
 	          mouseDownDiff: null,
 	        }
@@ -248,8 +284,7 @@ webpackJsonp([0],{
 	    var children = this.state.pointGroups.map(function(pg)  {
 	      var onMouseDown = function(e)  {
 	        pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
-	        var pointGroups = this.state.pointGroups.map(function(v)  {return v;}); // changed identity of list.
-	        this.setState({pointGroups:pointGroups});
+	        this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
 	      }.bind(this);
 	
 	      var onMouseUp = function()  {
@@ -259,8 +294,13 @@ webpackJsonp([0],{
 	
 	      var isMouseDown = typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null;
 	
-	      return React.createElement(PointGroup, React.__spread({},  pg, 
-	        {onMouseDown: onMouseDown, isMouseDown: isMouseDown, onMouseUp: onMouseUp}));
+	      var updatePoints = function(newPoints)  {
+	        pg.points = newPoints;
+	        this.setState({pointGroups: this.state.pointGroups.map(function(v)  {return v;})});
+	      }.bind(this)
+	
+	      return React.createElement(PointGroup, React.__spread({},  pg, {updatePoints: updatePoints, 
+	        onMouseDown: onMouseDown, isMouseDown: isMouseDown, onMouseUp: onMouseUp}));
 	    }.bind(this));
 	
 	    return React.createElement("svg", {
