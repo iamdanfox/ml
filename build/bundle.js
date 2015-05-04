@@ -176,7 +176,7 @@ webpackJsonp([0],{
 	 
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var $__0=     __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract,rotate=$__0.rotate,modulus=$__0.modulus;
+	var $__0=       __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
 	
 	
 	
@@ -263,11 +263,17 @@ webpackJsonp([0],{
 	      // console.log(thetaDiff, lDiff);
 	
 	      // update all points
+	      var stretchDirection = rotate(theta, {x: 0, y: 1});
+	
 	      var $__1=  this.props.generatedBy,center=$__1.center;
 	      var newPoints = this.props.points.map(function(p)  {
 	        var fromCenter = subtract(p)(center);
 	        var rotatedFromCenter = rotate(thetaDiff, fromCenter);
-	        return add(center)(rotatedFromCenter);
+	        var stretchAmount = dotProduct(stretchDirection, rotatedFromCenter);
+	        var subtractProportion = 1 - (l / oldL);
+	        var subtractVector = scale(stretchAmount * subtractProportion)(stretchDirection);
+	        var doneFromCenter = subtract(rotatedFromCenter)(subtractVector);
+	        return add(center)(doneFromCenter);
 	      });
 	      this.props.updatePoints(newPoints);
 	

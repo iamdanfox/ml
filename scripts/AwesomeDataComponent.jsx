@@ -17,7 +17,7 @@ type State = {
 }
 
 var React = require("react/addons");
-var {add, subtract, rotate, modulus} = require("./VectorUtils.jsx");
+var {add, subtract, scale, rotate, modulus, dotProduct} = require("./VectorUtils.jsx");
 
 
 
@@ -104,11 +104,17 @@ var PointGroup = React.createClass({
       // console.log(thetaDiff, lDiff);
 
       // update all points
+      var stretchDirection = rotate(theta, {x: 0, y: 1});
+
       var {center} = this.props.generatedBy;
       var newPoints = this.props.points.map((p) => {
         var fromCenter = subtract(p)(center);
         var rotatedFromCenter = rotate(thetaDiff, fromCenter);
-        return add(center)(rotatedFromCenter);
+        var stretchAmount = dotProduct(stretchDirection, rotatedFromCenter);
+        var subtractProportion = 1 - (l / oldL);
+        var subtractVector = scale(stretchAmount * subtractProportion)(stretchDirection);
+        var doneFromCenter = subtract(rotatedFromCenter)(subtractVector);
+        return add(center)(doneFromCenter);
       });
       this.props.updatePoints(newPoints);
 
