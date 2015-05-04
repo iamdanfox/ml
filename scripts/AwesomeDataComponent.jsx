@@ -12,6 +12,24 @@ var {add, subtract} = require("./VectorUtils.jsx");
 
 var POINTS_PER_AREA = 15;
 
+var labelToColour = (c) => ["red", "blue"][c];
+
+var generatePoints = function(generatedBy): Array<P2> {
+  var {x, y} = generatedBy.axes;
+  var area = Math.PI * x * y;
+  var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
+  // TODO randomise this slightly.
+
+  var newPoints = [];
+  var {x: cx, y: cy} = generatedBy.center;
+  for (var i = 0; i < numberOfPoints; i = i + 1) {
+    var r1 = 2 * Math.random() - 1;
+    var r2 = 2 * Math.random() - 1;
+    newPoints.push({x: cx + r1 * x, y: cy + r2 * y});
+  }
+  return newPoints;
+};
+
 
 var PointGroup = React.createClass({
   propTypes: {
@@ -20,9 +38,10 @@ var PointGroup = React.createClass({
     generatedBy: React.PropTypes.object.isRequired,
     isMouseDown: React.PropTypes.bool.isRequired,
     updatePoints: React.PropTypes.func.isRequired,
+    destroy: React.PropTypes.func.isRequired,
   },
 
-  getInitialState: function () {
+  getInitialState: function() {
     return {mouseOver: false};
   },
 
@@ -30,31 +49,19 @@ var PointGroup = React.createClass({
     this.setState({mouseOver: true});
   },
 
-  onMouseLeave: function(e: React.SyntheticEvent) {
+  onMouseLeave: function() {
     this.setState({mouseOver: false});
   },
 
   refresh: function() {
-    var {x, y} = this.props.generatedBy.axes;
-    var area = Math.PI * x * y;
-    var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
-    // TODO randomise this slightly.
-
-    var newPoints = [];
-    var {x: cx, y: cy} = this.props.generatedBy.center;
-    for (var i = 0; i < numberOfPoints; i = i + 1) {
-      var r1 = 2 * Math.random() - 1;
-      var r2 = 2 * Math.random() - 1;
-      newPoints.push({x: cx + r1 * x, y: cy + r2 * y});
-    }
-
+    var newPoints = generatePoints(this.props.generatedBy);
     this.props.updatePoints(newPoints);
   },
 
   render: function(): ?ReactElement {
     var {x, y} = this.props.generatedBy.center;
     var {x: rx, y: ry} = this.props.generatedBy.axes;
-    var fill = ["red", "blue"][this.props.label];
+    var fill = labelToColour(this.props.label);
     var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.1;
     return (
       <g style={{cursor: "move"}}
@@ -69,6 +76,10 @@ var PointGroup = React.createClass({
         {this.state.mouseOver &&
           <circle cx={x} cy={y} r={0.06} fill="white" ref="control"
             onClick={this.refresh} style={{cursor: "pointer"}} /> }
+
+        {this.state.mouseOver &&
+          <circle cx={x + 0.12} cy={y} r={0.06} fill="grey" ref="control"
+            onClick={this.props.destroy} style={{cursor: "pointer"}} /> }
       </g>
     );
   },
@@ -127,6 +138,20 @@ var AwesomeDataComponent = React.createClass({
     return {x: (2 * x) / this.props.dim - 1, y: (2 * y) / this.props.dim - 1};
   },
 
+  newPointGroup: function(label: number): () => void {
+    return () => {
+      var generatedBy = {
+        center: {x: Math.random() - 1, y: Math.random() - 1},
+        axes: {x: 0.5, y: 0.5},
+      };
+      var points = generatePoints(generatedBy);
+      var newGroup = {label, points, generatedBy, mouseDownDiff: null};
+      this.setState({
+        pointGroups: this.state.pointGroups.concat([newGroup])
+      });
+    };
+  },
+
   render: function(): ?ReactElement {
 
     var children = this.state.pointGroups.map((pg) => {
@@ -145,9 +170,13 @@ var AwesomeDataComponent = React.createClass({
       var updatePoints = (newPoints) => {
         pg.points = newPoints;
         this.setState({pointGroups: this.state.pointGroups.map((v) => v)});
-      }
+      };
 
-      return <PointGroup {...pg} updatePoints={updatePoints}
+      var destroy = () => {
+        this.setState({pointGroups: this.state.pointGroups.filter((v) => v !== pg)});
+      };
+
+      return <PointGroup {...pg} updatePoints={updatePoints} destroy={destroy}
         onMouseDown={onMouseDown} isMouseDown={isMouseDown} onMouseUp={onMouseUp} />;
     });
 
@@ -160,6 +189,11 @@ var AwesomeDataComponent = React.createClass({
           scale(${this.props.dim / 2} ${-this.props.dim / 2})`}>
 
         { children }
+
+        <rect x={-0.97} y={-0.97} height={0.12} width={0.12}
+          fill="red" onClick={this.newPointGroup(0)} />
+        <rect x={-0.82} y={-0.97} height={0.12} width={0.12}
+          fill="blue" onClick={this.newPointGroup(1)} />
 
         </g>
       </svg>;
