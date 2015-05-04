@@ -42,41 +42,220 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/*!***************************!*\
-  !*** ./scripts/Worker.js ***!
-  \***************************/
+/*!****************************!*\
+  !*** ./scripts/Worker.jsx ***!
+  \****************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
 	"use strict";
 	
-	var THREE = __webpack_require__(/*! three */ 1);
+	var workerSlug = __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 1);
 	
-	
-	// in worker.js
 	self.addEventListener('message', function(event) {
-	  // can't clone the entire 'event' object
-	
-	  // expect messages containing a return ID,
-	  // rResolution
-	  // thetaResolution
-	  // pointClasses
-	
-	  // we will compute the mesh using logistic regression objective & optimise
-	
-	  //  now send back the results
+	  var $__0=      event.data,reactElementId=$__0.reactElementId,thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,dim=$__0.dim,pointClasses=$__0.pointClasses;
+	  // var mesh = workerSlug(thetaResolution, rResolution, dim, pointClasses);
+	  // self.postMessage({reactElementId, mesh});
 	  self.postMessage({
 	    type: 'results',
 	    data: {
-	      received: event.data,
+	      a: 1234
 	    }
 	  });
 	});
-	
 
 
 /***/ },
 /* 1 */
+/*!****************************************!*\
+  !*** ./scripts/WebWorkerGraphSlug.jsx ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	                                 
+	                                           
+	
+	
+	var $__0=   __webpack_require__(/*! ./LogisticRegression.jsx */ 2),fastOptimise=$__0.fastOptimise,objective=$__0.objective;
+	var THREE = __webpack_require__(/*! three */ 3);
+	
+	
+	var MATERIAL = new THREE.MeshBasicMaterial({
+	  side: THREE.DoubleSide,
+	  vertexColors: THREE.FaceColors,
+	  opacity: 0.8,
+	  transparent: true,
+	});
+	
+	function build(thetaResolution, rResolution, dim, pointClasses)                           {
+	  var polarMeshFunction = function(i        , j        )                {
+	    var theta = i * 2 * Math.PI;
+	    var r = Math.pow(1.8, j * j) - 1; // this ensures there are lots of samples near the origin and gets close to 0!
+	    var x = r * Math.cos(theta) * dim;
+	    var y = r * Math.sin(theta) * dim;
+	    var z = objective({x:x, y:y}, pointClasses);
+	    return new THREE.Vector3(x, y, z);
+	  };
+	
+	  return new THREE.ParametricGeometry(polarMeshFunction, thetaResolution, rResolution, true);
+	}
+	
+	function colour(graphGeometry, pointClasses)       {
+	  graphGeometry.computeBoundingBox();
+	  var zMin = graphGeometry.boundingBox.min.z;
+	  var zRange = graphGeometry.boundingBox.max.z - zMin;
+	
+	  var colourFunction = function(vertex1, vertex2, vertex3, mutableFaceColor)       {
+	    var totalZ = vertex1.z + vertex2.z + vertex3.z;
+	    var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+	    var stops = fastOptimise(vertex1, pointClasses) / 250; // should match MAX_STOPS
+	    mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
+	  };
+	
+	  for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
+	    var face = graphGeometry.faces[i];
+	    colourFunction(
+	      graphGeometry.vertices[face.a],
+	      graphGeometry.vertices[face.b],
+	      graphGeometry.vertices[face.c],
+	      face.color);
+	  }
+	
+	  graphGeometry.colorsNeedUpdate = true;
+	}
+	
+	module.exports = function respond(thetaResolution        , rResolution        , dim        , pointClasses              ) {
+	  var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
+	  colour(graphGeometry, pointClasses);
+	  return new THREE.Mesh(graphGeometry, MATERIAL.clone());
+	};
+
+
+/***/ },
+/* 2 */
+/*!****************************************!*\
+  !*** ./scripts/LogisticRegression.jsx ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	                                 
+	                                             
+	                                           
+	
+	"use strict";
+	
+	var $__0=      __webpack_require__(/*! ./VectorUtils.jsx */ 4),pointClassesTransformZeroOne=$__0.pointClassesTransformZeroOne,dotProduct=$__0.dotProduct,scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
+	
+	function sigmoid(wx)         {
+	  return 1 / (1 + Math.exp(-wx));
+	}
+	
+	function logSigmoid(wx)         {
+	  return -Math.log(1 + Math.exp(-wx));
+	}
+	
+	function logOneMinusSigmoid(wx)         {
+	  return -Math.log(Math.exp(wx) + 1); // "equivalent" formulations of this don't give same results!
+	}
+	
+	
+	
+	var ANTI_OVERFLOW_FUDGE = 1 / 200;
+	
+	// the objective function is used to generate the surface
+	function objective(w    , pointClasses              )         {
+	  var smallerW = scale(ANTI_OVERFLOW_FUDGE)(w);
+	  var points = pointClassesTransformZeroOne(pointClasses);
+	
+	  // we're actually trying to minimise this.
+	  var sum = -points
+	    .map(function sumElement(point     )         { // crucially, t is either 0 or 1.
+	      var wx = dotProduct(smallerW, point);
+	      return point.t * logSigmoid(wx) + (1 - point.t) * logOneMinusSigmoid(wx);
+	    })
+	    .reduce(function(a, b) {return a + b;}, 0);
+	
+	  // flip representation because Surface.jsx shows maximisation
+	  return 100 - Math.log(1 + sum) * 10;
+	}
+	
+	
+	
+	var NU = 0.03;
+	var ACCEPTING_GRAD = 1; // we reach this in ~ 300 loops, but it takes more like 6000 to reach 0.1!
+	var MAX_STOPS = 250;
+	
+	function optimise(startW    , pointClasses              )            {
+	  var points = pointClassesTransformZeroOne(pointClasses);
+	  var len = points.length;
+	
+	  function gradient(w    )     {
+	    var smallerW = scale(ANTI_OVERFLOW_FUDGE)(w);
+	    var grad = {x: 0, y: 0};
+	
+	    for (var i = 0; i < len; i = i + 1) {
+	      var point = points[i];
+	      var scaleFactor = sigmoid(smallerW.x * point.x + smallerW.y * point.y) - point.t;
+	      grad.x = grad.x + scaleFactor * point.x;
+	      grad.y = grad.y + scaleFactor * point.y; // inlined scale factor and dot products here to reduce GC
+	    }
+	    return grad;
+	  }
+	
+	  var w = startW;
+	  var grad;
+	  var stops = [w];
+	  while (grad = gradient(w, pointClasses), modulus(grad) > ACCEPTING_GRAD && stops.length < MAX_STOPS) {
+	    w = add(w)(scale(-1 * NU)(grad));
+	    stops.push(w);
+	  }
+	  return stops;
+	}
+	
+	
+	
+	function fastOptimise(startW    , pointClasses              )         {
+	  var points = pointClassesTransformZeroOne(pointClasses);
+	
+	  function gradient(w    )     {
+	    var smallerW = {x: ANTI_OVERFLOW_FUDGE * w.x, y: ANTI_OVERFLOW_FUDGE * w.y};
+	    var grad = {x: 0, y: 0};
+	
+	    for (var i = 0; i < points.length; i = i + 1) {
+	      var point = points[i];
+	      var scaleFactor = sigmoid(smallerW.x * point.x + smallerW.y * point.y) - point.t;
+	      grad.x = grad.x + scaleFactor * point.x;
+	      grad.y = grad.y + scaleFactor * point.y; // inlined scale factor and dot products here to reduce GC
+	    }
+	    return grad;
+	  }
+	
+	  var w = {x: startW.x, y: startW.y};
+	  var grad;
+	  var stops = 1;
+	  while (grad = gradient(w, pointClasses), modulus(grad) > ACCEPTING_GRAD && stops < MAX_STOPS) {
+	    w.x = w.x - NU * grad.x;
+	    w.y = w.y - NU * grad.y;
+	    stops = stops + 1;
+	  }
+	
+	  return stops;
+	}
+	
+	
+	
+	module.exports = {
+	  objective: objective,
+	  optimise: optimise,
+	  fastOptimise: fastOptimise
+	};
+
+
+/***/ },
+/* 3 */
 /*!**************************!*\
   !*** ./~/three/three.js ***!
   \**************************/
@@ -35228,6 +35407,130 @@
 	} else {
 	  this['THREE'] = THREE;
 	}
+
+
+/***/ },
+/* 4 */
+/*!*********************************!*\
+  !*** ./scripts/VectorUtils.jsx ***!
+  \*********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	                           
+	                                 
+	                                             
+	                                          
+	
+	"use strict";
+	
+	function sizeSquared(arg    )         {
+	  var x = arg.x;
+	  var y = arg.y;
+	  return x * x + y * y;
+	}
+	
+	function dotProduct(a    , b    )         {
+	  var $__0=     a,x1=$__0.x,y1=$__0.y;
+	  var $__1=     b,x2=$__1.x,y2=$__1.y;
+	  return x1 * x2 + y1 * y2;
+	}
+	
+	function modulus(arg    )         {
+	  return Math.sqrt(sizeSquared(arg));
+	}
+	
+	function scale(sf        )            {
+	  return function(arg    )     {
+	    var $__0=     arg,x=$__0.x,y=$__0.y;
+	    return {
+	      x: x * sf,
+	      y: y * sf
+	    };
+	  };
+	}
+	
+	module.exports = {
+	  lineEq: function(p1    , p2    )          {
+	    return (typeof p1 !== "undefined" && p1 !== null &&
+	      typeof p2 !== "undefined" && p2 !== null) &&
+	      (p1.x === p2.x) && (p1.y === p2.y);
+	  },
+	
+	  // counter clockwise rotation of a vector, by 90 degrees
+	  rot90: function(arg    )     {
+	    var $__0=     arg,x=$__0.x,y=$__0.y;
+	    return {
+	      x: -y,
+	      y: x
+	    };
+	  },
+	
+	  dotProduct: dotProduct,
+	
+	  scale: scale,
+	
+	  sizeSquared: sizeSquared,
+	
+	  modulus: modulus,
+	
+	  add: function(a    )            {
+	    return function(b    )     {
+	      return {
+	        x: a.x + b.x,
+	        y: a.y + b.y
+	      };
+	    };
+	  },
+	
+	  subtract: function(a    )            {
+	    return function(b    )     {
+	      return {
+	        x: a.x - b.x,
+	        y: a.y - b.y
+	      };
+	    };
+	  },
+	
+	  pointClassesTransform: function(pointClasses              )             {
+	    var $__0=   pointClasses,class0=$__0[0],class1=$__0[1];
+	    var transformedClass0 = class0.map(function(p) {
+	      return {x: p.x, y: p.y, t: -1};
+	    });
+	    var transformedClass1 = class1.map(function(p) {
+	      return {x: p.x, y: p.y, t: 1};
+	    });
+	    return transformedClass0.concat(transformedClass1);
+	  },
+	
+	  pointClassesTransformZeroOne: function(pointClasses              )             {
+	    var $__0=   pointClasses,class0=$__0[0],class1=$__0[1];
+	    var transformedClass0 = class0.map(function(p) {
+	      return {x: p.x, y: p.y, t: 1};
+	    });
+	    var transformedClass1 = class1.map(function(p) {
+	      return {x: p.x, y: p.y, t: 0};
+	    });
+	    return transformedClass0.concat(transformedClass1);
+	  },
+	
+	  classify: function(w    , vectorToClassify    )         {
+	    if (dotProduct(vectorToClassify, w) > 0) {
+	      return 0;
+	    } else {
+	      return 1;
+	    }
+	  },
+	
+	  classTransform: function(classificationResult        )         {
+	    if (classificationResult === 0) {
+	      return -1;
+	    } else {
+	      console.assert(classificationResult === 1);
+	      return 1;
+	    }
+	  },
+	};
 
 
 /***/ }

@@ -27,7 +27,7 @@ module.exports = [
   },
   {
     // TODO: how to get THREEjs into the worker ?!?!?
-    entry: './scripts/Worker.js',
+    entry: './scripts/Worker.jsx',
     output: {
       filename: 'worker.bundle.js',
       path: './build/',
@@ -36,7 +36,12 @@ module.exports = [
       extensions: ['', '.js', '.jsx']
     },
     module: {
-      loaders: [ ]
+      loaders: [
+        {
+          test: /\.jsx$/,
+          loaders: ['jsx-loader?harmony&stripTypes']
+        },
+      ]
     }
   }
 ]

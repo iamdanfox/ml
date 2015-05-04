@@ -3,6 +3,7 @@
 
 var React = require("react/addons");
 var workerSlug = require("./WebWorkerGraphSlug.jsx");
+var WorkerBridge = require("./WorkerBridge.jsx");
 
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
@@ -44,6 +45,15 @@ var WebWorkerGraph = React.createClass({
     var graph = workerSlug(thetaResolution, rResolution, dim, pointClasses)
     this.setState({graph});
     this.props.scene.add(graph);
+
+    // set up worker connection
+    var reactElementId = this._reactInternalInstance._rootNodeID; // maybe cache a UUID instead?
+    var webWorkerChannel = WorkerBridge.subscribe(reactElementId, this.receiveWebWorkerResponse);
+    webWorkerChannel(120, 40, 400, this.props.pointClasses);
+  },
+
+  receiveWebWorkerResponse: function(mesh): void {
+    console.log('reactElement received', mesh);
   },
 
   componentWillUnmount: function() {
@@ -51,23 +61,9 @@ var WebWorkerGraph = React.createClass({
   },
 
   shouldComponentUpdate: function(): bool {
-    console.log('TODO');
+    // console.log('TODO');
     return false;
   },
-
-  // componentWillReceiveProps: function(nextProps: Props) {
-  //   if (this.shouldComponentUpdate(nextProps)) {
-  //     var geometry = this.state.graph.geometry;
-
-  //     for (var i = 0; i < geometry.vertices.length; i = i + 1) {
-  //       var vertex = geometry.vertices[i];
-  //       vertex.setZ(nextProps.projectedError(vertex, nextProps.pointClasses));
-  //     }
-
-  //     this.colourGeometry(geometry);
-  //     this.state.graph.geometry.verticesNeedUpdate = true;
-  //   }
-  // },
 
   render: function(): ?ReactElement {
     return null;

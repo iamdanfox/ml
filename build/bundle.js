@@ -10,19 +10,16 @@ webpackJsonp([0],{
 	"use strict";
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var Article = __webpack_require__(/*! ./Article.jsx */ 10);
+	var Article = __webpack_require__(/*! ./Article.jsx */ 5);
 	
 	window.React = React;
 	
 	React.render(React.createElement(Article, null), document.body);
-	
-	var wb = __webpack_require__(/*! ./WorkerBridge.jsx */ 223);
-	console.log('WorkerBridge', wb);
 
 
 /***/ },
 
-/***/ 10:
+/***/ 5:
 /*!*****************************!*\
   !*** ./scripts/Article.jsx ***!
   \*****************************/
@@ -32,14 +29,14 @@ webpackJsonp([0],{
 	"use strict";
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var HR = __webpack_require__(/*! ./HR.jsx */ 28);
+	var HR = __webpack_require__(/*! ./HR.jsx */ 23);
 	
-	var Header = __webpack_require__(/*! ./Header.jsx */ 29);
-	var BinaryClassifierSection = __webpack_require__(/*! ./BinaryClassifierSection.jsx */ 30);
-	var PerceptronSection = __webpack_require__(/*! ./PerceptronSection.jsx */ 31);
-	var ObjectiveFunctionSection = __webpack_require__(/*! ./ObjectiveFunctionSection.jsx */ 32);
-	var LogisticRegressionSection = __webpack_require__(/*! ./LogisticRegressionSection.jsx */ 33);
-	var MaximumMarginSection = __webpack_require__(/*! ./MaximumMarginSection.jsx */ 34);
+	var Header = __webpack_require__(/*! ./Header.jsx */ 24);
+	var BinaryClassifierSection = __webpack_require__(/*! ./BinaryClassifierSection.jsx */ 25);
+	var PerceptronSection = __webpack_require__(/*! ./PerceptronSection.jsx */ 26);
+	var ObjectiveFunctionSection = __webpack_require__(/*! ./ObjectiveFunctionSection.jsx */ 27);
+	var LogisticRegressionSection = __webpack_require__(/*! ./LogisticRegressionSection.jsx */ 28);
+	var MaximumMarginSection = __webpack_require__(/*! ./MaximumMarginSection.jsx */ 29);
 	
 	
 	var Article = React.createClass({displayName: "Article",
@@ -84,7 +81,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 28:
+/***/ 23:
 /*!************************!*\
   !*** ./scripts/HR.jsx ***!
   \************************/
@@ -111,7 +108,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 29:
+/***/ 24:
 /*!****************************!*\
   !*** ./scripts/Header.jsx ***!
   \****************************/
@@ -156,7 +153,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 30:
+/***/ 25:
 /*!*********************************************!*\
   !*** ./scripts/BinaryClassifierSection.jsx ***!
   \*********************************************/
@@ -166,7 +163,7 @@ webpackJsonp([0],{
 	"use strict";
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
+	var K = __webpack_require__(/*! ./Katex.jsx */ 80);
 	
 	
 	
@@ -232,7 +229,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 31:
+/***/ 26:
 /*!***************************************!*\
   !*** ./scripts/PerceptronSection.jsx ***!
   \***************************************/
@@ -247,12 +244,12 @@ webpackJsonp([0],{
 	                 
 	 
 	
-	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 90);
-	var Perceptron = __webpack_require__(/*! ./Perceptron.jsx */ 91);
+	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 81);
+	var Perceptron = __webpack_require__(/*! ./Perceptron.jsx */ 82);
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 92);
+	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 83);
 	
-	var INITIAL_POINTS = __webpack_require__(/*! ../data/points.js */ 93);
+	var INITIAL_POINTS = __webpack_require__(/*! ../data/points.js */ 84);
 	var INITIAL_W = {x: 80, y: 60};
 	var perceptronSteps           = Perceptron.optimise(INITIAL_W, INITIAL_POINTS);
 	
@@ -349,7 +346,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 32:
+/***/ 27:
 /*!**********************************************!*\
   !*** ./scripts/ObjectiveFunctionSection.jsx ***!
   \**********************************************/
@@ -361,16 +358,16 @@ webpackJsonp([0],{
 	                                 
 	
 	
-	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 94);
-	var Default2DVis = __webpack_require__(/*! ./Default2DVis.jsx */ 95);
-	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 96);
-	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 97);
-	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
-	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 98);
-	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 99);
+	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 85);
+	var Default2DVis = __webpack_require__(/*! ./Default2DVis.jsx */ 86);
+	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 87);
+	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 88);
+	var K = __webpack_require__(/*! ./Katex.jsx */ 80);
+	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 89);
+	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 90);
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 100);
-	var $__0=   __webpack_require__(/*! ./Perceptron.jsx */ 91),objective=$__0.objective,optimise=$__0.optimise;
+	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 91);
+	var $__0=   __webpack_require__(/*! ./Perceptron.jsx */ 82),objective=$__0.objective,optimise=$__0.optimise;
 	
 	
 	
@@ -378,7 +375,7 @@ webpackJsonp([0],{
 	  getInitialState: function()                      {
 	    return {
 	      highlightedW: null,
-	      pointClasses: __webpack_require__(/*! ../data/points.js */ 93),
+	      pointClasses: __webpack_require__(/*! ../data/points.js */ 84),
 	    };
 	  },
 	
@@ -470,7 +467,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 33:
+/***/ 28:
 /*!***********************************************!*\
   !*** ./scripts/LogisticRegressionSection.jsx ***!
   \***********************************************/
@@ -481,15 +478,15 @@ webpackJsonp([0],{
 	
 	                                 
 	
-	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 94);
-	var Default2DVis = __webpack_require__(/*! ./Default2DVis.jsx */ 95);
-	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 96);
-	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 97);
-	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
-	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 98);
-	var WebWorkerGraph = __webpack_require__(/*! ./WebWorkerGraph.jsx */ 224);
+	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 85);
+	var Default2DVis = __webpack_require__(/*! ./Default2DVis.jsx */ 86);
+	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 87);
+	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 88);
+	var K = __webpack_require__(/*! ./Katex.jsx */ 80);
+	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 89);
+	var WebWorkerGraph = __webpack_require__(/*! ./WebWorkerGraph.jsx */ 92);
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var $__0=    __webpack_require__(/*! ./LogisticRegression.jsx */ 101),objective=$__0.objective,optimise=$__0.optimise,fastOptimise=$__0.fastOptimise;
+	var $__0=    __webpack_require__(/*! ./LogisticRegression.jsx */ 93),objective=$__0.objective,optimise=$__0.optimise,fastOptimise=$__0.fastOptimise;
 	
 	
 	
@@ -497,7 +494,7 @@ webpackJsonp([0],{
 	  getInitialState: function()                      {
 	    return {
 	      highlightedW: null,
-	      pointClasses: __webpack_require__(/*! ../data/closePoints.js */ 102),
+	      pointClasses: __webpack_require__(/*! ../data/closePoints.js */ 94),
 	    };
 	  },
 	
@@ -638,7 +635,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 34:
+/***/ 29:
 /*!******************************************!*\
   !*** ./scripts/MaximumMarginSection.jsx ***!
   \******************************************/
@@ -649,16 +646,16 @@ webpackJsonp([0],{
 	
 	                                 
 	
-	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 94);
-	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 96);
-	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 97);
-	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 90);
-	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
-	var MaximumMargin = __webpack_require__(/*! ./MaximumMargin.jsx */ 103);
-	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 99);
+	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 85);
+	var DisplayWNumbers = __webpack_require__(/*! ./DisplayWNumbers.jsx */ 87);
+	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 88);
+	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 81);
+	var K = __webpack_require__(/*! ./Katex.jsx */ 80);
+	var MaximumMargin = __webpack_require__(/*! ./MaximumMargin.jsx */ 95);
+	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 90);
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 100);
-	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 92);
+	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 91);
+	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 83);
 	
 	
 	
@@ -666,7 +663,7 @@ webpackJsonp([0],{
 	  getInitialState: function()                      {
 	    return {
 	      highlightedW: null,
-	      pointClasses: __webpack_require__(/*! ../data/closePoints.js */ 102),
+	      pointClasses: __webpack_require__(/*! ../data/closePoints.js */ 94),
 	    };
 	  },
 	
@@ -740,7 +737,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 89:
+/***/ 80:
 /*!***************************!*\
   !*** ./scripts/Katex.jsx ***!
   \***************************/
@@ -768,7 +765,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 90:
+/***/ 81:
 /*!********************************!*\
   !*** ./scripts/Hyperplane.jsx ***!
   \********************************/
@@ -777,7 +774,7 @@ webpackJsonp([0],{
 	/* @flow */
 	"use strict";
 	
-	var Line = __webpack_require__(/*! ./Line.jsx */ 167);
+	var Line = __webpack_require__(/*! ./Line.jsx */ 168);
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var $__0=  __webpack_require__(/*! react/addons */ 1).addons,PureRenderMixin=$__0.PureRenderMixin;
 	
@@ -804,7 +801,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 91:
+/***/ 82:
 /*!********************************!*\
   !*** ./scripts/Perceptron.jsx ***!
   \********************************/
@@ -816,7 +813,7 @@ webpackJsonp([0],{
 	                                 
 	                                          
 	
-	var $__0=       __webpack_require__(/*! ./VectorUtils.jsx */ 168),add=$__0.add,scale=$__0.scale,pointClassesTransform=$__0.pointClassesTransform,classify=$__0.classify,classTransform=$__0.classTransform,dotProduct=$__0.dotProduct;
+	var $__0=       __webpack_require__(/*! ./VectorUtils.jsx */ 169),add=$__0.add,scale=$__0.scale,pointClassesTransform=$__0.pointClassesTransform,classify=$__0.classify,classTransform=$__0.classTransform,dotProduct=$__0.dotProduct;
 	
 	/*
 	The Perceptron training algorithm cycles through each training
@@ -883,7 +880,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 92:
+/***/ 83:
 /*!*****************************************!*\
   !*** ./scripts/SimpleHyperplaneVis.jsx ***!
   \*****************************************/
@@ -892,8 +889,8 @@ webpackJsonp([0],{
 	/* @flow */
 	"use strict";
 	
-	var AllPoints = __webpack_require__(/*! ./AllPoints.jsx */ 169);
-	var Axes = __webpack_require__(/*! ./Axes.jsx */ 170);
+	var AllPoints = __webpack_require__(/*! ./AllPoints.jsx */ 170);
+	var Axes = __webpack_require__(/*! ./Axes.jsx */ 171);
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var $__0=  __webpack_require__(/*! react/addons */ 1).addons,PureRenderMixin=$__0.PureRenderMixin;
 	
@@ -939,7 +936,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 93:
+/***/ 84:
 /*!************************!*\
   !*** ./data/points.js ***!
   \************************/
@@ -952,7 +949,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 94:
+/***/ 85:
 /*!**********************************!*\
   !*** ./scripts/CursorSphere.jsx ***!
   \**********************************/
@@ -1021,7 +1018,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 95:
+/***/ 86:
 /*!**********************************!*\
   !*** ./scripts/Default2DVis.jsx ***!
   \**********************************/
@@ -1030,11 +1027,11 @@ webpackJsonp([0],{
 	/* @flow */
 	"use strict";
 	
-	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 90);
-	var Line = __webpack_require__(/*! ./Line.jsx */ 167);
+	var Hyperplane = __webpack_require__(/*! ./Hyperplane.jsx */ 81);
+	var Line = __webpack_require__(/*! ./Line.jsx */ 168);
 	var React = __webpack_require__(/*! react/addons */ 1);
-	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 100);
-	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 92);
+	var ReplacePointsBar = __webpack_require__(/*! ./ReplacePointsBar.jsx */ 91);
+	var SimpleHyperplaneVis = __webpack_require__(/*! ./SimpleHyperplaneVis.jsx */ 83);
 	var $__0=  __webpack_require__(/*! react/addons */ 1).addons,PureRenderMixin=$__0.PureRenderMixin;
 	
 	
@@ -1074,7 +1071,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 96:
+/***/ 87:
 /*!*************************************!*\
   !*** ./scripts/DisplayWNumbers.jsx ***!
   \*************************************/
@@ -1083,7 +1080,7 @@ webpackJsonp([0],{
 	/* @flow */
 	"use strict";
 	
-	var K = __webpack_require__(/*! ./Katex.jsx */ 89);
+	var K = __webpack_require__(/*! ./Katex.jsx */ 80);
 	var React = __webpack_require__(/*! react/addons */ 1);
 	
 	var DisplayWNumbers = React.createClass({displayName: "DisplayWNumbers",
@@ -1101,7 +1098,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 97:
+/***/ 88:
 /*!**************************************!*\
   !*** ./scripts/Draggable3DScene.jsx ***!
   \**************************************/
@@ -1301,7 +1298,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 98:
+/***/ 89:
 /*!***********************************!*\
   !*** ./scripts/OptimiserLine.jsx ***!
   \***********************************/
@@ -1378,7 +1375,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 99:
+/***/ 90:
 /*!*************************************!*\
   !*** ./scripts/ParametricGraph.jsx ***!
   \*************************************/
@@ -1521,7 +1518,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 100:
+/***/ 91:
 /*!**************************************!*\
   !*** ./scripts/ReplacePointsBar.jsx ***!
   \**************************************/
@@ -1546,13 +1543,13 @@ webpackJsonp([0],{
 	var ReplacePointsBar = React.createClass({displayName: "ReplacePointsBar",
 	  render: function()                {
 	    return React.createElement("div", {style: this.props.style}, 
-	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/points.js */ 93)}, 
+	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/points.js */ 84)}, 
 	        "Default"
 	      ), 
-	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/closePoints.js */ 102)}, 
+	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/closePoints.js */ 94)}, 
 	        "Close"
 	      ), 
-	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/overlapPoints.js */ 171)}, 
+	      React.createElement(ReplacePointsButton, {callback: this.props.callback, points: __webpack_require__(/*! ../data/overlapPoints.js */ 174)}, 
 	        "Overlap"
 	      )
 	    );
@@ -1564,7 +1561,90 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 101:
+/***/ 92:
+/*!************************************!*\
+  !*** ./scripts/WebWorkerGraph.jsx ***!
+  \************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	var React = __webpack_require__(/*! react/addons */ 1);
+	var workerSlug = __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 172);
+	var WorkerBridge = __webpack_require__(/*! ./WorkerBridge.jsx */ 173);
+	
+	                                 
+	                                           
+	              
+	              
+	                             
+	                      
+	                     
+	                          
+	 
+	              
+	                    
+	 
+	
+	
+	
+	var WebWorkerGraph = React.createClass({displayName: "WebWorkerGraph",
+	  propTypes: {
+	    dim: React.PropTypes.number.isRequired, // 400
+	    pointClasses: React.PropTypes.array.isRequired,
+	    rResolution: React.PropTypes.number.isRequired, // 8
+	    scene: React.PropTypes.any.isRequired,
+	    thetaResolution: React.PropTypes.number.isRequired, // 24
+	  },
+	
+	  // 120 * 40 looks great... 4800 computations
+	  // 96 * 32
+	  // 72 * 24
+	  // 36 * 12
+	  // 24 * 8 is pretty much a minimum.
+	
+	  getInitialState: function()        {
+	    return {graph: null};
+	  },
+	
+	  componentWillMount: function() {
+	    // synchronously compute the first graph.
+	    var $__0=     this.props,thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,dim=$__0.dim,pointClasses=$__0.pointClasses;
+	    var graph = workerSlug(thetaResolution, rResolution, dim, pointClasses)
+	    this.setState({graph:graph});
+	    this.props.scene.add(graph);
+	
+	    // set up worker connection
+	    var reactElementId = this._reactInternalInstance._rootNodeID; // maybe cache a UUID instead?
+	    var webWorkerChannel = WorkerBridge.subscribe(reactElementId, this.receiveWebWorkerResponse);
+	    webWorkerChannel(120, 40, 400, this.props.pointClasses);
+	  },
+	
+	  receiveWebWorkerResponse: function(mesh)       {
+	    console.log('reactElement received', mesh);
+	  },
+	
+	  componentWillUnmount: function() {
+	    this.props.scene.remove(this.state.graph);
+	  },
+	
+	  shouldComponentUpdate: function()       {
+	    // console.log('TODO');
+	    return false;
+	  },
+	
+	  render: function()                {
+	    return null;
+	  }
+	});
+	
+	module.exports = WebWorkerGraph;
+
+
+/***/ },
+
+/***/ 93:
 /*!****************************************!*\
   !*** ./scripts/LogisticRegression.jsx ***!
   \****************************************/
@@ -1577,7 +1657,7 @@ webpackJsonp([0],{
 	
 	"use strict";
 	
-	var $__0=      __webpack_require__(/*! ./VectorUtils.jsx */ 168),pointClassesTransformZeroOne=$__0.pointClassesTransformZeroOne,dotProduct=$__0.dotProduct,scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
+	var $__0=      __webpack_require__(/*! ./VectorUtils.jsx */ 169),pointClassesTransformZeroOne=$__0.pointClassesTransformZeroOne,dotProduct=$__0.dotProduct,scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
 	
 	function sigmoid(wx)         {
 	  return 1 / (1 + Math.exp(-wx));
@@ -1686,7 +1766,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 102:
+/***/ 94:
 /*!*****************************!*\
   !*** ./data/closePoints.js ***!
   \*****************************/
@@ -1698,7 +1778,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 103:
+/***/ 95:
 /*!***********************************!*\
   !*** ./scripts/MaximumMargin.jsx ***!
   \***********************************/
@@ -1711,7 +1791,7 @@ webpackJsonp([0],{
 	
 	"use strict";
 	
-	var $__0=    __webpack_require__(/*! ./VectorUtils.jsx */ 168),pointClassesTransform=$__0.pointClassesTransform,dotProduct=$__0.dotProduct,modulus=$__0.modulus;
+	var $__0=    __webpack_require__(/*! ./VectorUtils.jsx */ 169),pointClassesTransform=$__0.pointClassesTransform,dotProduct=$__0.dotProduct,modulus=$__0.modulus;
 	
 	
 	// the objective function is used to generate the surface
@@ -1739,7 +1819,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 167:
+/***/ 168:
 /*!**************************!*\
   !*** ./scripts/Line.jsx ***!
   \**************************/
@@ -1750,7 +1830,7 @@ webpackJsonp([0],{
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var $__0=  __webpack_require__(/*! react/addons */ 1).addons,PureRenderMixin=$__0.PureRenderMixin;
-	var $__1=       __webpack_require__(/*! ./VectorUtils.jsx */ 168),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
+	var $__1=       __webpack_require__(/*! ./VectorUtils.jsx */ 169),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
 	
 	
 	// my stackoverflow explanation: http: //stackoverflow.com/a/24392281/1941552
@@ -1836,7 +1916,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 168:
+/***/ 169:
 /*!*********************************!*\
   !*** ./scripts/VectorUtils.jsx ***!
   \*********************************/
@@ -1961,7 +2041,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 169:
+/***/ 170:
 /*!*******************************!*\
   !*** ./scripts/AllPoints.jsx ***!
   \*******************************/
@@ -2006,7 +2086,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 170:
+/***/ 171:
 /*!**************************!*\
   !*** ./scripts/Axes.jsx ***!
   \**************************/
@@ -2034,161 +2114,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 171:
-/*!*******************************!*\
-  !*** ./data/overlapPoints.js ***!
-  \*******************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	/* @flow */
-	
-	module.exports = [[{"x":-69.91981426253915,"y":4.750457964837551},{"x":-106.71077957376838,"y":34.54018207266927},{"x":-75.78700138255954,"y":39.27134918048978},{"x":-53.5,"y":87.703125},{"x":-60.5,"y":39.703125},{"x":-45.5,"y":61.703125},{"x":-85.5,"y":10.703125},{"x":-98.5,"y":-19.296875},{"x":-38.5,"y":24.703125},{"x":-23.5,"y":37.703125},{"x":-3.5,"y":63.703125},{"x":-25.5,"y":64.703125},{"x":-26.5,"y":5.703125},{"x":-34.5,"y":-4.296875},{"x":-49.5,"y":-40.296875},{"x":-51.5,"y":-9.296875},{"x":-72.5,"y":-31.296875},{"x":-96.5,"y":-45.296875},{"x":-115.5,"y":-62.296875},{"x":-90.5,"y":-70.296875},{"x":-23.5,"y":114.703125},{"x":-23.5,"y":96.703125},{"x":-32.5,"y":-37.296875},{"x":-43.5,"y":-71.296875},{"x":-6.5,"y":26.703125},{"x":-8.5,"y":-20.296875},{"x":9.5,"y":30.703125},{"x":-0.5,"y":-6.296875},{"x":17.5,"y":73.703125}],[{"x":53.5,"y":-79.296875},{"x":64.5,"y":-55.296875},{"x":69.5,"y":0.703125},{"x":35.5,"y":-3.296875},{"x":9.5,"y":-21.296875},{"x":6.5,"y":-79.296875},{"x":-11.5,"y":-82.296875},{"x":1.5,"y":-118.296875},{"x":12.5,"y":-115.296875},{"x":2.5,"y":-49.296875},{"x":62.5,"y":-36.296875},{"x":35.5,"y":-45.296875},{"x":36.5,"y":11.703125},{"x":52.5,"y":45.703125},{"x":64.5,"y":91.703125},{"x":59.5,"y":52.703125},{"x":31.5,"y":29.703125},{"x":64.5,"y":34.703125},{"x":60.5,"y":8.703125},{"x":43.5,"y":-20.296875},{"x":18.5,"y":-50.296875},{"x":18.5,"y":-86.296875},{"x":29.5,"y":-98.296875},{"x":1.5,"y":-143.296875},{"x":50.5,"y":-15.296875},{"x":50.5,"y":60.703125},{"x":58.5,"y":99.703125},{"x":-14.5,"y":-118.296875},{"x":40.5,"y":-71.296875},{"x":-48.5,"y":-63.296875},{"x":-22.5,"y":-60.296875},{"x":-22.5,"y":-7.296875},{"x":-22.5,"y":35.703125},{"x":-6.5,"y":72.703125},{"x":18.5,"y":86.703125},{"x":31.5,"y":95.703125},{"x":13.5,"y":44.703125},{"x":-4.5,"y":11.703125},{"x":-27.5,"y":-52.296875},{"x":-27.5,"y":-89.296875},{"x":-47.5,"y":-103.296875}]]
-
-/***/ },
-
-/***/ 223:
-/*!**********************************!*\
-  !*** ./scripts/WorkerBridge.jsx ***!
-  \**********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	/* @flow */
-	"use strict";
-	                           
-	                                 
-	                                           
-	
-	
-	var worker = new Worker("./build/worker.bundle.js");
-	var subscribers = {};
-	
-	
-	worker.onmessage = function(event     ) {
-	  var $__0=   event.data,reactElementId=$__0.reactElementId,mesh=$__0.mesh;
-	
-	  if (reactElementId in subscribers) {
-	    subscribers[reactElementId](mesh);
-	  } else {
-	    console.log("no subscriber for: ", reactElementId, mesh);
-	  }
-	};
-	
-	
-	module.exports = {
-	
-	  subscribe: function(
-	      reactElementId        ,
-	      callback              )                                                              {
-	    console.assert(!(reactElementId in subscribers), "No repeat subscribing: " + reactElementId);
-	    subscribers[reactElementId] = callback;
-	
-	    return function(thetaResolution        , rResolution        , dim        , pointClasses              ) {
-	      console.assert(
-	        typeof thetaResolution === "number" &&
-	        typeof rResolution === "number" &&
-	        pointClasses instanceof Array);
-	      worker.postMessage({reactElementId:reactElementId, thetaResolution:thetaResolution, rResolution:rResolution, dim:dim, pointClasses:pointClasses});
-	    };
-	  },
-	
-	  unsubscribe: function(reactElementId        )       {
-	    console.assert(reactElementId in subscribers, "Can't unsubscribe " + reactElementId);
-	    delete subscribers[reactElementId];
-	  }
-	
-	};
-
-
-/***/ },
-
-/***/ 224:
-/*!************************************!*\
-  !*** ./scripts/WebWorkerGraph.jsx ***!
-  \************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	/* @flow */
-	"use strict";
-	
-	var React = __webpack_require__(/*! react/addons */ 1);
-	var workerSlug = __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 225);
-	
-	                                 
-	                                           
-	              
-	              
-	                             
-	                      
-	                     
-	                          
-	 
-	              
-	                    
-	 
-	
-	
-	
-	var WebWorkerGraph = React.createClass({displayName: "WebWorkerGraph",
-	  propTypes: {
-	    dim: React.PropTypes.number.isRequired, // 400
-	    pointClasses: React.PropTypes.array.isRequired,
-	    rResolution: React.PropTypes.number.isRequired, // 8
-	    scene: React.PropTypes.any.isRequired,
-	    thetaResolution: React.PropTypes.number.isRequired, // 24
-	  },
-	
-	  // 120 * 40 looks great... 4800 computations
-	  // 96 * 32
-	  // 72 * 24
-	  // 36 * 12
-	  // 24 * 8 is pretty much a minimum.
-	
-	  getInitialState: function()        {
-	    return {graph: null};
-	  },
-	
-	  componentWillMount: function() {
-	    // synchronously compute the first graph.
-	    var $__0=     this.props,thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,dim=$__0.dim,pointClasses=$__0.pointClasses;
-	    var graph = workerSlug(thetaResolution, rResolution, dim, pointClasses)
-	    this.setState({graph:graph});
-	    this.props.scene.add(graph);
-	  },
-	
-	  componentWillUnmount: function() {
-	    this.props.scene.remove(this.state.graph);
-	  },
-	
-	  shouldComponentUpdate: function()       {
-	    console.log('TODO');
-	    return false;
-	  },
-	
-	  // componentWillReceiveProps: function(nextProps: Props) {
-	  //   if (this.shouldComponentUpdate(nextProps)) {
-	  //     var geometry = this.state.graph.geometry;
-	
-	  //     for (var i = 0; i < geometry.vertices.length; i = i + 1) {
-	  //       var vertex = geometry.vertices[i];
-	  //       vertex.setZ(nextProps.projectedError(vertex, nextProps.pointClasses));
-	  //     }
-	
-	  //     this.colourGeometry(geometry);
-	  //     this.state.graph.geometry.verticesNeedUpdate = true;
-	  //   }
-	  // },
-	
-	  render: function()                {
-	    return null;
-	  }
-	});
-	
-	module.exports = WebWorkerGraph;
-
-
-/***/ },
-
-/***/ 225:
+/***/ 172:
 /*!****************************************!*\
   !*** ./scripts/WebWorkerGraphSlug.jsx ***!
   \****************************************/
@@ -2200,7 +2126,7 @@ webpackJsonp([0],{
 	                                           
 	
 	
-	var $__0=   __webpack_require__(/*! ./LogisticRegression.jsx */ 101),fastOptimise=$__0.fastOptimise,objective=$__0.objective;
+	var $__0=   __webpack_require__(/*! ./LogisticRegression.jsx */ 93),fastOptimise=$__0.fastOptimise,objective=$__0.objective;
 	var THREE = __webpack_require__(/*! three */ 2);
 	
 	
@@ -2212,8 +2138,6 @@ webpackJsonp([0],{
 	});
 	
 	function build(thetaResolution, rResolution, dim, pointClasses)                           {
-	  console.log('build', thetaResolution, rResolution, dim, pointClasses);
-	
 	  var polarMeshFunction = function(i        , j        )                {
 	    var theta = i * 2 * Math.PI;
 	    var r = Math.pow(1.8, j * j) - 1; // this ensures there are lots of samples near the origin and gets close to 0!
@@ -2251,12 +2175,81 @@ webpackJsonp([0],{
 	}
 	
 	module.exports = function respond(thetaResolution        , rResolution        , dim        , pointClasses              ) {
-	  console.log('respond');
 	  var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
 	  colour(graphGeometry, pointClasses);
 	  return new THREE.Mesh(graphGeometry, MATERIAL.clone());
 	};
 
+
+/***/ },
+
+/***/ 173:
+/*!**********************************!*\
+  !*** ./scripts/WorkerBridge.jsx ***!
+  \**********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	                           
+	                                 
+	                                           
+	
+	
+	var worker = new Worker("./build/worker.bundle.js");
+	var subscribers = {};
+	
+	console.log('hi')
+	
+	worker.onmessage = function(event     ) {
+	  console.log('onMessage', event);
+	  // var {reactElementId, mesh} = event.data;
+	
+	  // if (reactElementId in subscribers) {
+	  //   subscribers[reactElementId](mesh);
+	  // } else {
+	  //   console.log("no subscriber for: ", event, reactElementId, mesh);
+	  // }
+	};
+	
+	
+	module.exports = {
+	
+	  subscribe: function(
+	      reactElementId        ,
+	      callback              )                                                              {
+	    console.assert(!(reactElementId in subscribers), "No repeat subscribing: " + reactElementId);
+	    subscribers[reactElementId] = callback;
+	
+	    return function request(thetaResolution        , rResolution        , dim        , pointClasses              ) {
+	      console.assert(
+	        typeof thetaResolution === "number" &&
+	        typeof rResolution === "number" &&
+	        pointClasses instanceof Array);
+	      console.log('sending', reactElementId);
+	      worker.postMessage({reactElementId:reactElementId, thetaResolution:thetaResolution, rResolution:rResolution, dim:dim, pointClasses:pointClasses});
+	    };
+	  },
+	
+	  unsubscribe: function(reactElementId        )       {
+	    console.assert(reactElementId in subscribers, "Can't unsubscribe " + reactElementId);
+	    delete subscribers[reactElementId];
+	  }
+	
+	};
+
+
+/***/ },
+
+/***/ 174:
+/*!*******************************!*\
+  !*** ./data/overlapPoints.js ***!
+  \*******************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	
+	module.exports = [[{"x":-69.91981426253915,"y":4.750457964837551},{"x":-106.71077957376838,"y":34.54018207266927},{"x":-75.78700138255954,"y":39.27134918048978},{"x":-53.5,"y":87.703125},{"x":-60.5,"y":39.703125},{"x":-45.5,"y":61.703125},{"x":-85.5,"y":10.703125},{"x":-98.5,"y":-19.296875},{"x":-38.5,"y":24.703125},{"x":-23.5,"y":37.703125},{"x":-3.5,"y":63.703125},{"x":-25.5,"y":64.703125},{"x":-26.5,"y":5.703125},{"x":-34.5,"y":-4.296875},{"x":-49.5,"y":-40.296875},{"x":-51.5,"y":-9.296875},{"x":-72.5,"y":-31.296875},{"x":-96.5,"y":-45.296875},{"x":-115.5,"y":-62.296875},{"x":-90.5,"y":-70.296875},{"x":-23.5,"y":114.703125},{"x":-23.5,"y":96.703125},{"x":-32.5,"y":-37.296875},{"x":-43.5,"y":-71.296875},{"x":-6.5,"y":26.703125},{"x":-8.5,"y":-20.296875},{"x":9.5,"y":30.703125},{"x":-0.5,"y":-6.296875},{"x":17.5,"y":73.703125}],[{"x":53.5,"y":-79.296875},{"x":64.5,"y":-55.296875},{"x":69.5,"y":0.703125},{"x":35.5,"y":-3.296875},{"x":9.5,"y":-21.296875},{"x":6.5,"y":-79.296875},{"x":-11.5,"y":-82.296875},{"x":1.5,"y":-118.296875},{"x":12.5,"y":-115.296875},{"x":2.5,"y":-49.296875},{"x":62.5,"y":-36.296875},{"x":35.5,"y":-45.296875},{"x":36.5,"y":11.703125},{"x":52.5,"y":45.703125},{"x":64.5,"y":91.703125},{"x":59.5,"y":52.703125},{"x":31.5,"y":29.703125},{"x":64.5,"y":34.703125},{"x":60.5,"y":8.703125},{"x":43.5,"y":-20.296875},{"x":18.5,"y":-50.296875},{"x":18.5,"y":-86.296875},{"x":29.5,"y":-98.296875},{"x":1.5,"y":-143.296875},{"x":50.5,"y":-15.296875},{"x":50.5,"y":60.703125},{"x":58.5,"y":99.703125},{"x":-14.5,"y":-118.296875},{"x":40.5,"y":-71.296875},{"x":-48.5,"y":-63.296875},{"x":-22.5,"y":-60.296875},{"x":-22.5,"y":-7.296875},{"x":-22.5,"y":35.703125},{"x":-6.5,"y":72.703125},{"x":18.5,"y":86.703125},{"x":31.5,"y":95.703125},{"x":13.5,"y":44.703125},{"x":-4.5,"y":11.703125},{"x":-27.5,"y":-52.296875},{"x":-27.5,"y":-89.296875},{"x":-47.5,"y":-103.296875}]]
 
 /***/ }
 

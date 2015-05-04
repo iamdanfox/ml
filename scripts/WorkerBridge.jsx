@@ -8,15 +8,17 @@ type PointClasses = [Array<P2>, Array<P2>];
 var worker = new Worker("./build/worker.bundle.js");
 var subscribers = {};
 
+console.log('hi')
 
 worker.onmessage = function(event: any) {
-  var {reactElementId, mesh} = event.data;
+  console.log('onMessage', event);
+  // var {reactElementId, mesh} = event.data;
 
-  if (reactElementId in subscribers) {
-    subscribers[reactElementId](mesh);
-  } else {
-    console.log("no subscriber for: ", reactElementId, mesh);
-  }
+  // if (reactElementId in subscribers) {
+  //   subscribers[reactElementId](mesh);
+  // } else {
+  //   console.log("no subscriber for: ", event, reactElementId, mesh);
+  // }
 };
 
 
@@ -28,11 +30,12 @@ module.exports = {
     console.assert(!(reactElementId in subscribers), "No repeat subscribing: " + reactElementId);
     subscribers[reactElementId] = callback;
 
-    return function(thetaResolution: number, rResolution: number, dim: number, pointClasses: PointClasses) {
+    return function request(thetaResolution: number, rResolution: number, dim: number, pointClasses: PointClasses) {
       console.assert(
         typeof thetaResolution === "number" &&
         typeof rResolution === "number" &&
         pointClasses instanceof Array);
+      console.log('sending', reactElementId);
       worker.postMessage({reactElementId, thetaResolution, rResolution, dim, pointClasses});
     };
   },
