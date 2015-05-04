@@ -43,15 +43,15 @@ webpackJsonp([0],{
 	  render: function()                {
 	    var $__0=   this.props.generatedBy.center,x=$__0.x,y=$__0.y;
 	    var $__1=     this.props.generatedBy.skew,rx=$__1.x,ry=$__1.y;
-	    var color = ["red", "blue"][this.props.label];
-	
+	    var fill = ["red", "blue"][this.props.label];
+	    var opacity = (this.props.mouseDown) ? 0.6 : 0.3;
 	    return (
 	      React.createElement("g", null, 
 	
 	         this.props.points.map(function(p) 
-	            {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x, cy: p.y, r: 0.03, fill: color});}), 
+	            {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x, cy: p.y, r: 0.03, fill: fill});}), 
 	
-	        React.createElement("ellipse", {cx: x, cy: y, rx: rx, ry: ry, style: {fill: color, opacity: 0.3}, 
+	        React.createElement("ellipse", {cx: x, cy: y, rx: rx, ry: ry, style: {fill:fill, opacity:opacity}, 
 	          onMouseDown: this.props.onMouseDown})
 	      )
 	    );
@@ -72,6 +72,7 @@ webpackJsonp([0],{
 	            center: {x: 0.10, y: 0.10},
 	            skew: {x: 0.05, y: 0.4},
 	          },
+	          mouseDown: false,
 	        },
 	        {
 	          points: [{x: 0.50, y: 0.50}],
@@ -80,14 +81,20 @@ webpackJsonp([0],{
 	            center: {x: 0.50, y: 0.50},
 	            skew: {x: 0.2, y: 0.2},
 	          },
+	          mouseDown: false,
 	        }
 	      ],
 	      context: null
 	    };
 	  },
 	
-	  onMouseDown: function(e                      ) {
-	    console.log('md', this.getMouseXY(e));
+	  makeMouseDownHandler: function(mouseDownPointGroup) {
+	    return (function(e                      ) {
+	      console.log('md', this.getMouseXY(e));
+	      mouseDownPointGroup.mouseDown = true;
+	      var pointGroups = this.state.pointGroups.map(function(pg)  {return pg;}); // changed identity of list.
+	      this.setState({pointGroups:pointGroups})
+	    }).bind(this);
 	  },
 	
 	  getMouseXY: function(e                      )                         {
@@ -106,7 +113,7 @@ webpackJsonp([0],{
 	(this.props.dim / 2) + " " + (-this.props.dim / 2) + ")")}, 
 	
 	         this.state.pointGroups.map(function(pg) 
-	          {return React.createElement(PointGroup, {onMouseDown: this.onMouseDown, 
+	          {return React.createElement(PointGroup, {onMouseDown: this.makeMouseDownHandler(pg), mouseDown: pg.mouseDown, 
 	            label: pg.label, points: pg.points, generatedBy: pg.generatedBy});}.bind(this))
 	
 	        )
