@@ -33,12 +33,12 @@ var generatePoints = function(generatedBy): Array<P2> {
   // TODO randomise this slightly.
 
   var newPoints = [];
-  var {x: cx, y: cy} = generatedBy.center;
   for (var i = 0; i < numberOfPoints; i = i + 1) {
     var r1 = 2 * Math.random() - 1;
     var r2 = 2 * Math.random() - 1;
-    var plainPoint = {x: cx + r1 * ELLIPSE_FIXED_RADIUS, y: cy + r2 * l}
-    newPoints.push(rotate(theta, plainPoint));
+    var offset = {x: r1 * ELLIPSE_FIXED_RADIUS, y: r2 * l};
+    var rotatedOffset = rotate(theta, offset);
+    newPoints.push(add(generatedBy.center)(rotatedOffset));
   }
   return newPoints;
 };
@@ -79,24 +79,25 @@ var PointGroup = React.createClass({
     return (
       <g style={{cursor: "move"}}
         onMouseDown={this.props.onMouseDown} onMouseUp={this.props.onMouseUp}
-        onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+        onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}
+        transform={`translate(${x} ${y})`}>
 
-        <ellipse cx={x} cy={y} rx={ELLIPSE_FIXED_RADIUS} ry={l} style={{fill, opacity}}
-          transform={`rotate(${theta * 180 / Math.PI} ${x} ${y})`} />
+        <ellipse cx={0} cy={0} rx={ELLIPSE_FIXED_RADIUS} ry={l} style={{fill, opacity}}
+          transform={`rotate(${theta * 180 / Math.PI})`} />
 
         { this.props.points.map((p) =>
-            <circle key={p.x + ":" + p.y} cx={p.x} cy={p.y} r={0.03} fill={fill} />) }
+            <circle key={p.x + ":" + p.y} cx={p.x - x} cy={p.y - y} r={0.03} fill={fill} />) }
 
         {this.state.mouseOver &&
-          <circle cx={x} cy={y + l / 2} r={0.06} fill="white"
+          <circle cx={0} cy={l / 2} r={0.06} fill="white"
             style={{cursor: "pointer"}} /> }
 
         {this.state.mouseOver &&
-          <circle cx={x} cy={y} r={0.06} fill="grey"
+          <circle cx={0} cy={0} r={0.06} fill="grey"
             onClick={this.refresh} style={{cursor: "pointer"}} /> }
 
         {this.state.mouseOver &&
-          <circle cx={x + 0.12} cy={y} r={0.06} fill="black"
+          <circle cx={0.12} cy={0} r={0.06} fill="black"
             onClick={this.props.destroy} style={{cursor: "pointer"}} /> }
       </g>
     );
@@ -124,7 +125,7 @@ var AwesomeDataComponent = React.createClass({
           label: 1,
           generatedBy: {
             center: {x: 0.50, y: 0.50},
-            params: {l: 0.2, theta: 1},
+            params: {l: 0.2, theta: Math.PI / 4},
           },
           mouseDownDiff: null,
         }

@@ -192,12 +192,12 @@ webpackJsonp([0],{
 	  // TODO randomise this slightly.
 	
 	  var newPoints = [];
-	  var $__1=     generatedBy.center,cx=$__1.x,cy=$__1.y;
 	  for (var i = 0; i < numberOfPoints; i = i + 1) {
 	    var r1 = 2 * Math.random() - 1;
 	    var r2 = 2 * Math.random() - 1;
-	    var plainPoint = {x: cx + r1 * ELLIPSE_FIXED_RADIUS, y: cy + r2 * l}
-	    newPoints.push(rotate(theta, plainPoint));
+	    var offset = {x: r1 * ELLIPSE_FIXED_RADIUS, y: r2 * l};
+	    var rotatedOffset = rotate(theta, offset);
+	    newPoints.push(add(generatedBy.center)(rotatedOffset));
 	  }
 	  return newPoints;
 	};
@@ -238,24 +238,25 @@ webpackJsonp([0],{
 	    return (
 	      React.createElement("g", {style: {cursor: "move"}, 
 	        onMouseDown: this.props.onMouseDown, onMouseUp: this.props.onMouseUp, 
-	        onMouseEnter: this.onMouseEnter, onMouseLeave: this.onMouseLeave}, 
+	        onMouseEnter: this.onMouseEnter, onMouseLeave: this.onMouseLeave, 
+	        transform: ("translate(" + x + " " + y + ")")}, 
 	
-	        React.createElement("ellipse", {cx: x, cy: y, rx: ELLIPSE_FIXED_RADIUS, ry: l, style: {fill:fill, opacity:opacity}, 
-	          transform: ("rotate(" + (theta * 180 / Math.PI) + " " + x + " " + y + ")")}), 
+	        React.createElement("ellipse", {cx: 0, cy: 0, rx: ELLIPSE_FIXED_RADIUS, ry: l, style: {fill:fill, opacity:opacity}, 
+	          transform: ("rotate(" + (theta * 180 / Math.PI) + ")")}), 
 	
 	         this.props.points.map(function(p) 
-	            {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x, cy: p.y, r: 0.03, fill: fill});}), 
+	            {return React.createElement("circle", {key: p.x + ":" + p.y, cx: p.x - x, cy: p.y - y, r: 0.03, fill: fill});}), 
 	
 	        this.state.mouseOver &&
-	          React.createElement("circle", {cx: x, cy: y + l / 2, r: 0.06, fill: "white", 
+	          React.createElement("circle", {cx: 0, cy: l / 2, r: 0.06, fill: "white", 
 	            style: {cursor: "pointer"}}), 
 	
 	        this.state.mouseOver &&
-	          React.createElement("circle", {cx: x, cy: y, r: 0.06, fill: "grey", 
+	          React.createElement("circle", {cx: 0, cy: 0, r: 0.06, fill: "grey", 
 	            onClick: this.refresh, style: {cursor: "pointer"}}), 
 	
 	        this.state.mouseOver &&
-	          React.createElement("circle", {cx: x + 0.12, cy: y, r: 0.06, fill: "black", 
+	          React.createElement("circle", {cx: 0.12, cy: 0, r: 0.06, fill: "black", 
 	            onClick: this.props.destroy, style: {cursor: "pointer"}})
 	      )
 	    );
@@ -283,7 +284,7 @@ webpackJsonp([0],{
 	          label: 1,
 	          generatedBy: {
 	            center: {x: 0.50, y: 0.50},
-	            params: {l: 0.2, theta: 1},
+	            params: {l: 0.2, theta: Math.PI / 4},
 	          },
 	          mouseDownDiff: null,
 	        }
