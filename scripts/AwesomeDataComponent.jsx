@@ -18,30 +18,7 @@ type State = {
 
 var React = require("react/addons");
 var {add, subtract, scale, rotate, modulus, dotProduct} = require("./VectorUtils.jsx");
-
-
-
-var ELLIPSE_FIXED_RADIUS = 0.35;
-
-var POINTS_PER_AREA = 15;
-var labelToColour = (c) => ["red", "blue"][c];
-
-var generatePoints = function(generatedBy): Array<P2> {
-  var {l, theta} = generatedBy.params;
-  var area = Math.PI * l * ELLIPSE_FIXED_RADIUS;
-  var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
-  // TODO randomise this slightly.
-
-  var newPoints = [];
-  for (var i = 0; i < numberOfPoints; i = i + 1) {
-    var r1 = 2 * Math.random() - 1;
-    var r2 = 2 * Math.random() - 1;
-    var offset = {x: r1 * ELLIPSE_FIXED_RADIUS, y: r2 * l};
-    var rotatedOffset = rotate(theta, offset);
-    newPoints.push(add(generatedBy.center)(rotatedOffset));
-  }
-  return newPoints;
-};
+var {generatePoints, ELLIPSE_FIXED_RADIUS, labelToColour, POINTS_PER_AREA} = require("./AwesomePointUtilities.jsx");
 
 
 var PointGroup = React.createClass({
@@ -54,6 +31,7 @@ var PointGroup = React.createClass({
     destroy: React.PropTypes.func.isRequired,
     getMouseXY: React.PropTypes.func.isRequired,
     updateParams: React.PropTypes.func.isRequired,
+    dim: React.PropTypes.number.isRequired,
   },
 
   getInitialState: function() {
@@ -79,50 +57,50 @@ var PointGroup = React.createClass({
   onMouseMove: function(e: React.SyntheticEvent) {
     if (typeof this.state.paramsAtHandleMouseDown !== "undefined" &&
         this.state.paramsAtHandleMouseDown !== null) {
-
-      var mousePos = this.props.getMouseXY(e);
-      var diff = subtract(mousePos)(this.props.generatedBy.center);
-
-      var theta = Math.atan(diff.y / diff.x) - (Math.PI / 2);
-      if (Math.sign(diff.x) !== Math.sign(diff.y)) {
-        theta = theta + Math.PI;
-      }
-      if (diff.y < 0) {
-        theta = theta + Math.PI;
-      }
-      var l = 2 * modulus(diff);
-
-      // points fit these
-      var {l: oldL, theta: oldTheta} = this.props.generatedBy.params;
-
-      // need to make match {l, theta} instead.
-      var thetaDiff = theta - oldTheta;
-
-
-      // var lDiff = l - oldL;
-
-      // console.log(thetaDiff, lDiff);
-
-      // update all points
-      var stretchDirection = rotate(theta, {x: 0, y: 1});
-
-      var {center} = this.props.generatedBy;
-      var newPoints = this.props.points.map((p) => {
-        var fromCenter = subtract(p)(center);
-        var rotatedFromCenter = rotate(thetaDiff, fromCenter);
-        var stretchAmount = dotProduct(stretchDirection, rotatedFromCenter);
-        var subtractProportion = 1 - (l / oldL);
-        var subtractVector = scale(stretchAmount * subtractProportion)(stretchDirection);
-        var doneFromCenter = subtract(rotatedFromCenter)(subtractVector);
-        return add(center)(doneFromCenter);
-      });
-      this.props.updatePoints(newPoints);
-
-      this.props.updateParams({l, theta});
-
       e.stopPropagation();
       e.preventDefault();
+
+      var mousePos = this.props.getMouseXY(e);
+      this.paramHandleDraggedTo(mousePos);
     }
+  },
+
+  paramHandleDraggedTo: function(mousePos: P2) {
+    var {center, params: {l: oldL, theta: oldTheta}} = this.props.generatedBy;
+    var fromCenter = subtract(mousePos)(center);
+
+    var theta = this.getAngleFromVertical(fromCenter);
+    var l = 2 * modulus(fromCenter);
+
+    // need to make match {l, theta} instead.
+    var thetaDiff = theta - oldTheta;
+
+    // update all points
+    var stretchDirection = rotate(theta, {x: 0, y: 1});
+
+    var newPoints = this.props.points.map((p) => {
+      var fromCenter = subtract(p)(center);
+      var rotatedFromCenter = rotate(thetaDiff, fromCenter);
+      var stretchAmount = dotProduct(stretchDirection, rotatedFromCenter);
+      var subtractProportion = 1 - (l / oldL);
+      var subtractVector = scale(stretchAmount * subtractProportion)(stretchDirection);
+      var doneFromCenter = subtract(rotatedFromCenter)(subtractVector);
+      return add(center)(doneFromCenter);
+    });
+
+    this.props.updatePoints(newPoints);
+    this.props.updateParams({l, theta});
+  },
+
+  getAngleFromVertical: function(vector: P2): number {
+    var theta = Math.atan(vector.y / vector.x) - (Math.PI / 2);
+    if (Math.sign(vector.x) !== Math.sign(vector.y)) {
+      theta = theta + Math.PI;
+    }
+    if (vector.y < 0) {
+      theta = theta + Math.PI;
+    }
+    return theta;
   },
 
   onHandleMouseDown: function(e: React.SyntheticEvent) {
@@ -133,10 +111,9 @@ var PointGroup = React.createClass({
   },
 
   render: function(): ?ReactElement {
-    var {x, y} = this.props.generatedBy.center;
-    var {l, theta} = this.props.generatedBy.params;
+    var {center, params: {l, theta}} = this.props.generatedBy;
     var fill = labelToColour(this.props.label);
-    var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.1;
+    var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.05;
 
     var paramHandle = rotate(theta, {x: 0, y: 0.5 * l});
     var refreshHandle = subtract(paramHandle)(scale(0.13 / (0.5 * l))(paramHandle));
@@ -147,19 +124,20 @@ var PointGroup = React.createClass({
         onMouseDown={this.props.onMouseDown} onMouseUp={this.props.onMouseUp}
         onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}
         onMouseMove={this.onMouseMove}
-        transform={`translate(${x} ${y})`}>
+        transform={`translate(${center.x} ${center.y})`}>
 
         { this.props.points.map((p) =>
             <circle key={p.x + ":" + p.y}
-              cx={p.x - x} cy={p.y - y} r={0.03}
+              cx={p.x - center.x} cy={p.y - center.y} r={0.03}
               style={{fill, opacity: this.state.mouseOver ? 0.2 : 0.8}} />) }
 
         <ellipse cx={0} cy={0} rx={ELLIPSE_FIXED_RADIUS} ry={l} style={{fill, opacity}}
           transform={`rotate(${theta * 180 / Math.PI})`} />
 
-        <line x1="0" y1="0.03" x2="0" y2="-0.03" style={{stroke: "white", strokeWidth: "0.01"}} />
-        <line x1="-0.03" y1="0" x2="0.03" y2="0" style={{stroke: "white", strokeWidth: "0.01"}} />
-
+        <g transform={`scale(${2 / this.props.dim})`}>
+          <line x1="0.5" y1="5.5" x2="0.5" y2="-4.5" style={{stroke: "white", strokeWidth: 1}} />
+          <line x1="-4.5" y1="0.5" x2="5.5" y2="0.5" style={{stroke: "white", strokeWidth: 1}} />
+        </g>
 
         {this.state.mouseOver &&
           <circle cx={paramHandle.x} cy={paramHandle.y} r={0.07} fill="white"
@@ -169,7 +147,7 @@ var PointGroup = React.createClass({
 
         {this.state.mouseOver &&
           <circle cx={refreshHandle.x} cy={refreshHandle.y} r={0.05} fill="white"
-            onClick={this.refresh} style={{cursor: "pointer"}} /> }
+            onClick={this.refresh} style={{cursor: "pointer", opacity: 0.9}} /> }
 
         {this.state.mouseOver &&
           <circle cx={deleteHandle.x} cy={deleteHandle.y} r={0.03} fill="black"
@@ -276,7 +254,7 @@ var AwesomeDataComponent = React.createClass({
         this.setState({pointGroups: this.state.pointGroups.filter((v) => v !== pg)});
       };
 
-      return <PointGroup {...pg}
+      return <PointGroup {...pg} dim={this.props.dim}
         updatePoints={updatePoints} updateParams={updateParams} destroy={destroy}
         onMouseDown={onMouseDown} isMouseDown={isMouseDown} onMouseUp={onMouseUp}
         getMouseXY={this.getMouseXY} />;

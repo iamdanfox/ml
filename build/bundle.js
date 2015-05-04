@@ -177,30 +177,7 @@ webpackJsonp([0],{
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var $__0=       __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
-	
-	
-	
-	var ELLIPSE_FIXED_RADIUS = 0.35;
-	
-	var POINTS_PER_AREA = 15;
-	var labelToColour = function(c)  {return ["red", "blue"][c];};
-	
-	var generatePoints = function(generatedBy)            {
-	  var $__0=   generatedBy.params,l=$__0.l,theta=$__0.theta;
-	  var area = Math.PI * l * ELLIPSE_FIXED_RADIUS;
-	  var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
-	  // TODO randomise this slightly.
-	
-	  var newPoints = [];
-	  for (var i = 0; i < numberOfPoints; i = i + 1) {
-	    var r1 = 2 * Math.random() - 1;
-	    var r2 = 2 * Math.random() - 1;
-	    var offset = {x: r1 * ELLIPSE_FIXED_RADIUS, y: r2 * l};
-	    var rotatedOffset = rotate(theta, offset);
-	    newPoints.push(add(generatedBy.center)(rotatedOffset));
-	  }
-	  return newPoints;
-	};
+	var $__1=     __webpack_require__(/*! ./AwesomePointUtilities.jsx */ 226),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour,POINTS_PER_AREA=$__1.POINTS_PER_AREA;
 	
 	
 	var PointGroup = React.createClass({displayName: "PointGroup",
@@ -213,6 +190,7 @@ webpackJsonp([0],{
 	    destroy: React.PropTypes.func.isRequired,
 	    getMouseXY: React.PropTypes.func.isRequired,
 	    updateParams: React.PropTypes.func.isRequired,
+	    dim: React.PropTypes.number.isRequired,
 	  },
 	
 	  getInitialState: function() {
@@ -238,50 +216,50 @@ webpackJsonp([0],{
 	  onMouseMove: function(e                      ) {
 	    if (typeof this.state.paramsAtHandleMouseDown !== "undefined" &&
 	        this.state.paramsAtHandleMouseDown !== null) {
-	
-	      var mousePos = this.props.getMouseXY(e);
-	      var diff = subtract(mousePos)(this.props.generatedBy.center);
-	
-	      var theta = Math.atan(diff.y / diff.x) - (Math.PI / 2);
-	      if (Math.sign(diff.x) !== Math.sign(diff.y)) {
-	        theta = theta + Math.PI;
-	      }
-	      if (diff.y < 0) {
-	        theta = theta + Math.PI;
-	      }
-	      var l = 2 * modulus(diff);
-	
-	      // points fit these
-	      var $__0=     this.props.generatedBy.params,oldL=$__0.l,oldTheta=$__0.theta;
-	
-	      // need to make match {l, theta} instead.
-	      var thetaDiff = theta - oldTheta;
-	
-	
-	      // var lDiff = l - oldL;
-	
-	      // console.log(thetaDiff, lDiff);
-	
-	      // update all points
-	      var stretchDirection = rotate(theta, {x: 0, y: 1});
-	
-	      var $__1=  this.props.generatedBy,center=$__1.center;
-	      var newPoints = this.props.points.map(function(p)  {
-	        var fromCenter = subtract(p)(center);
-	        var rotatedFromCenter = rotate(thetaDiff, fromCenter);
-	        var stretchAmount = dotProduct(stretchDirection, rotatedFromCenter);
-	        var subtractProportion = 1 - (l / oldL);
-	        var subtractVector = scale(stretchAmount * subtractProportion)(stretchDirection);
-	        var doneFromCenter = subtract(rotatedFromCenter)(subtractVector);
-	        return add(center)(doneFromCenter);
-	      });
-	      this.props.updatePoints(newPoints);
-	
-	      this.props.updateParams({l:l, theta:theta});
-	
 	      e.stopPropagation();
 	      e.preventDefault();
+	
+	      var mousePos = this.props.getMouseXY(e);
+	      this.paramHandleDraggedTo(mousePos);
 	    }
+	  },
+	
+	  paramHandleDraggedTo: function(mousePos    ) {
+	    var $__0=       this.props.generatedBy,center=$__0.center,$__1=$__0.params,oldL=$__1.l,oldTheta=$__1.theta;
+	    var fromCenter = subtract(mousePos)(center);
+	
+	    var theta = this.getAngleFromVertical(fromCenter);
+	    var l = 2 * modulus(fromCenter);
+	
+	    // need to make match {l, theta} instead.
+	    var thetaDiff = theta - oldTheta;
+	
+	    // update all points
+	    var stretchDirection = rotate(theta, {x: 0, y: 1});
+	
+	    var newPoints = this.props.points.map(function(p)  {
+	      var fromCenter = subtract(p)(center);
+	      var rotatedFromCenter = rotate(thetaDiff, fromCenter);
+	      var stretchAmount = dotProduct(stretchDirection, rotatedFromCenter);
+	      var subtractProportion = 1 - (l / oldL);
+	      var subtractVector = scale(stretchAmount * subtractProportion)(stretchDirection);
+	      var doneFromCenter = subtract(rotatedFromCenter)(subtractVector);
+	      return add(center)(doneFromCenter);
+	    });
+	
+	    this.props.updatePoints(newPoints);
+	    this.props.updateParams({l:l, theta:theta});
+	  },
+	
+	  getAngleFromVertical: function(vector    )         {
+	    var theta = Math.atan(vector.y / vector.x) - (Math.PI / 2);
+	    if (Math.sign(vector.x) !== Math.sign(vector.y)) {
+	      theta = theta + Math.PI;
+	    }
+	    if (vector.y < 0) {
+	      theta = theta + Math.PI;
+	    }
+	    return theta;
 	  },
 	
 	  onHandleMouseDown: function(e                      ) {
@@ -292,10 +270,9 @@ webpackJsonp([0],{
 	  },
 	
 	  render: function()                {
-	    var $__0=   this.props.generatedBy.center,x=$__0.x,y=$__0.y;
-	    var $__1=   this.props.generatedBy.params,l=$__1.l,theta=$__1.theta;
+	    var $__0=     this.props.generatedBy,center=$__0.center,$__1=$__0.params,l=$__1.l,theta=$__1.theta;
 	    var fill = labelToColour(this.props.label);
-	    var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.1;
+	    var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.05;
 	
 	    var paramHandle = rotate(theta, {x: 0, y: 0.5 * l});
 	    var refreshHandle = subtract(paramHandle)(scale(0.13 / (0.5 * l))(paramHandle));
@@ -306,19 +283,20 @@ webpackJsonp([0],{
 	        onMouseDown: this.props.onMouseDown, onMouseUp: this.props.onMouseUp, 
 	        onMouseEnter: this.onMouseEnter, onMouseLeave: this.onMouseLeave, 
 	        onMouseMove: this.onMouseMove, 
-	        transform: ("translate(" + x + " " + y + ")")}, 
+	        transform: ("translate(" + center.x + " " + center.y + ")")}, 
 	
 	         this.props.points.map(function(p) 
 	            {return React.createElement("circle", {key: p.x + ":" + p.y, 
-	              cx: p.x - x, cy: p.y - y, r: 0.03, 
+	              cx: p.x - center.x, cy: p.y - center.y, r: 0.03, 
 	              style: {fill:fill, opacity: this.state.mouseOver ? 0.2 : 0.8}});}.bind(this)), 
 	
 	        React.createElement("ellipse", {cx: 0, cy: 0, rx: ELLIPSE_FIXED_RADIUS, ry: l, style: {fill:fill, opacity:opacity}, 
 	          transform: ("rotate(" + (theta * 180 / Math.PI) + ")")}), 
 	
-	        React.createElement("line", {x1: "0", y1: "0.03", x2: "0", y2: "-0.03", style: {stroke: "white", strokeWidth: "0.01"}}), 
-	        React.createElement("line", {x1: "-0.03", y1: "0", x2: "0.03", y2: "0", style: {stroke: "white", strokeWidth: "0.01"}}), 
-	
+	        React.createElement("g", {transform: ("scale(" + (2 / this.props.dim) + ")")}, 
+	          React.createElement("line", {x1: "0.5", y1: "5.5", x2: "0.5", y2: "-4.5", style: {stroke: "white", strokeWidth: 1}}), 
+	          React.createElement("line", {x1: "-4.5", y1: "0.5", x2: "5.5", y2: "0.5", style: {stroke: "white", strokeWidth: 1}})
+	        ), 
 	
 	        this.state.mouseOver &&
 	          React.createElement("circle", {cx: paramHandle.x, cy: paramHandle.y, r: 0.07, fill: "white", 
@@ -328,7 +306,7 @@ webpackJsonp([0],{
 	
 	        this.state.mouseOver &&
 	          React.createElement("circle", {cx: refreshHandle.x, cy: refreshHandle.y, r: 0.05, fill: "white", 
-	            onClick: this.refresh, style: {cursor: "pointer"}}), 
+	            onClick: this.refresh, style: {cursor: "pointer", opacity: 0.9}}), 
 	
 	        this.state.mouseOver &&
 	          React.createElement("circle", {cx: deleteHandle.x, cy: deleteHandle.y, r: 0.03, fill: "black", 
@@ -435,8 +413,8 @@ webpackJsonp([0],{
 	        this.setState({pointGroups: this.state.pointGroups.filter(function(v)  {return v !== pg;})});
 	      }.bind(this);
 	
-	      return React.createElement(PointGroup, React.__spread({},  pg, 
-	        {updatePoints: updatePoints, updateParams: updateParams, destroy: destroy, 
+	      return React.createElement(PointGroup, React.__spread({},  pg, {dim: this.props.dim, 
+	        updatePoints: updatePoints, updateParams: updateParams, destroy: destroy, 
 	        onMouseDown: onMouseDown, isMouseDown: isMouseDown, onMouseUp: onMouseUp, 
 	        getMouseXY: this.getMouseXY}));
 	    }.bind(this));
@@ -462,6 +440,56 @@ webpackJsonp([0],{
 	});
 	
 	module.exports = AwesomeDataComponent;
+
+
+/***/ },
+
+/***/ 226:
+/*!*******************************************!*\
+  !*** ./scripts/AwesomePointUtilities.jsx ***!
+  \*******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	                           
+	                                 
+	                    
+	             
+	                                     
+	  
+	
+	var $__0=   __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,rotate=$__0.rotate;
+	
+	
+	
+	var ELLIPSE_FIXED_RADIUS = 0.35;
+	
+	var labelToColour                    = function(c)  {return ["red", "blue"][c];};
+	
+	var POINTS_PER_AREA = 20;
+	
+	var generatePoints = function(generatedBy             )            {
+	  var $__0=   generatedBy.params,l=$__0.l,theta=$__0.theta;
+	  var area = Math.PI * l * ELLIPSE_FIXED_RADIUS;
+	  var numberOfPoints = Math.floor(area * POINTS_PER_AREA);
+	
+	  var project = function(rand)  {return 0.4 * (Math.pow(2 * rand - 1, 3) + 2 * rand - 1);};
+	
+	  var newPoints = [];
+	  for (var i = 0; i < numberOfPoints; i = i + 1) {
+	    var offset = {
+	      x: project(Math.random()) * ELLIPSE_FIXED_RADIUS,
+	      y: project(Math.random()) * l,
+	    };
+	    var rotatedOffset = rotate(theta, offset);
+	    newPoints.push(add(generatedBy.center)(rotatedOffset));
+	  }
+	  return newPoints;
+	};
+	
+	module.exports = {generatePoints:generatePoints, ELLIPSE_FIXED_RADIUS:ELLIPSE_FIXED_RADIUS, labelToColour:labelToColour, POINTS_PER_AREA:POINTS_PER_AREA};
 
 
 /***/ }
