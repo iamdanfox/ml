@@ -35286,12 +35286,12 @@
 	 * errors in the expression, or errors in javascript handling.
 	 */
 	
-	var ParseError = __webpack_require__(/*! ./src/ParseError */ 6);
-	var Settings = __webpack_require__(/*! ./src/Settings */ 7);
+	var ParseError = __webpack_require__(/*! ./src/ParseError */ 5);
+	var Settings = __webpack_require__(/*! ./src/Settings */ 6);
 	
-	var buildTree = __webpack_require__(/*! ./src/buildTree */ 8);
-	var parseTree = __webpack_require__(/*! ./src/parseTree */ 9);
-	var utils = __webpack_require__(/*! ./src/utils */ 10);
+	var buildTree = __webpack_require__(/*! ./src/buildTree */ 7);
+	var parseTree = __webpack_require__(/*! ./src/parseTree */ 8);
+	var utils = __webpack_require__(/*! ./src/utils */ 9);
 	
 	/**
 	 * Parse and build an expression, and place that expression in the DOM node
@@ -35402,8 +35402,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! (webpack)/~/node-libs-browser/~/process/browser.js */ 34)))
 
 /***/ },
-/* 5 */,
-/* 6 */
+/* 5 */
 /*!***********************************!*\
   !*** ./~/katex/src/ParseError.js ***!
   \***********************************/
@@ -35452,7 +35451,7 @@
 
 
 /***/ },
-/* 7 */
+/* 6 */
 /*!*********************************!*\
   !*** ./~/katex/src/Settings.js ***!
   \*********************************/
@@ -35487,16 +35486,16 @@
 
 
 /***/ },
-/* 8 */
+/* 7 */
 /*!**********************************!*\
   !*** ./~/katex/src/buildTree.js ***!
   \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	
-	var buildHTML = __webpack_require__(/*! ./buildHTML */ 30);
-	var buildMathML = __webpack_require__(/*! ./buildMathML */ 31);
-	var buildCommon = __webpack_require__(/*! ./buildCommon */ 32);
+	var buildHTML = __webpack_require__(/*! ./buildHTML */ 23);
+	var buildMathML = __webpack_require__(/*! ./buildMathML */ 24);
+	var buildCommon = __webpack_require__(/*! ./buildCommon */ 25);
 	
 	var makeSpan = buildCommon.makeSpan;
 	
@@ -35521,7 +35520,7 @@
 
 
 /***/ },
-/* 9 */
+/* 8 */
 /*!**********************************!*\
   !*** ./~/katex/src/parseTree.js ***!
   \**********************************/
@@ -35532,7 +35531,7 @@
 	 * TODO(emily): Remove this
 	 */
 	
-	var Parser = __webpack_require__(/*! ./Parser */ 33);
+	var Parser = __webpack_require__(/*! ./Parser */ 26);
 	
 	/**
 	 * Parses an expression using a Parser, then returns the parsed result.
@@ -35547,7 +35546,7 @@
 
 
 /***/ },
-/* 10 */
+/* 9 */
 /*!******************************!*\
   !*** ./~/katex/src/utils.js ***!
   \******************************/
@@ -35653,6 +35652,7 @@
 
 
 /***/ },
+/* 10 */,
 /* 11 */
 /*!*****************************************!*\
   !*** ./~/react/lib/LinkedStateMixin.js ***!
@@ -37802,14 +37802,7 @@
 
 
 /***/ },
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */
+/* 23 */
 /*!**********************************!*\
   !*** ./~/katex/src/buildHTML.js ***!
   \**********************************/
@@ -37822,15 +37815,15 @@
 	 * called, to produce a final HTML tree.
 	 */
 	
-	var Options = __webpack_require__(/*! ./Options */ 96);
-	var ParseError = __webpack_require__(/*! ./ParseError */ 6);
-	var Style = __webpack_require__(/*! ./Style */ 97);
+	var Options = __webpack_require__(/*! ./Options */ 80);
+	var ParseError = __webpack_require__(/*! ./ParseError */ 5);
+	var Style = __webpack_require__(/*! ./Style */ 81);
 	
-	var buildCommon = __webpack_require__(/*! ./buildCommon */ 32);
-	var delimiter = __webpack_require__(/*! ./delimiter */ 98);
-	var domTree = __webpack_require__(/*! ./domTree */ 99);
-	var fontMetrics = __webpack_require__(/*! ./fontMetrics */ 100);
-	var utils = __webpack_require__(/*! ./utils */ 10);
+	var buildCommon = __webpack_require__(/*! ./buildCommon */ 25);
+	var delimiter = __webpack_require__(/*! ./delimiter */ 82);
+	var domTree = __webpack_require__(/*! ./domTree */ 83);
+	var fontMetrics = __webpack_require__(/*! ./fontMetrics */ 84);
+	var utils = __webpack_require__(/*! ./utils */ 9);
 	
 	var makeSpan = buildCommon.makeSpan;
 	
@@ -38969,7 +38962,7 @@
 
 
 /***/ },
-/* 31 */
+/* 24 */
 /*!************************************!*\
   !*** ./~/katex/src/buildMathML.js ***!
   \************************************/
@@ -38981,10 +38974,10 @@
 	 * parser.
 	 */
 	
-	var buildCommon = __webpack_require__(/*! ./buildCommon */ 32);
-	var mathMLTree = __webpack_require__(/*! ./mathMLTree */ 101);
-	var ParseError = __webpack_require__(/*! ./ParseError */ 6);
-	var symbols = __webpack_require__(/*! ./symbols */ 102);
+	var buildCommon = __webpack_require__(/*! ./buildCommon */ 25);
+	var mathMLTree = __webpack_require__(/*! ./mathMLTree */ 85);
+	var ParseError = __webpack_require__(/*! ./ParseError */ 5);
+	var symbols = __webpack_require__(/*! ./symbols */ 86);
 	
 	var makeSpan = buildCommon.makeSpan;
 	
@@ -39420,7 +39413,7 @@
 
 
 /***/ },
-/* 32 */
+/* 25 */
 /*!************************************!*\
   !*** ./~/katex/src/buildCommon.js ***!
   \************************************/
@@ -39431,9 +39424,9 @@
 	 * different kinds of domTree nodes in a consistent manner.
 	 */
 	
-	var domTree = __webpack_require__(/*! ./domTree */ 99);
-	var fontMetrics = __webpack_require__(/*! ./fontMetrics */ 100);
-	var symbols = __webpack_require__(/*! ./symbols */ 102);
+	var domTree = __webpack_require__(/*! ./domTree */ 83);
+	var fontMetrics = __webpack_require__(/*! ./fontMetrics */ 84);
+	var symbols = __webpack_require__(/*! ./symbols */ 86);
 	
 	/**
 	 * Makes a symbolNode after translation via the list of symbols in symbols.js.
@@ -39749,18 +39742,18 @@
 
 
 /***/ },
-/* 33 */
+/* 26 */
 /*!*******************************!*\
   !*** ./~/katex/src/Parser.js ***!
   \*******************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var functions = __webpack_require__(/*! ./functions */ 103);
-	var Lexer = __webpack_require__(/*! ./Lexer */ 104);
-	var symbols = __webpack_require__(/*! ./symbols */ 102);
-	var utils = __webpack_require__(/*! ./utils */ 10);
+	var functions = __webpack_require__(/*! ./functions */ 87);
+	var Lexer = __webpack_require__(/*! ./Lexer */ 88);
+	var symbols = __webpack_require__(/*! ./symbols */ 86);
+	var utils = __webpack_require__(/*! ./utils */ 9);
 	
-	var ParseError = __webpack_require__(/*! ./ParseError */ 6);
+	var ParseError = __webpack_require__(/*! ./ParseError */ 5);
 	
 	/**
 	 * This file contains the parser used to parse out a TeX expression from the
@@ -40386,6 +40379,13 @@
 
 
 /***/ },
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */,
+/* 32 */,
+/* 33 */,
 /* 34 */
 /*!**********************************************************!*\
   !*** (webpack)/~/node-libs-browser/~/process/browser.js ***!
@@ -49447,23 +49447,7 @@
 
 
 /***/ },
-/* 80 */,
-/* 81 */,
-/* 82 */,
-/* 83 */,
-/* 84 */,
-/* 85 */,
-/* 86 */,
-/* 87 */,
-/* 88 */,
-/* 89 */,
-/* 90 */,
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */,
-/* 95 */,
-/* 96 */
+/* 80 */
 /*!********************************!*\
   !*** ./~/katex/src/Options.js ***!
   \********************************/
@@ -49557,7 +49541,7 @@
 
 
 /***/ },
-/* 97 */
+/* 81 */
 /*!******************************!*\
   !*** ./~/katex/src/Style.js ***!
   \******************************/
@@ -49692,7 +49676,7 @@
 
 
 /***/ },
-/* 98 */
+/* 82 */
 /*!**********************************!*\
   !*** ./~/katex/src/delimiter.js ***!
   \**********************************/
@@ -49720,13 +49704,13 @@
 	 * used in `\left` and `\right`.
 	 */
 	
-	var ParseError = __webpack_require__(/*! ./ParseError */ 6);
-	var Style = __webpack_require__(/*! ./Style */ 97);
+	var ParseError = __webpack_require__(/*! ./ParseError */ 5);
+	var Style = __webpack_require__(/*! ./Style */ 81);
 	
-	var buildCommon = __webpack_require__(/*! ./buildCommon */ 32);
-	var fontMetrics = __webpack_require__(/*! ./fontMetrics */ 100);
-	var symbols = __webpack_require__(/*! ./symbols */ 102);
-	var utils = __webpack_require__(/*! ./utils */ 10);
+	var buildCommon = __webpack_require__(/*! ./buildCommon */ 25);
+	var fontMetrics = __webpack_require__(/*! ./fontMetrics */ 84);
+	var symbols = __webpack_require__(/*! ./symbols */ 86);
+	var utils = __webpack_require__(/*! ./utils */ 9);
 	
 	var makeSpan = buildCommon.makeSpan;
 	
@@ -50242,7 +50226,7 @@
 
 
 /***/ },
-/* 99 */
+/* 83 */
 /*!********************************!*\
   !*** ./~/katex/src/domTree.js ***!
   \********************************/
@@ -50258,7 +50242,7 @@
 	 * Similar functions for working with MathML nodes exist in mathMLTree.js.
 	 */
 	
-	var utils = __webpack_require__(/*! ./utils */ 10);
+	var utils = __webpack_require__(/*! ./utils */ 9);
 	
 	/**
 	 * Create an HTML className based on a list of classes. In addition to joining
@@ -50520,7 +50504,7 @@
 
 
 /***/ },
-/* 100 */
+/* 84 */
 /*!************************************!*\
   !*** ./~/katex/src/fontMetrics.js ***!
   \************************************/
@@ -50528,7 +50512,7 @@
 
 	/* jshint unused:false */
 	
-	var Style = __webpack_require__(/*! ./Style */ 97);
+	var Style = __webpack_require__(/*! ./Style */ 81);
 	
 	/**
 	 * This file contains metrics regarding fonts and individual symbols. The sigma
@@ -50658,7 +50642,7 @@
 
 
 /***/ },
-/* 101 */
+/* 85 */
 /*!***********************************!*\
   !*** ./~/katex/src/mathMLTree.js ***!
   \***********************************/
@@ -50674,7 +50658,7 @@
 	 * domTree.js, creating namespaced DOM nodes and HTML text markup respectively.
 	 */
 	
-	var utils = __webpack_require__(/*! ./utils */ 10);
+	var utils = __webpack_require__(/*! ./utils */ 9);
 	
 	/**
 	 * This node represents a general purpose MathML node of any type. The
@@ -50769,7 +50753,7 @@
 
 
 /***/ },
-/* 102 */
+/* 86 */
 /*!********************************!*\
   !*** ./~/katex/src/symbols.js ***!
   \********************************/
@@ -53321,14 +53305,14 @@
 
 
 /***/ },
-/* 103 */
+/* 87 */
 /*!**********************************!*\
   !*** ./~/katex/src/functions.js ***!
   \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var utils = __webpack_require__(/*! ./utils */ 10);
-	var ParseError = __webpack_require__(/*! ./ParseError */ 6);
+	var utils = __webpack_require__(/*! ./utils */ 9);
+	var ParseError = __webpack_require__(/*! ./ParseError */ 5);
 	
 	// This file contains a list of functions that we parse. The functions map
 	// contains the following data:
@@ -53858,7 +53842,7 @@
 
 
 /***/ },
-/* 104 */
+/* 88 */
 /*!******************************!*\
   !*** ./~/katex/src/Lexer.js ***!
   \******************************/
@@ -53877,7 +53861,7 @@
 	 * kinds.
 	 */
 	
-	var ParseError = __webpack_require__(/*! ./ParseError */ 6);
+	var ParseError = __webpack_require__(/*! ./ParseError */ 5);
 	
 	// The main lexer class
 	function Lexer(input) {
@@ -54057,6 +54041,22 @@
 
 
 /***/ },
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
 /* 105 */
 /*!********************************************!*\
   !*** ./~/react/lib/traverseAllChildren.js ***!

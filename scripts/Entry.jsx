@@ -2,8 +2,8 @@
 "use strict";
 
 var React = require("react/addons");
-var Article = require("./Article.jsx");
+var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
 
 window.React = React;
 
-React.render(<Article />, document.body);
+React.render(<AwesomeDataComponent />, document.body);
