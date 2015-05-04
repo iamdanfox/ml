@@ -132,20 +132,15 @@ var PointGroup = React.createClass({
     e.preventDefault();
   },
 
-  // getMouseXY: function(e: React.SyntheticEvent): {x: number; y: number} {
-  //   var {left, top} = this.refs.canvas.getDOMNode().getBoundingClientRect();
-  //   var x = e.pageX - left;
-  //   var y = this.props.dim - (e.pageY - top);
-  //   return {x: (2 * x) / this.props.dim - 1, y: (2 * y) / this.props.dim - 1};
-  // },
-
   render: function(): ?ReactElement {
     var {x, y} = this.props.generatedBy.center;
     var {l, theta} = this.props.generatedBy.params;
     var fill = labelToColour(this.props.label);
     var opacity = (this.state.mouseOver || this.props.isMouseDown) ? 0.6 : 0.1;
 
-    var paramHandle = rotate(theta, {x: 0, y: l / 2});
+    var paramHandle = rotate(theta, {x: 0, y: 0.5 * l});
+    var refreshHandle = subtract(paramHandle)(scale(0.13 / (0.5 * l))(paramHandle));
+    var deleteHandle = add(paramHandle)(scale(0.11 / (0.5 * l))(paramHandle));
 
     return (
       <g style={{cursor: "move"}}
@@ -154,24 +149,30 @@ var PointGroup = React.createClass({
         onMouseMove={this.onMouseMove}
         transform={`translate(${x} ${y})`}>
 
+        { this.props.points.map((p) =>
+            <circle key={p.x + ":" + p.y}
+              cx={p.x - x} cy={p.y - y} r={0.03}
+              style={{fill, opacity: this.state.mouseOver ? 0.2 : 0.8}} />) }
+
         <ellipse cx={0} cy={0} rx={ELLIPSE_FIXED_RADIUS} ry={l} style={{fill, opacity}}
           transform={`rotate(${theta * 180 / Math.PI})`} />
 
-        { this.props.points.map((p) =>
-            <circle key={p.x + ":" + p.y} cx={p.x - x} cy={p.y - y} r={0.03} fill={fill} />) }
+        <line x1="0" y1="0.03" x2="0" y2="-0.03" style={{stroke: "white", strokeWidth: "0.01"}} />
+        <line x1="-0.03" y1="0" x2="0.03" y2="0" style={{stroke: "white", strokeWidth: "0.01"}} />
+
 
         {this.state.mouseOver &&
-          <circle cx={paramHandle.x} cy={paramHandle.y} r={0.06} fill="white"
+          <circle cx={paramHandle.x} cy={paramHandle.y} r={0.07} fill="white"
             onMouseDown={this.onHandleMouseDown}
             onMouseUp={() => this.setState({paramsAtHandleMouseDown: null})}
             style={{cursor: "ew-resize"}} /> }
 
         {this.state.mouseOver &&
-          <circle cx={0} cy={0} r={0.06} fill="grey"
+          <circle cx={refreshHandle.x} cy={refreshHandle.y} r={0.05} fill="white"
             onClick={this.refresh} style={{cursor: "pointer"}} /> }
 
         {this.state.mouseOver &&
-          <circle cx={0.12} cy={0} r={0.06} fill="black"
+          <circle cx={deleteHandle.x} cy={deleteHandle.y} r={0.03} fill="black"
             onClick={this.props.destroy} style={{cursor: "pointer"}} /> }
       </g>
     );
