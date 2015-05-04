@@ -1570,12 +1570,9 @@ webpackJsonp([0],{
 	/* @flow */
 	"use strict";
 	
-	var React = __webpack_require__(/*! react/addons */ 1);
-	var WebWorkerGraphSlug = __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 172);
-	var WorkerBridge = __webpack_require__(/*! ./WorkerBridge.jsx */ 173);
-	
 	                                 
 	                                           
+	                                                        
 	              
 	              
 	                             
@@ -1584,8 +1581,14 @@ webpackJsonp([0],{
 	                          
 	 
 	              
-	                    
+	                     
+	                
 	 
+	
+	var React = __webpack_require__(/*! react/addons */ 1);
+	var WebWorkerGraphSlug = __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 172);
+	var WorkerBridge = __webpack_require__(/*! ./WorkerBridge.jsx */ 173);
+	
 	
 	
 	
@@ -1605,7 +1608,7 @@ webpackJsonp([0],{
 	    };
 	  },
 	
-	  componentWillReceiveProps: function(nextProps)       {
+	  componentWillReceiveProps: function(nextProps       )       {
 	    if (this.shouldComponentUpdate(nextProps)) {
 	      this.unsubscribeFromWebWorker(); // ignore outstanding responses
 	      this.synchronouslyComputeInitialGraph(nextProps);
@@ -1615,11 +1618,11 @@ webpackJsonp([0],{
 	    }
 	  },
 	
-	  shouldComponentUpdate: function(nextProps)       {
+	  shouldComponentUpdate: function(nextProps       )       {
 	    return (nextProps.pointClasses != this.props.pointClasses);
 	  },
 	
-	  synchronouslyComputeInitialGraph: function(props) {
+	  synchronouslyComputeInitialGraph: function(props       ) {
 	    if (this.state.graph) {
 	      this.props.scene.remove(this.state.graph);
 	    }
@@ -1630,7 +1633,7 @@ webpackJsonp([0],{
 	    props.scene.add(graph);
 	  },
 	
-	  asyncRequestGraphs: function(webWorkerChannel, props) {
+	  asyncRequestGraphs: function(webWorkerChannel, props       ) {
 	    webWorkerChannel(36, 12, props.dim, props.pointClasses);
 	    webWorkerChannel(72, 24, props.dim, props.pointClasses);
 	    webWorkerChannel(120, 40, props.dim, props.pointClasses);
@@ -1643,7 +1646,7 @@ webpackJsonp([0],{
 	    return webWorkerChannel;
 	  },
 	
-	  receiveWebWorkerResponse: function(result)       {
+	  receiveWebWorkerResponse: function(result        )       {
 	    var newGraph = WebWorkerGraphSlug.reconstruct(result);
 	    this.props.scene.remove(this.state.graph);
 	    this.props.scene.add(newGraph);
@@ -1651,8 +1654,10 @@ webpackJsonp([0],{
 	  },
 	
 	  unsubscribeFromWebWorker: function() {
-	    WorkerBridge.unsubscribe(this.state.uuid);
-	    this.setState({uuid: null, webWorkerChannel: null});
+	    if (typeof this.state.uuid !== "undefined" && this.state.uuid !== null){
+	      WorkerBridge.unsubscribe(this.state.uuid);
+	      this.setState({uuid: null});
+	    }
 	  },
 	
 	  componentWillMount: function() {
@@ -2156,7 +2161,7 @@ webpackJsonp([0],{
 	"use strict";
 	                                 
 	                                           
-	
+	                                                        
 	
 	var $__0=   __webpack_require__(/*! ./LogisticRegression.jsx */ 93),fastOptimise=$__0.fastOptimise,objective=$__0.objective;
 	var THREE = __webpack_require__(/*! three */ 2);
@@ -2207,14 +2212,14 @@ webpackJsonp([0],{
 	}
 	
 	module.exports = {
-	  respond: function(thetaResolution        , rResolution        , dim        , pointClasses              ) {
+	  respond: function(thetaResolution        , rResolution        , dim        , pointClasses              )         {
 	    var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
 	    colour(graphGeometry, pointClasses);
 	    var $__0=   graphGeometry,faces=$__0.faces,vertices=$__0.vertices;
 	    return {faces:faces, vertices:vertices}; // clonable to send back!
 	  },
 	
-	  reconstruct: function(result)             {
+	  reconstruct: function(result        )             {
 	    var $__0=   result,faces=$__0.faces,vertices=$__0.vertices;
 	    var geometry = new THREE.Geometry();
 	    geometry.vertices = vertices;

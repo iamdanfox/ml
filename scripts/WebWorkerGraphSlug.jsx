@@ -2,7 +2,7 @@
 "use strict";
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
-
+type Result = {faces: Array<any>; vertices: Array<any>};
 
 var {fastOptimise, objective} = require("./LogisticRegression.jsx");
 var THREE = require("three");
@@ -53,14 +53,14 @@ function colour(graphGeometry, pointClasses): void {
 }
 
 module.exports = {
-  respond: function(thetaResolution: number, rResolution: number, dim: number, pointClasses: PointClasses) {
+  respond: function(thetaResolution: number, rResolution: number, dim: number, pointClasses: PointClasses): Result {
     var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
     colour(graphGeometry, pointClasses);
     var {faces, vertices} = graphGeometry;
     return {faces, vertices}; // clonable to send back!
   },
 
-  reconstruct: function(result): THREE.Mesh {
+  reconstruct: function(result: Result): THREE.Mesh {
     var {faces, vertices} = result;
     var geometry = new THREE.Geometry();
     geometry.vertices = vertices;

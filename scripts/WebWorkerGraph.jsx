@@ -1,12 +1,9 @@
 /* @flow */
 "use strict";
 
-var React = require("react/addons");
-var WebWorkerGraphSlug = require("./WebWorkerGraphSlug.jsx");
-var WorkerBridge = require("./WorkerBridge.jsx");
-
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
+type Result = {faces: Array<any>; vertices: Array<any>};
 type Props = {
   dim: number;
   pointClasses: PointClasses;
@@ -15,8 +12,14 @@ type Props = {
   thetaResolution: number;
 }
 type State = {
-  graph: THREE.Mesh;
+  graph: ?THREE.Mesh;
+  uuid: ?string;
 }
+
+var React = require("react/addons");
+var WebWorkerGraphSlug = require("./WebWorkerGraphSlug.jsx");
+var WorkerBridge = require("./WorkerBridge.jsx");
+
 
 
 
@@ -36,7 +39,7 @@ var WebWorkerGraph = React.createClass({
     };
   },
 
-  componentWillReceiveProps: function(nextProps): void {
+  componentWillReceiveProps: function(nextProps: Props): void {
     if (this.shouldComponentUpdate(nextProps)) {
       this.unsubscribeFromWebWorker(); // ignore outstanding responses
       this.synchronouslyComputeInitialGraph(nextProps);
@@ -46,11 +49,11 @@ var WebWorkerGraph = React.createClass({
     }
   },
 
-  shouldComponentUpdate: function(nextProps): bool {
+  shouldComponentUpdate: function(nextProps: Props): bool {
     return (nextProps.pointClasses != this.props.pointClasses);
   },
 
-  synchronouslyComputeInitialGraph: function(props) {
+  synchronouslyComputeInitialGraph: function(props: Props) {
     if (this.state.graph) {
       this.props.scene.remove(this.state.graph);
     }
@@ -61,7 +64,7 @@ var WebWorkerGraph = React.createClass({
     props.scene.add(graph);
   },
 
-  asyncRequestGraphs: function(webWorkerChannel, props) {
+  asyncRequestGraphs: function(webWorkerChannel, props: Props) {
     webWorkerChannel(36, 12, props.dim, props.pointClasses);
     webWorkerChannel(72, 24, props.dim, props.pointClasses);
     webWorkerChannel(120, 40, props.dim, props.pointClasses);
@@ -74,7 +77,7 @@ var WebWorkerGraph = React.createClass({
     return webWorkerChannel;
   },
 
-  receiveWebWorkerResponse: function(result): void {
+  receiveWebWorkerResponse: function(result: Result): void {
     var newGraph = WebWorkerGraphSlug.reconstruct(result);
     this.props.scene.remove(this.state.graph);
     this.props.scene.add(newGraph);
@@ -82,8 +85,10 @@ var WebWorkerGraph = React.createClass({
   },
 
   unsubscribeFromWebWorker: function() {
-    WorkerBridge.unsubscribe(this.state.uuid);
-    this.setState({uuid: null, webWorkerChannel: null});
+    if (typeof this.state.uuid !== "undefined" && this.state.uuid !== null){
+      WorkerBridge.unsubscribe(this.state.uuid);
+      this.setState({uuid: null});
+    }
   },
 
   componentWillMount: function() {

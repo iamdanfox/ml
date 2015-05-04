@@ -70,7 +70,7 @@
 	"use strict";
 	                                 
 	                                           
-	
+	                                                        
 	
 	var $__0=   __webpack_require__(/*! ./LogisticRegression.jsx */ 2),fastOptimise=$__0.fastOptimise,objective=$__0.objective;
 	var THREE = __webpack_require__(/*! three */ 3);
@@ -121,14 +121,14 @@
 	}
 	
 	module.exports = {
-	  respond: function(thetaResolution        , rResolution        , dim        , pointClasses              ) {
+	  respond: function(thetaResolution        , rResolution        , dim        , pointClasses              )         {
 	    var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
 	    colour(graphGeometry, pointClasses);
 	    var $__0=   graphGeometry,faces=$__0.faces,vertices=$__0.vertices;
 	    return {faces:faces, vertices:vertices}; // clonable to send back!
 	  },
 	
-	  reconstruct: function(result)             {
+	  reconstruct: function(result        )             {
 	    var $__0=   result,faces=$__0.faces,vertices=$__0.vertices;
 	    var geometry = new THREE.Geometry();
 	    geometry.vertices = vertices;
