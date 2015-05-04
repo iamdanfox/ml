@@ -1619,7 +1619,9 @@ webpackJsonp([0],{
 	    // set up worker connection
 	    var reactElementId = this._reactInternalInstance._rootNodeID; // maybe cache a UUID instead?
 	    var webWorkerChannel = WorkerBridge.subscribe(reactElementId, this.receiveWebWorkerResponse);
-	    webWorkerChannel(120, 40, 400, this.props.pointClasses); // real version
+	    webWorkerChannel(36, 12, this.props.dim, this.props.pointClasses);
+	    webWorkerChannel(72, 24, this.props.dim, this.props.pointClasses);
+	    webWorkerChannel(120, 40, this.props.dim, this.props.pointClasses);
 	  },
 	
 	  receiveWebWorkerResponse: function(result)       {
