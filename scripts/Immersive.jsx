@@ -69,11 +69,6 @@ var Immersive = React.createClass({
     this.setState({pointGroups});
   },
 
-  computePointClasses: function(): PointClasses {
-    return [0, 1].map((l) => this.state.pointGroups
-          .reduce((acc, pg) => pg.label === l ? acc.concat(pg.points) : acc, []));
-  },
-
   highlightW: function(highlightedW: P2) {
     this.setState({highlightedW});
   },
@@ -87,7 +82,6 @@ var Immersive = React.createClass({
     //   <CursorSphere highlightedW={this.state.highlightedW} />
 
     // </Draggable3DScene>
-    var pointClasses = this.computePointClasses();
     // var optimiserLine = Perceptron.optimise(this.state.highlightedW, pointClasses);
 
     // <Draggable3DScene dim={500} pointClasses={pointClasses}
@@ -99,19 +93,7 @@ var Immersive = React.createClass({
     // </Draggable3DScene>
 
 
-    var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
 
-      var zMin = boundingBox.min.z;
-      var zRange = boundingBox.max.z - zMin;
-      var totalZ = vertex1.z + vertex2.z + vertex3.z;
-      var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-
-      var stops = LogisticRegression.fastOptimise(vertex1, pointClasses) / 250;
-
-      mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
-    };
-
-    var optimiserLine = LogisticRegression.optimise(this.state.highlightedW, pointClasses);
 
           // <WebWorkerGraph thetaResolution={24} rResolution={8} />
 
@@ -120,19 +102,47 @@ var Immersive = React.createClass({
         <AwesomeDataComponent dim={500}
           updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
 
-        <Draggable3DScene dim={500} pointClasses={pointClasses}
-            projectedError={LogisticRegression.objective} highlightW={this.highlightW}>
-
-          <OptimiserLine vertices={optimiserLine} />
-          <CursorSphere highlightedW={this.state.highlightedW} />
-          <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction} />
-
-        </Draggable3DScene>
+        <LogisticRegressionVis highlightW={this.highlightW}
+          highlightedW={this.state.highlightedW} pointGroups={this.state.pointGroups} />
 
 
       </div>
     );
   }
 });
+
+var LogisticRegressionVis = React.createClass({
+
+  computePointClasses: function(): PointClasses {
+    return [0, 1].map((l) => this.props.pointGroups
+          .reduce((acc, pg) => pg.label === l ? acc.concat(pg.points) : acc, []));
+  },
+
+  render: function (): ?ReactElement {
+    var pointClasses = this.computePointClasses();
+
+    var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
+      var zMin = boundingBox.min.z;
+      var zRange = boundingBox.max.z - zMin;
+      var totalZ = vertex1.z + vertex2.z + vertex3.z;
+      var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+      var stops = LogisticRegression.fastOptimise(vertex1, pointClasses) / 250;
+      mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
+    };
+
+    var optimiserLine = LogisticRegression.optimise(this.props.highlightedW, pointClasses);
+
+    return (
+      <Draggable3DScene dim={500} pointClasses={pointClasses}
+          projectedError={LogisticRegression.objective} highlightW={this.props.highlightW}>
+
+        <OptimiserLine vertices={optimiserLine} />
+        <CursorSphere highlightedW={this.props.highlightedW} />
+        <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction} />
+
+      </Draggable3DScene>
+    );
+  }
+})
 
 module.exports = Immersive;

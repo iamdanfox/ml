@@ -3,7 +3,6 @@
 
 var React = require("react/addons");
 var THREE = require("three");
-var {scale} = require("./VectorUtils.jsx");
 
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];

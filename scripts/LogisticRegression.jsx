@@ -23,13 +23,12 @@ function logOneMinusSigmoid(wx): number {
 
 // the objective function is used to generate the surface
 function objective(smallW: P2, smallPointClasses: PointClasses): number {
-  var w = scale(200)(smallW);
   var points = pointClassesTransformZeroOne(smallPointClasses);
 
   // we're actually trying to minimise this.
   var sum = -points
     .map(function sumElement(point: P2t): number { // crucially, t is either 0 or 1.
-      var wx = dotProduct(w, point);
+      var wx = 200 * dotProduct(smallW, point);
       return point.t * logSigmoid(wx) + (1 - point.t) * logOneMinusSigmoid(wx);
     })
     .reduce(function(a, b) {return a + b;}, 0);
@@ -43,7 +42,7 @@ function objective(smallW: P2, smallPointClasses: PointClasses): number {
 
 
 var NU = 0.03;
-var ACCEPTING_GRAD = 1; // we reach this in ~ 300 loops, but it takes more like 6000 to reach 0.1!
+var ACCEPTING_GRAD = 1 / 200; // we reach this in ~ 300 loops
 var MAX_STOPS = 250;
 
 function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
@@ -51,12 +50,12 @@ function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
   var points = pointClassesTransformZeroOne(smallPointClasses);
   var len = points.length;
 
-  function gradient(bigW: P2): P2 {
+  function gradient(w: P2): P2 {
     var grad = {x: 0, y: 0};
 
     for (var i = 0; i < len; i = i + 1) {
       var point = points[i];
-      var scaleFactor = sigmoid(bigW.x * point.x + bigW.y * point.y) - point.t;
+      var scaleFactor = sigmoid(200 * (w.x * point.x + w.y * point.y)) - point.t;
       grad.x = grad.x + scaleFactor * point.x;
       grad.y = grad.y + scaleFactor * point.y; // inlined scale factor and dot products here to reduce GC
     }
@@ -65,12 +64,12 @@ function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
 
   var w = smallStartW;
   var grad;
-  var stops = [scale(200)(w)];
-  while (grad = gradient(scale(200)(w)), modulus(scale(200)(grad)) > ACCEPTING_GRAD && stops.length < MAX_STOPS) {
+  var stops = [w];
+  while (grad = gradient(w), modulus(grad) > ACCEPTING_GRAD && stops.length < MAX_STOPS) {
     w = add(w)(scale(-1 * NU)(grad));
-    stops.push(scale(200)(w));
+    stops.push(w);
   }
-  return stops.map(scale( 1 / 200));
+  return stops;
 }
 
 
@@ -79,12 +78,12 @@ function fastOptimise(smallStartW: P2, smallPointClasses: PointClasses): number 
   var points = pointClassesTransformZeroOne(smallPointClasses);
   var len = points.length;
 
-  function gradient(bigW: P2): P2 {
+  function gradient(w: P2): P2 {
     var grad = {x: 0, y: 0};
 
     for (var i = 0; i < len; i = i + 1) {
       var point = points[i];
-      var scaleFactor = sigmoid(bigW.x * point.x + bigW.y * point.y) - point.t;
+      var scaleFactor = sigmoid(200 * (w.x * point.x + w.y * point.y)) - point.t;
       grad.x = grad.x + scaleFactor * point.x;
       grad.y = grad.y + scaleFactor * point.y; // inlined scale factor and dot products here to reduce GC
     }
@@ -94,7 +93,7 @@ function fastOptimise(smallStartW: P2, smallPointClasses: PointClasses): number 
   var w = smallStartW;
   var grad;
   var stops = 1;
-  while (grad = gradient(scale(200)(w)), modulus(scale(200)(grad)) > ACCEPTING_GRAD && stops < MAX_STOPS) {
+  while (grad = gradient(w), modulus(grad) > ACCEPTING_GRAD && stops < MAX_STOPS) {
     w = add(w)(scale(-1 * NU)(grad));
     stops = stops + 1;
   }

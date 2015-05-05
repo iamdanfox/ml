@@ -3,7 +3,6 @@
 
 var React = require("react/addons");
 var THREE = require("three");
-var {scale} = require("./VectorUtils.jsx");
 
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
@@ -46,9 +45,8 @@ var CursorSphere = React.createClass({
       var highlightedW = nextProps.highlightedW;
 
       if (typeof highlightedW !== "undefined" && highlightedW !== null) {
-        var bigHighlightedW = scale(1)(highlightedW);
-        var {x, y} = bigHighlightedW;
-        var z = nextProps.projectedError(bigHighlightedW, nextProps.pointClasses);
+        var {x, y} = highlightedW;
+        var z = nextProps.projectedError(highlightedW, nextProps.pointClasses);
         this.state.sphere.position.set(x, y, z);
       }
     }
