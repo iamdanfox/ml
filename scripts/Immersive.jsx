@@ -91,10 +91,6 @@ var Immersive = React.createClass({
     //   <OptimiserLine vertices={optimiserLine} />
     //   <CursorSphere highlightedW={this.state.highlightedW} />
     // </Draggable3DScene>
-
-
-
-
           // <WebWorkerGraph thetaResolution={24} rResolution={8} />
 
     return (
@@ -113,27 +109,39 @@ var Immersive = React.createClass({
 
 var LogisticRegressionVis = React.createClass({
 
-  computePointClasses: function(): PointClasses {
-    return [0, 1].map((l) => this.props.pointGroups
+  getInitialState: function() {
+    return {
+      pointClasses: this.computePointClasses(this.props.pointGroups)
+    }
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    if (nextProps.pointGroups !== this.props.pointGroups) {
+      this.setState({
+        pointClasses: this.computePointClasses(nextProps.pointGroups)
+      });
+    }
+  },
+
+  computePointClasses: function(pointGroups): PointClasses {
+    return [0, 1].map((l) => pointGroups
           .reduce((acc, pg) => pg.label === l ? acc.concat(pg.points) : acc, []));
   },
 
   render: function (): ?ReactElement {
-    var pointClasses = this.computePointClasses();
-
     var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
       var zMin = boundingBox.min.z;
       var zRange = boundingBox.max.z - zMin;
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-      var stops = LogisticRegression.fastOptimise(vertex1, pointClasses) / 250;
+      var stops = LogisticRegression.fastOptimise(vertex1, this.state.pointClasses) / 250;
       mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
     };
 
-    var optimiserLine = LogisticRegression.optimise(this.props.highlightedW, pointClasses);
+    var optimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.state.pointClasses);
 
     return (
-      <Draggable3DScene dim={500} pointClasses={pointClasses}
+      <Draggable3DScene dim={500} pointClasses={this.state.pointClasses}
           projectedError={LogisticRegression.objective} highlightW={this.props.highlightW}>
 
         <OptimiserLine vertices={optimiserLine} />
