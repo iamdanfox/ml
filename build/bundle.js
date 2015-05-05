@@ -589,6 +589,249 @@ webpackJsonp([0],{
 
 /***/ },
 
+/***/ 99:
+/*!************************************!*\
+  !*** ./scripts/WebWorkerGraph.jsx ***!
+  \************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	                                 
+	                                           
+	                                                        
+	              
+	              
+	                             
+	                      
+	                     
+	                          
+	 
+	              
+	                     
+	                
+	 
+	
+	var React = __webpack_require__(/*! react/addons */ 1);
+	var WebWorkerGraphSlug = __webpack_require__(/*! ./WebWorkerGraphSlug.jsx */ 171);
+	var WorkerBridge = __webpack_require__(/*! ./WorkerBridge.jsx */ 172);
+	
+	
+	
+	
+	var WebWorkerGraph = React.createClass({displayName: "WebWorkerGraph",
+	  propTypes: {
+	    dim: React.PropTypes.number.isRequired,
+	    pointClasses: React.PropTypes.array.isRequired,
+	    rResolution: React.PropTypes.number.isRequired, // 8
+	    scene: React.PropTypes.any.isRequired,
+	    thetaResolution: React.PropTypes.number.isRequired, // 24
+	  },
+	
+	  getInitialState: function()        {
+	    return {
+	      graph: null,
+	      uuid: null,
+	    };
+	  },
+	
+	  componentWillReceiveProps: function(nextProps       )       {
+	    if (this.shouldComponentUpdate(nextProps)) {
+	      this.unsubscribeFromWebWorker(); // ignore outstanding responses
+	      this.synchronouslyComputeInitialGraph(nextProps);
+	
+	      var webWorkerChannel = this.subscribeToWebWorker();
+	      this.asyncRequestGraphs(webWorkerChannel, nextProps);
+	    }
+	  },
+	
+	  shouldComponentUpdate: function(nextProps       )       {
+	    return (nextProps.pointClasses != this.props.pointClasses);
+	  },
+	
+	  synchronouslyComputeInitialGraph: function(props       ) {
+	    if (this.state.graph) {
+	      this.props.scene.remove(this.state.graph);
+	    }
+	    var $__0=     props,thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,dim=$__0.dim,pointClasses=$__0.pointClasses;
+	    var result = WebWorkerGraphSlug.respond(thetaResolution, rResolution, dim, pointClasses)
+	    var graph = WebWorkerGraphSlug.reconstruct(result);
+	    this.setState({graph: graph});
+	    props.scene.add(graph);
+	  },
+	
+	  asyncRequestGraphs: function(webWorkerChannel, props       ) {
+	    webWorkerChannel(36, 12, props.dim, props.pointClasses);
+	    webWorkerChannel(72, 24, props.dim, props.pointClasses);
+	    webWorkerChannel(120, 40, props.dim, props.pointClasses);
+	  },
+	
+	  subscribeToWebWorker: function() {
+	    var uuid = this._reactInternalInstance._rootNodeID + Math.random().toString();
+	    var webWorkerChannel = WorkerBridge.subscribe(uuid, this.receiveWebWorkerResponse);
+	    this.setState({uuid:uuid});
+	    return webWorkerChannel;
+	  },
+	
+	  receiveWebWorkerResponse: function(result        )       {
+	    var newGraph = WebWorkerGraphSlug.reconstruct(result);
+	    this.props.scene.remove(this.state.graph);
+	    this.props.scene.add(newGraph);
+	    this.setState({graph: newGraph});
+	  },
+	
+	  unsubscribeFromWebWorker: function() {
+	    if (typeof this.state.uuid !== "undefined" && this.state.uuid !== null){
+	      WorkerBridge.unsubscribe(this.state.uuid);
+	      this.setState({uuid: null});
+	    }
+	  },
+	
+	  componentWillMount: function() {
+	    this.synchronouslyComputeInitialGraph(this.props);
+	    var webWorkerChannel = this.subscribeToWebWorker();
+	    this.asyncRequestGraphs(webWorkerChannel, this.props);
+	  },
+	
+	  componentWillUnmount: function() {
+	    this.unsubscribeFromWebWorker()
+	    this.props.scene.remove(this.state.graph);
+	  },
+	
+	  render: function()                {
+	    return null;
+	  }
+	});
+	
+	module.exports = WebWorkerGraph;
+
+
+/***/ },
+
+/***/ 100:
+/*!****************************************!*\
+  !*** ./scripts/LogisticRegression.jsx ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	                                 
+	                                             
+	                                           
+	
+	"use strict";
+	
+	var $__0=      __webpack_require__(/*! ./VectorUtils.jsx */ 170),pointClassesTransformZeroOne=$__0.pointClassesTransformZeroOne,dotProduct=$__0.dotProduct,scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
+	
+	function sigmoid(wx)         {
+	  return 1 / (1 + Math.exp(-wx));
+	}
+	
+	function logSigmoid(wx)         {
+	  return -Math.log(1 + Math.exp(-wx));
+	}
+	
+	function logOneMinusSigmoid(wx)         {
+	  return -Math.log(Math.exp(wx) + 1); // "equivalent" formulations of this don't give same results!
+	}
+	
+	
+	
+	var ANTI_OVERFLOW_FUDGE = 1;
+	
+	// the objective function is used to generate the surface
+	function objective(w    , pointClasses              )         {
+	  var smallerW = scale(ANTI_OVERFLOW_FUDGE)(w);
+	  var points = pointClassesTransformZeroOne(pointClasses);
+	
+	  // we're actually trying to minimise this.
+	  var sum = -points
+	    .map(function sumElement(point     )         { // crucially, t is either 0 or 1.
+	      var wx = dotProduct(smallerW, point);
+	      return point.t * logSigmoid(wx) + (1 - point.t) * logOneMinusSigmoid(wx);
+	    })
+	    .reduce(function(a, b) {return a + b;}, 0);
+	
+	
+	  // flip representation because Surface.jsx shows maximisation
+	  return 3 - sum / 20;
+	}
+	
+	
+	
+	var NU = 0.03;
+	var ACCEPTING_GRAD = 1; // we reach this in ~ 300 loops, but it takes more like 6000 to reach 0.1!
+	var MAX_STOPS = 250;
+	
+	function optimise(startW    , pointClasses              )            {
+	  var points = pointClassesTransformZeroOne(pointClasses);
+	  var len = points.length;
+	
+	  function gradient(w    )     {
+	    var smallerW = scale(ANTI_OVERFLOW_FUDGE)(w);
+	    var grad = {x: 0, y: 0};
+	
+	    for (var i = 0; i < len; i = i + 1) {
+	      var point = points[i];
+	      var scaleFactor = sigmoid(smallerW.x * point.x + smallerW.y * point.y) - point.t;
+	      grad.x = grad.x + scaleFactor * point.x;
+	      grad.y = grad.y + scaleFactor * point.y; // inlined scale factor and dot products here to reduce GC
+	    }
+	    return grad;
+	  }
+	
+	  var w = startW;
+	  var grad;
+	  var stops = [w];
+	  while (grad = gradient(w, pointClasses), modulus(grad) > ACCEPTING_GRAD && stops.length < MAX_STOPS) {
+	    w = add(w)(scale(-1 * NU)(grad));
+	    stops.push(w);
+	  }
+	  return stops;
+	}
+	
+	
+	
+	function fastOptimise(startW    , pointClasses              )         {
+	  var points = pointClassesTransformZeroOne(pointClasses);
+	
+	  function gradient(w    )     {
+	    var smallerW = {x: ANTI_OVERFLOW_FUDGE * w.x, y: ANTI_OVERFLOW_FUDGE * w.y};
+	    var grad = {x: 0, y: 0};
+	
+	    for (var i = 0; i < points.length; i = i + 1) {
+	      var point = points[i];
+	      var scaleFactor = sigmoid(smallerW.x * point.x + smallerW.y * point.y) - point.t;
+	      grad.x = grad.x + scaleFactor * point.x;
+	      grad.y = grad.y + scaleFactor * point.y; // inlined scale factor and dot products here to reduce GC
+	    }
+	    return grad;
+	  }
+	
+	  var w = {x: startW.x, y: startW.y};
+	  var grad;
+	  var stops = 1;
+	  while (grad = gradient(w, pointClasses), modulus(grad) > ACCEPTING_GRAD && stops < MAX_STOPS) {
+	    w.x = w.x - NU * grad.x;
+	    w.y = w.y - NU * grad.y;
+	    stops = stops + 1;
+	  }
+	
+	  return stops;
+	}
+	
+	
+	
+	module.exports = {
+	  objective: objective,
+	  optimise: optimise,
+	  fastOptimise: fastOptimise
+	};
+
+
+/***/ },
+
 /***/ 104:
 /*!***********************************!*\
   !*** ./scripts/MaximumMargin.jsx ***!
@@ -761,6 +1004,143 @@ webpackJsonp([0],{
 	      return 1;
 	    }
 	  },
+	};
+
+
+/***/ },
+
+/***/ 171:
+/*!****************************************!*\
+  !*** ./scripts/WebWorkerGraphSlug.jsx ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	                                 
+	                                           
+	                                                        
+	
+	var $__0=   __webpack_require__(/*! ./LogisticRegression.jsx */ 100),fastOptimise=$__0.fastOptimise,objective=$__0.objective;
+	var THREE = __webpack_require__(/*! three */ 2);
+	
+	
+	var MATERIAL = new THREE.MeshBasicMaterial({
+	  side: THREE.DoubleSide,
+	  vertexColors: THREE.FaceColors,
+	  opacity: 0.8,
+	  transparent: true,
+	});
+	
+	function build(thetaResolution, rResolution, dim, pointClasses)                           {
+	  var polarMeshFunction = function(i        , j        )                {
+	    var theta = i * 2 * Math.PI;
+	    var r = (Math.pow(1.8, j * j) - 1) / 400; // this ensures there are lots of samples near the origin and gets close to 0!
+	    var x = r * Math.cos(theta) * dim;
+	    var y = r * Math.sin(theta) * dim;
+	    var z = objective({x:x, y:y}, pointClasses);
+	    return new THREE.Vector3(x, y, z);
+	  };
+	
+	  return new THREE.ParametricGeometry(polarMeshFunction, thetaResolution, rResolution, true);
+	}
+	
+	function colour(graphGeometry, pointClasses)       {
+	  graphGeometry.computeBoundingBox();
+	  var zMin = graphGeometry.boundingBox.min.z;
+	  var zRange = graphGeometry.boundingBox.max.z - zMin;
+	
+	  var colourFunction = function(vertex1, vertex2, vertex3, mutableFaceColor)       {
+	    var totalZ = vertex1.z + vertex2.z + vertex3.z;
+	    var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+	    var stops = fastOptimise(vertex1, pointClasses) / 250; // should match MAX_STOPS
+	    mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
+	  };
+	
+	  for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
+	    var face = graphGeometry.faces[i];
+	    colourFunction(
+	      graphGeometry.vertices[face.a],
+	      graphGeometry.vertices[face.b],
+	      graphGeometry.vertices[face.c],
+	      face.color);
+	  }
+	
+	  graphGeometry.colorsNeedUpdate = true;
+	}
+	
+	module.exports = {
+	  respond: function(thetaResolution        , rResolution        , dim        , pointClasses              )         {
+	    var graphGeometry = build(thetaResolution, rResolution, dim, pointClasses);
+	    colour(graphGeometry, pointClasses);
+	    var $__0=   graphGeometry,faces=$__0.faces,vertices=$__0.vertices;
+	    return {faces:faces, vertices:vertices}; // clonable to send back!
+	  },
+	
+	  reconstruct: function(result        )             {
+	    var $__0=   result,faces=$__0.faces,vertices=$__0.vertices;
+	    var geometry = new THREE.Geometry();
+	    geometry.vertices = vertices;
+	    geometry.verticesNeedUpdate = true;
+	    geometry.faces = faces;
+	    geometry.facesNeedUpdate = true;
+	    return new THREE.Mesh(geometry, MATERIAL.clone());
+	  }
+	};
+	
+
+
+/***/ },
+
+/***/ 172:
+/*!**********************************!*\
+  !*** ./scripts/WorkerBridge.jsx ***!
+  \**********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	                           
+	                                 
+	                                           
+	
+	var worker = new Worker("./build/worker.bundle.js");
+	var subscribers = {};
+	
+	worker.onmessage = function(event     ) {
+	  var $__0=   event.data,reactElementId=$__0.reactElementId,result=$__0.result;
+	
+	  if (reactElementId in subscribers) {
+	    subscribers[reactElementId](result);
+	  } else {
+	    console.log("no subscriber for: ", reactElementId, result, event);
+	  }
+	};
+	
+	
+	module.exports = {
+	
+	  subscribe: function(
+	      reactElementId        ,
+	      callback              )                                                              {
+	    console.assert(!(reactElementId in subscribers), "No repeat subscribing: " + reactElementId);
+	    subscribers[reactElementId] = callback;
+	
+	    return function request(thetaResolution        , rResolution        , dim        , pointClasses              ) {
+	      console.assert(
+	        typeof thetaResolution === "number" &&
+	        typeof rResolution === "number" &&
+	        pointClasses instanceof Array);
+	      console.log('sending', reactElementId, pointClasses);
+	      worker.postMessage({reactElementId:reactElementId, thetaResolution:thetaResolution, rResolution:rResolution, dim:dim, pointClasses:pointClasses});
+	    };
+	  },
+	
+	  unsubscribe: function(reactElementId        )       {
+	    console.assert(reactElementId in subscribers, "Can't unsubscribe " + reactElementId);
+	    delete subscribers[reactElementId];
+	  }
+	
 	};
 
 
@@ -1159,6 +1539,9 @@ webpackJsonp([0],{
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var Perceptron = __webpack_require__(/*! ./Perceptron.jsx */ 97);
 	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 94);
+	var LogisticRegression = __webpack_require__(/*! ./LogisticRegression.jsx */ 100);
+	var WebWorkerGraph = __webpack_require__(/*! ./WebWorkerGraph.jsx */ 99);
+	
 	
 	
 	
@@ -1193,8 +1576,32 @@ webpackJsonp([0],{
 	
 	    // </Draggable3DScene>
 	    var pointClasses = this.computePointClasses();
-	    var optimiserLine = Perceptron.optimise(this.state.highlightedW, pointClasses);
+	    // var optimiserLine = Perceptron.optimise(this.state.highlightedW, pointClasses);
 	
+	    // <Draggable3DScene dim={500} pointClasses={pointClasses}
+	    //     projectedError={Perceptron.objective} highlightW={this.highlightW}>
+	
+	    //   <ParametricGraph thetaResolution={120} rResolution={20} />
+	    //   <OptimiserLine vertices={optimiserLine} />
+	    //   <CursorSphere highlightedW={this.state.highlightedW} />
+	    // </Draggable3DScene>
+	
+	
+	    var colourFunction = function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor)  {
+	      var zMin = boundingBox.min.z;
+	      var zRange = boundingBox.max.z - zMin;
+	      var totalZ = vertex1.z + vertex2.z + vertex3.z;
+	      var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+	
+	      var stops = LogisticRegression.fastOptimise(vertex1, pointClasses) / 250;
+	
+	      mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
+	    };
+	
+	    // var optimiserLine = LogisticRegression.optimise(this.state.highlightedW, pointClasses);
+	
+	          // <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction} />
+	          // <OptimiserLine vertices={optimiserLine} />
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement(AwesomeDataComponent, {dim: 500, 
@@ -1202,11 +1609,14 @@ webpackJsonp([0],{
 	
 	
 	        React.createElement(Draggable3DScene, {dim: 500, pointClasses: pointClasses, 
-	            projectedError: Perceptron.objective, highlightW: this.highlightW}, 
+	            projectedError: LogisticRegression.objective, highlightW: this.highlightW}, 
 	
-	          React.createElement(ParametricGraph, {thetaResolution: 120, rResolution: 20}), 
-	          React.createElement(OptimiserLine, {vertices: optimiserLine}), 
+	
+	          React.createElement(WebWorkerGraph, {thetaResolution: 24, rResolution: 8}), 
+	
+	
 	          React.createElement(CursorSphere, {highlightedW: this.state.highlightedW})
+	
 	        )
 	
 	

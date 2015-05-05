@@ -27,6 +27,9 @@ var ParametricGraph = require("./ParametricGraph.jsx");
 var React = require("react/addons");
 var Perceptron = require("./Perceptron.jsx");
 var OptimiserLine = require("./OptimiserLine.jsx");
+var LogisticRegression = require("./LogisticRegression.jsx");
+var WebWorkerGraph = require("./WebWorkerGraph.jsx");
+
 
 
 
@@ -61,8 +64,32 @@ var Immersive = React.createClass({
 
     // </Draggable3DScene>
     var pointClasses = this.computePointClasses();
-    var optimiserLine = Perceptron.optimise(this.state.highlightedW, pointClasses);
+    // var optimiserLine = Perceptron.optimise(this.state.highlightedW, pointClasses);
 
+    // <Draggable3DScene dim={500} pointClasses={pointClasses}
+    //     projectedError={Perceptron.objective} highlightW={this.highlightW}>
+
+    //   <ParametricGraph thetaResolution={120} rResolution={20} />
+    //   <OptimiserLine vertices={optimiserLine} />
+    //   <CursorSphere highlightedW={this.state.highlightedW} />
+    // </Draggable3DScene>
+
+
+    var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
+      var zMin = boundingBox.min.z;
+      var zRange = boundingBox.max.z - zMin;
+      var totalZ = vertex1.z + vertex2.z + vertex3.z;
+      var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+
+      var stops = LogisticRegression.fastOptimise(vertex1, pointClasses) / 250;
+
+      mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
+    };
+
+    // var optimiserLine = LogisticRegression.optimise(this.state.highlightedW, pointClasses);
+
+          // <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction} />
+          // <OptimiserLine vertices={optimiserLine} />
     return (
       <div>
         <AwesomeDataComponent dim={500}
@@ -70,11 +97,14 @@ var Immersive = React.createClass({
 
 
         <Draggable3DScene dim={500} pointClasses={pointClasses}
-            projectedError={Perceptron.objective} highlightW={this.highlightW}>
+            projectedError={LogisticRegression.objective} highlightW={this.highlightW}>
 
-          <ParametricGraph thetaResolution={120} rResolution={20} />
-          <OptimiserLine vertices={optimiserLine} />
+
+          <WebWorkerGraph thetaResolution={24} rResolution={8} />
+
+
           <CursorSphere highlightedW={this.state.highlightedW} />
+
         </Draggable3DScene>
 
 

@@ -18,7 +18,7 @@ var MATERIAL = new THREE.MeshBasicMaterial({
 function build(thetaResolution, rResolution, dim, pointClasses): THREE.ParametricGeometry {
   var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
     var theta = i * 2 * Math.PI;
-    var r = Math.pow(1.8, j * j) - 1; // this ensures there are lots of samples near the origin and gets close to 0!
+    var r = (Math.pow(1.8, j * j) - 1) / 400; // this ensures there are lots of samples near the origin and gets close to 0!
     var x = r * Math.cos(theta) * dim;
     var y = r * Math.sin(theta) * dim;
     var z = objective({x, y}, pointClasses);

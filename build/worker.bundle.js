@@ -86,7 +86,7 @@
 	function build(thetaResolution, rResolution, dim, pointClasses)                           {
 	  var polarMeshFunction = function(i        , j        )                {
 	    var theta = i * 2 * Math.PI;
-	    var r = Math.pow(1.8, j * j) - 1; // this ensures there are lots of samples near the origin and gets close to 0!
+	    var r = (Math.pow(1.8, j * j) - 1) / 400; // this ensures there are lots of samples near the origin and gets close to 0!
 	    var x = r * Math.cos(theta) * dim;
 	    var y = r * Math.sin(theta) * dim;
 	    var z = objective({x:x, y:y}, pointClasses);
@@ -171,7 +171,7 @@
 	
 	
 	
-	var ANTI_OVERFLOW_FUDGE = 1 / 200;
+	var ANTI_OVERFLOW_FUDGE = 1;
 	
 	// the objective function is used to generate the surface
 	function objective(w    , pointClasses              )         {
@@ -186,8 +186,9 @@
 	    })
 	    .reduce(function(a, b) {return a + b;}, 0);
 	
+	
 	  // flip representation because Surface.jsx shows maximisation
-	  return 100 - Math.log(1 + sum) * 10;
+	  return 3 - sum / 20;
 	}
 	
 	
