@@ -24,7 +24,7 @@ var CursorSphere = React.createClass({
 
   getInitialState: function() {
     return {
-      sphere: new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() )
+      sphere: new THREE.Mesh( new THREE.SphereGeometry(3 / 400, 32, 32) , new THREE.MeshLambertMaterial() )
     };
   },
 

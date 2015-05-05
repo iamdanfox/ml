@@ -51,7 +51,7 @@ webpackJsonp([0],{
 	
 	  getInitialState: function() {
 	    return {
-	      sphere: new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() )
+	      sphere: new THREE.Mesh( new THREE.SphereGeometry(3 / 400, 32, 32) , new THREE.MeshLambertMaterial() )
 	    };
 	  },
 	
@@ -1017,7 +1017,6 @@ webpackJsonp([0],{
 	  },
 	
 	  render: function()                {
-	          // <CursorSphere highlightedW={this.state.highlightedW} />
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement(AwesomeDataComponent, {dim: 600, 
@@ -1027,7 +1026,8 @@ webpackJsonp([0],{
 	        React.createElement(Draggable3DScene, {dim: 600, pointClasses: this.computePointClasses(), 
 	            projectedError: MaximumMargin.objective, highlightW: this.highlightW}, 
 	
-	          React.createElement(ParametricGraph, {thetaResolution: 120, rResolution: 40})
+	          React.createElement(ParametricGraph, {thetaResolution: 120, rResolution: 40}), 
+	          React.createElement(CursorSphere, {highlightedW: this.state.highlightedW})
 	
 	        )
 	

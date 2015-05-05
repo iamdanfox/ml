@@ -49,7 +49,6 @@ var Immersive = React.createClass({
   },
 
   render: function(): ?ReactElement {
-          // <CursorSphere highlightedW={this.state.highlightedW} />
     return (
       <div>
         <AwesomeDataComponent dim={600}
@@ -60,6 +59,7 @@ var Immersive = React.createClass({
             projectedError={MaximumMargin.objective} highlightW={this.highlightW}>
 
           <ParametricGraph thetaResolution={120} rResolution={40} />
+          <CursorSphere highlightedW={this.state.highlightedW} />
 
         </Draggable3DScene>
 
