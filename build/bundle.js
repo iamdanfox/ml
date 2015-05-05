@@ -19,6 +19,459 @@ webpackJsonp([0],{
 
 /***/ },
 
+/***/ 89:
+/*!**********************************!*\
+  !*** ./scripts/CursorSphere.jsx ***!
+  \**********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	var React = __webpack_require__(/*! react/addons */ 1);
+	var THREE = __webpack_require__(/*! three */ 2);
+	
+	                                 
+	                                           
+	              
+	                    
+	                             
+	                                                                
+	                     
+	 
+	
+	
+	var CursorSphere = React.createClass({displayName: "CursorSphere",
+	  propTypes: {
+	    highlightedW: React.PropTypes.object.isRequired,
+	    pointClasses: React.PropTypes.array.isRequired,
+	    projectedError: React.PropTypes.func.isRequired,
+	    scene: React.PropTypes.any.isRequired
+	  },
+	
+	  getInitialState: function() {
+	    return {
+	      sphere: new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() )
+	    };
+	  },
+	
+	  componentWillMount: function() {
+	    this.props.scene.add(this.state.sphere);
+	  },
+	
+	  componentWillUnmount: function() {
+	    this.props.scene.remove(this.state.sphere);
+	  },
+	
+	  shouldComponentUpdate: function(nextProps       )       {
+	    return (nextProps.highlightedW !== this.props.highlightedW);
+	  },
+	
+	  componentWillReceiveProps: function(nextProps       ) {
+	    if (this.shouldComponentUpdate(nextProps)) {
+	      var highlightedW = nextProps.highlightedW;
+	      if (typeof highlightedW !== "undefined" && highlightedW !== null) {
+	        var $__0=   highlightedW,x=$__0.x,y=$__0.y;
+	        var z = nextProps.projectedError(highlightedW, nextProps.pointClasses);
+	        this.state.sphere.position.set(x, y, z);
+	      }
+	    }
+	  },
+	
+	  render: function()                {
+	    return null;
+	  }
+	});
+	
+	module.exports = CursorSphere;
+
+
+/***/ },
+
+/***/ 92:
+/*!**************************************!*\
+  !*** ./scripts/Draggable3DScene.jsx ***!
+  \**************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	                           
+	                                 
+	"use strict";
+	
+	var React = __webpack_require__(/*! react/addons */ 1);
+	var THREE = __webpack_require__(/*! three */ 2);
+	
+	              
+	                
+	                                  
+	                                 
+	                            
+	                                 
+	                                
+	                     
+	                      
+	 
+	                                           
+	              
+	              
+	                          
+	                             
+	                                                                
+	 
+	
+	
+	
+	var Draggable3DScene = React.createClass({displayName: "Draggable3DScene",
+	  propTypes: {
+	    dim: React.PropTypes.number.isRequired,
+	    highlightW: React.PropTypes.func.isRequired,
+	    pointClasses: React.PropTypes.array.isRequired,
+	    projectedError: React.PropTypes.func.isRequired
+	  },
+	
+	  getInitialState: function()        {
+	    var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.1, 10 ); // Field of view, aspect ratio, near clip, far clip
+	    initialCamera.up = new THREE.Vector3( 0, 0, 1 );
+	    initialCamera.position.z = 0.75;
+	
+	
+	    var initialRenderer = new THREE.WebGLRenderer({antialias: true});
+	    initialRenderer.setClearColor( 0x111111, 1 );
+	
+	    return {
+	      angle: 0,
+	      camera: initialCamera,
+	      mouseDownCamera: null,
+	      mouseDownClientX: null,
+	      mouseDownPoint: null,
+	      renderer: initialRenderer,
+	      scene: new THREE.Scene(),
+	      startAngle: null,
+	    };
+	  },
+	
+	  componentWillMount: function() {
+	    this.state.renderer.setSize( this.props.dim, this.props.dim );
+	    this.updateCamera(this.state);
+	  },
+	
+	  componentDidMount: function() {
+	    this.refs.container.getDOMNode().appendChild(this.state.renderer.domElement);
+	    this.state.renderer.render(this.state.scene, this.state.camera);
+	  },
+	
+	  componentWillUpdate: function(nextProps       , nextState        )       {
+	    if (typeof nextState !== "undefined" && nextState !== null) {
+	      this.updateCamera(nextState);
+	    }
+	  },
+	
+	  updateCamera: function(state       )       {
+	    this.state.camera.position.x = Math.cos(state.angle) * 0.75;
+	    this.state.camera.position.y = Math.sin(state.angle) * 0.75;
+	    this.state.camera.lookAt(new THREE.Vector3(0, 0, 0));
+	  },
+	
+	  mouseDown: function(e                      )       {
+	    var intersections = this.raycast(this.state.camera, e).intersectObjects(this.state.scene.children);
+	    if (intersections.length > 0){ // try to drag
+	      this.setState({
+	        mouseDownCamera: this.state.camera.clone(),
+	        mouseDownPoint: intersections[0].point
+	      });
+	    }
+	    this.setState({
+	      mouseDownClientX: e.clientX,
+	      startAngle: this.state.angle
+	    });
+	  },
+	
+	  mouseUp: function()       {
+	    this.setState({
+	      mouseDownClientX: null,
+	      startAngle: null,
+	      mouseDownCamera: null,
+	      mouseDownPoint: null
+	    });
+	  },
+	
+	  mouseMove: function(e                      )       {
+	    if (typeof this.state.mouseDownClientX !== "undefined" && this.state.mouseDownClientX !== null &&
+	        typeof this.state.startAngle !== "undefined" && this.state.startAngle !== null) {
+	      if (typeof this.state.mouseDownPoint !== "undefined" && this.state.mouseDownPoint !== null &&
+	          typeof this.state.mouseDownCamera !== "undefined" && this.state.mouseDownCamera !== null) {
+	        this.handleSceneDrag(e, this.state.startAngle, this.state.mouseDownPoint, this.state.mouseDownCamera);
+	      } else {
+	        this.handleSpaceDrag(e, this.state.startAngle, this.state.mouseDownClientX);
+	      }
+	    } else {
+	      this.handleHover(e);
+	    }
+	  },
+	
+	  handleSceneDrag: function(e                      ,
+	      startAngle        ,
+	      mouseDownPoint               ,
+	      mouseDownCamera              )       {
+	    var plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), -mouseDownPoint.z);
+	    var raycaster = this.raycast(mouseDownCamera, e);
+	    var cursorPoint = raycaster.ray.intersectPlane(plane);
+	    if (typeof cursorPoint !== "undefined" && cursorPoint !== null) {
+	      var angle = function(point    )         {
+	        return Math.atan(point.y / point.x);
+	      };
+	      var fudge = (cursorPoint.x > 0 && mouseDownPoint.x < 0) ||
+	        (cursorPoint.x < 0 && mouseDownPoint.x > 0) ? Math.PI : 0;
+	      var deltaAngle = angle(cursorPoint) - fudge - angle(mouseDownPoint);
+	      this.setState({
+	        angle: startAngle - deltaAngle
+	      });
+	    }
+	  },
+	
+	  handleSpaceDrag: function(e                      , startAngle        , mouseDownClientX        )       {
+	    var deltaX = e.clientX - mouseDownClientX;
+	    var deltaAngle = (deltaX / this.props.dim) * 2 * Math.PI;
+	    this.setState({
+	      angle: startAngle - deltaAngle
+	    });
+	  },
+	
+	  handleHover: function(e                      )       {
+	    var intersections = this.raycast(this.state.camera, e).intersectObjects(this.state.scene.children);
+	    if (intersections.length > 0) {
+	      this.props.highlightW(intersections[0].point);
+	    }
+	  },
+	
+	  raycast: function(camera              , e                      )                  {
+	    var $__0=     this.refs.container.getDOMNode().getBoundingClientRect(),left=$__0.left,top=$__0.top;
+	    var x = 2 * (e.clientX - left) / this.props.dim - 1;
+	    var y = -2 * (e.clientY - top) / this.props.dim + 1;
+	    var raycaster = new THREE.Raycaster();
+	    raycaster.set( camera.position, camera );
+	    raycaster.ray.direction.set(x, y, 0.5).unproject(camera).sub(camera.position).normalize();
+	    return raycaster;
+	  },
+	
+	  render: function()                {
+	    var mergeInProps = {
+	      dim: this.props.dim,
+	      pointClasses: this.props.pointClasses,
+	      projectedError: this.props.projectedError,
+	      scene: this.state.scene
+	    };
+	    var children = React.Children.map(this.props.children, function(childElement) {
+	      if (React.isValidElement(childElement)) {
+	        return React.cloneElement(childElement, mergeInProps);
+	      } else {
+	        return null;
+	      }
+	    });
+	
+	    this.state.renderer.render(this.state.scene, this.state.camera);
+	
+	    return (
+	      React.createElement("div", {ref: "container", style: {display: "inline-block"}, 
+	          onMouseDown: this.mouseDown, 
+	          onMouseUp: this.mouseUp, 
+	          onMouseMove: this.mouseMove}, 
+	        children
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = Draggable3DScene;
+
+
+/***/ },
+
+/***/ 95:
+/*!*************************************!*\
+  !*** ./scripts/ParametricGraph.jsx ***!
+  \*************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	var React = __webpack_require__(/*! react/addons */ 1);
+	var THREE = __webpack_require__(/*! three */ 2);
+	
+	                                 
+	                                           
+	              
+	                                    
+	                                                            
+	                                           
+	              
+	                             
+	                                                                
+	                      
+	                     
+	                          
+	 
+	              
+	                    
+	 
+	
+	
+	
+	var MATERIAL = new THREE.MeshBasicMaterial({
+	  side: THREE.DoubleSide,
+	  vertexColors: THREE.FaceColors,
+	  opacity: 0.8,
+	  transparent: true,
+	});
+	
+	
+	var ParametricGraph = React.createClass({displayName: "ParametricGraph",
+	  propTypes: {
+	    colourFunction: React.PropTypes.func,
+	    dim: React.PropTypes.number.isRequired,
+	    pointClasses: React.PropTypes.array.isRequired,
+	    projectedError: React.PropTypes.func.isRequired,
+	    rResolution: React.PropTypes.number,
+	    scene: React.PropTypes.any.isRequired,
+	    thetaResolution: React.PropTypes.number,
+	  },
+	
+	  // 120 * 40 looks great... 4800 computations
+	  // 96 * 32
+	  // 72 * 24
+	  // 36 * 12
+	  // 24 * 8 is pretty much a minimum.
+	
+	  getDefaultProps: function() {
+	    return {
+	      thetaResolution: 96,
+	      rResolution: 32,
+	      colourFunction: function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor)       {
+	        var zMin = boundingBox.min.z;
+	        var zRange = boundingBox.max.z - zMin;
+	        var totalZ = vertex1.z + vertex2.z + vertex3.z;
+	        var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+	        mutableFaceColor.setHSL(0.54, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
+	      }
+	    };
+	  },
+	
+	  getInitialState: function()        {
+	    return {
+	      graph: new THREE.Mesh(this.colourGeometry(this.buildInitialGeometry(this.props)), MATERIAL.clone())
+	    };
+	  },
+	
+	  componentWillMount: function() {
+	    this.props.scene.add(this.state.graph);
+	  },
+	
+	  componentWillUnmount: function() {
+	    this.props.scene.remove(this.state.graph);
+	  },
+	
+	  shouldComponentUpdate: function(nextProps       )       {
+	    return (nextProps.pointClasses !== this.props.pointClasses ||
+	      nextProps.projectedError !== this.props.projectedError);
+	  },
+	
+	  componentWillReceiveProps: function(nextProps       ) {
+	    if (this.shouldComponentUpdate(nextProps)) {
+	      var geometry = this.state.graph.geometry;
+	
+	      for (var i = 0; i < geometry.vertices.length; i = i + 1) {
+	        var vertex = geometry.vertices[i];
+	        vertex.setZ(nextProps.projectedError(vertex, nextProps.pointClasses));
+	      }
+	
+	      this.colourGeometry(geometry);
+	      this.state.graph.geometry.verticesNeedUpdate = true;
+	    }
+	  },
+	
+	  buildInitialGeometry: function(props       )                           {
+	    var polarMeshFunction = function(i        , j        )                {
+	      var theta = i * 2 * Math.PI;
+	      var r = (Math.pow(1.8, j * j) - 1) / 400; // this ensures there are lots of samples near the origin and gets close to 0!
+	      var x = r * Math.cos(theta) * props.dim;
+	      var y = r * Math.sin(theta) * props.dim;
+	      var z = props.projectedError({x:x, y:y}, props.pointClasses);
+	      return new THREE.Vector3(x, y, z);
+	    };
+	
+	    return new THREE.ParametricGeometry(polarMeshFunction,
+	      this.props.thetaResolution, this.props.rResolution, true);
+	  },
+	
+	  colourGeometry: function(graphGeometry                          )                           {
+	    graphGeometry.computeBoundingBox();
+	
+	    for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
+	      var face = graphGeometry.faces[i];
+	      this.props.colourFunction(graphGeometry.boundingBox,
+	        graphGeometry.vertices[face.a],
+	        graphGeometry.vertices[face.b],
+	        graphGeometry.vertices[face.c],
+	        face.color);
+	    }
+	
+	    graphGeometry.colorsNeedUpdate = true;
+	    return graphGeometry;
+	  },
+	
+	  render: function()                {
+	    return null;
+	  }
+	});
+	
+	module.exports = ParametricGraph;
+
+
+/***/ },
+
+/***/ 104:
+/*!***********************************!*\
+  !*** ./scripts/MaximumMargin.jsx ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	                                 
+	                                             
+	                                          
+	
+	"use strict";
+	
+	var $__0=    __webpack_require__(/*! ./VectorUtils.jsx */ 170),pointClassesTransform=$__0.pointClassesTransform,dotProduct=$__0.dotProduct,modulus=$__0.modulus;
+	
+	
+	// the objective function is used to generate the surface
+	function objective(w    , pointClasses              )         {
+	  // compute the `margin` for all points in pointClasses
+	  var points = pointClassesTransform(pointClasses);
+	  var margins = points.map( function(point)  {return -1 * point.t * dotProduct(w, point);} ); // -1 fudge
+	  // find the minimum of these
+	  var minimumMargin = Math.min.apply(null, margins);
+	  // normalise by w.
+	  var normalisationFactor = 1 / modulus(w);
+	  return normalisationFactor * minimumMargin;
+	}
+	
+	
+	// optimisation algorithm is used to overlay the line
+	// function optimise(startWeight: P2, pointClasses: PointClasses): Array<P2> {
+	//   return [];
+	// }
+	
+	module.exports = {
+	  objective: objective,
+	};
+
+
+/***/ },
+
 /***/ 170:
 /*!*********************************!*\
   !*** ./scripts/VectorUtils.jsx ***!
@@ -517,6 +970,7 @@ webpackJsonp([0],{
 	"use strict";
 	
 	                                 
+	                                           
 	                 
 	                
 	                    
@@ -524,30 +978,60 @@ webpackJsonp([0],{
 	               
 	                                       
 	    
-	                    
+	                     
 	  
 	              
-	                              
+	                               
+	                   
 	 
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var AwesomeDataComponent = __webpack_require__(/*! ./AwesomeDataComponent.jsx */ 225);
 	
+	var CursorSphere = __webpack_require__(/*! ./CursorSphere.jsx */ 89);
+	var Draggable3DScene = __webpack_require__(/*! ./Draggable3DScene.jsx */ 92);
+	var MaximumMargin = __webpack_require__(/*! ./MaximumMargin.jsx */ 104);
+	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 95);
+	var React = __webpack_require__(/*! react/addons */ 1);
+	
 	
 	var Immersive = React.createClass({displayName: "Immersive",
 	  getInitialState: function()        {
-	    return {pointGroups: __webpack_require__(/*! ../data/awesomePointGroups.js */ 228)};
+	    return {
+	      pointGroups: __webpack_require__(/*! ../data/awesomePointGroups.js */ 228),
+	      highlightedW: {x: 0.2, y: 0.2},
+	    };
 	  },
 	
 	  updatePointGroups: function(pointGroups                 )       {
 	    this.setState({pointGroups:pointGroups});
 	  },
 	
+	  computePointClasses: function()               {
+	    return [0, 1].map(function(l)  {return this.state.pointGroups
+	          .reduce(function(acc, pg)  {return pg.label === l ? acc.concat(pg.points) : acc;}, []);}.bind(this));
+	  },
+	
+	  highlightW: function(highlightedW    ) {
+	    this.setState({highlightedW:highlightedW});
+	  },
+	
 	  render: function()                {
+	          // <CursorSphere highlightedW={this.state.highlightedW} />
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement(AwesomeDataComponent, {dim: 600, 
-	          updatePointGroups: this.updatePointGroups, pointGroups: this.state.pointGroups})
+	          updatePointGroups: this.updatePointGroups, pointGroups: this.state.pointGroups}), 
+	
+	
+	        React.createElement(Draggable3DScene, {dim: 600, pointClasses: this.computePointClasses(), 
+	            projectedError: MaximumMargin.objective, highlightW: this.highlightW}, 
+	
+	          React.createElement(ParametricGraph, {thetaResolution: 120, rResolution: 40})
+	
+	        )
+	
+	
 	      )
 	    );
 	  }
