@@ -4,24 +4,23 @@ type PointClasses = [Array<P2>, Array<P2>];
 
 "use strict";
 
-var {modulus} = require("./VectorUtils.jsx");
+var {modulus, classTransform} = require("./VectorUtils.jsx");
 
 
 // the objective function is used to generate the surface
 function objective(w: P2, pointClasses: PointClasses): number {
-  // compute the `margin` for all points in pointClasses
-  var [class0, class1] = pointClasses;
+  var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]}});
 
   var minimumMargin = Infinity;
 
-  for (var i = 0, l = class0.length; i < l; i = i + 1) {
-    var p = class0[i];
-    minimumMargin = Math.min(minimumMargin, w.x * p.x + w.y * p.y);
-  }
+  for (var k = 0, maxk = pointGroups.length; k < maxk; k = k + 1) {
+    var {points, label} = pointGroups[k];
 
-  for (var j = 0, m = class1.length; j < m; j = j + 1) {
-    var q = class1[j];
-    minimumMargin = Math.min(minimumMargin, -1 * (w.x * q.x + w.y * q.y));
+    for (var i = 0, l = points.length; i < l; i = i + 1) {
+      var p = points[i];
+      var addOrSubtract = -1 * classTransform(label);
+      minimumMargin = Math.min(minimumMargin, addOrSubtract * (w.x * p.x + w.y * p.y));
+    }
   }
 
   // normalise by w.
