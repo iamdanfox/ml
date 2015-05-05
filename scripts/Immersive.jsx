@@ -99,22 +99,24 @@ var Immersive = React.createClass({
     // </Draggable3DScene>
 
 
-    // var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
-    //   var zMin = boundingBox.min.z;
-    //   var zRange = boundingBox.max.z - zMin;
-    //   var totalZ = vertex1.z + vertex2.z + vertex3.z;
-    //   var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+    var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
+      // if (Math.random() > 0.995) console.log(vertex1)
 
-    //   var stops = LogisticRegression.fastOptimise(vertex1, pointClasses) / 250;
+      var zMin = boundingBox.min.z;
+      var zRange = boundingBox.max.z - zMin;
+      var totalZ = vertex1.z + vertex2.z + vertex3.z;
+      var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
 
-    //   mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
-    // };
+      var stops = LogisticRegression.fastOptimise(vertex1, pointClasses) / 250;
 
-    var optimiserLine = LogisticRegression.optimise(scale(200)(this.state.highlightedW), pointClasses);
+      mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
+    };
+
+    var optimiserLine = LogisticRegression.optimise(this.state.highlightedW, pointClasses);
 
           // <WebWorkerGraph thetaResolution={24} rResolution={8} />
 
-// colourFunction={colourFunction}
+
     var highlightW = (bigW) => this.highlightW(scale(1 / 200)(bigW));
 
     return (
@@ -127,7 +129,7 @@ var Immersive = React.createClass({
 
           <OptimiserLine vertices={optimiserLine} />
           <CursorSphere highlightedW={this.state.highlightedW} />
-          <ParametricGraph thetaResolution={24} rResolution={8} />
+          <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction} />
 
         </Draggable3DScene>
 
