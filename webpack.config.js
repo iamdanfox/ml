@@ -4,7 +4,7 @@ module.exports = [
   {
     entry: {
       app: './scripts/Entry.jsx',
-      vendor: ['react/addons', 'three', 'katex'],
+      vendor: ['react/addons', 'three'],
     },
     output: {
       filename: 'bundle.js',

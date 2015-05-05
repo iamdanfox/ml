@@ -9,7 +9,7 @@ var {modulus, classTransform} = require("./VectorUtils.jsx");
 
 // the objective function is used to generate the surface
 function objective(w: P2, pointClasses: PointClasses): number {
-  var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]}});
+  var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]};});
 
   var minimumMargin = Infinity;
 

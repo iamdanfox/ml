@@ -51,7 +51,7 @@ var WebWorkerGraph = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps: Props): bool {
-    return (nextProps.pointClasses != this.props.pointClasses);
+    return (nextProps.pointClasses !== this.props.pointClasses);
   },
 
   synchronouslyComputeInitialGraph: function(props: Props) {
@@ -59,7 +59,7 @@ var WebWorkerGraph = React.createClass({
       this.props.scene.remove(this.state.graph);
     }
     var {thetaResolution, rResolution, dim, pointClasses} = props;
-    var result = WebWorkerGraphSlug.respond(thetaResolution, rResolution, dim, pointClasses)
+    var result = WebWorkerGraphSlug.respond(thetaResolution, rResolution, dim, pointClasses);
     var graph = WebWorkerGraphSlug.reconstruct(result);
     this.setState({graph: graph});
     props.scene.add(graph);
@@ -99,7 +99,7 @@ var WebWorkerGraph = React.createClass({
   },
 
   componentWillUnmount: function() {
-    this.unsubscribeFromWebWorker()
+    this.unsubscribeFromWebWorker();
     this.props.scene.remove(this.state.graph);
   },
 

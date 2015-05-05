@@ -5,7 +5,7 @@ type PointClasses = [Array<P2>, Array<P2>];
 
 "use strict";
 
-var {pointClassesTransformZeroOne,  scale, add, modulus} = require("./VectorUtils.jsx");
+var {scale, add, modulus} = require("./VectorUtils.jsx");
 
 function sigmoid(wx): number {
   return 1 / (1 + Math.exp(-wx));
@@ -23,10 +23,10 @@ function sigmoid(wx): number {
 
 // the objective function is used to generate the surface
 function objective(smallW: P2, smallPointClasses: PointClasses): number {
-  var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]}});
+  var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]};});
   var sum = 0;
 
-  for (var k = 0, maxk = pointGroups.length; k < maxk; k = k + 1) {
+  for (var k = 0; k < pointGroups.length; k = k + 1) {
     var {points, label} = pointGroups[k];
     if (label === 0) {
       for (var i = 0, len = points.length; i < len; i = i + 1) {
@@ -52,12 +52,12 @@ var ACCEPTING_GRAD = 1 / 200; // we reach this in ~ 300 loops
 var MAX_STOPS = 250;
 
 function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
-  var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]}});
+  var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]};});
 
   function gradient(w: P2): P2 {
     var grad = {x: 0, y: 0};
 
-    for (var k = 0, kmax = pointGroups.length; k < kmax; k = k + 1){
+    for (var k = 0; k < pointGroups.length; k = k + 1){
       var {label, points} = pointGroups[k];
       for (var i = 0, l = points.length; i < l; i = i + 1) {
         var p = points[i];
@@ -82,7 +82,7 @@ function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
 
 
 function fastOptimise(smallStartW: P2, smallPointClasses: PointClasses): number {
-  var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]}});
+  var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]};});
 
   function gradient(w: P2): P2 {
     var grad = {x: 0, y: 0};

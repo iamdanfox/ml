@@ -4,7 +4,7 @@
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>,Array<P2>];
 
-var {add, scale, pointClassesTransform, classify, classTransform, dotProduct} = require("./VectorUtils.jsx");
+var {add, scale, classify, classTransform} = require("./VectorUtils.jsx");
 
 /*
 The Perceptron training algorithm cycles through each training
@@ -37,18 +37,12 @@ The value of nu is interesting to observe.
 module.exports = {
 
   objective: function(w: P2, pointClasses: PointClasses): number {
-    var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]}});
+    var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]};});
 
-    for (var k = 0, maxk = pointGroups.length; k < maxk; k = k + 1) {
+    for (var k = 0; k < pointGroups.length; k = k + 1) {
       var {points, label} = pointGroups[k];
-      if (label == 0) {
-        if (points.some((p) => dotProduct(p, w) <= 0)) {
-          return 0; // there was a misclassification
-        }
-      } else {
-        if (points.some((p) => dotProduct(p, w) > 0)) {
-          return 0;
-        }
+      if (points.some((p) => classify(p, w) !== label)) {
+        return 0; // there was a misclassification
       }
     }
 
@@ -56,22 +50,19 @@ module.exports = {
   },
 
   optimise: function(startWeight: P2, pointClasses: PointClasses): Array<P2> {
-    var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]}});
+    var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]};});
 
     var w = startWeight;
     var stops = [w];
-    for (var epoch = 0; epoch < EPOCHS; epoch = epoch + 1){
 
-      for (var k = 0, maxk = pointGroups.length; k < maxk; k = k + 1) {
-        var {points, label} = pointGroups[k];
-
-        for (var i = 0, maxi = points.length; i < maxi; i = i + 1) {
-          var trainingVector = points[i];
-          if (classify(w, trainingVector) !== label) {
-            // there was a classification error, so we should add or subtract the trainingVector.
-            w = add(w)(scale(-1 * PERCEPTRON_NU * classTransform(label))( trainingVector ));
-            stops.push(w);
-          }
+    for (var k = 0; k < pointGroups.length * EPOCHS; k = k + 1) {
+      var {points, label} = pointGroups[k % pointGroups.length];
+      for (var i = 0, maxi = points.length; i < maxi; i = i + 1) {
+        var trainingVector = points[i];
+        if (classify(w, trainingVector) !== label) {
+          // there was a classification error, so we should add or subtract the trainingVector.
+          w = add(w)(scale(-1 * PERCEPTRON_NU * classTransform(label))( trainingVector ));
+          stops.push(w);
         }
       }
     }
