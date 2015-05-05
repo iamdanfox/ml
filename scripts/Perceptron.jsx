@@ -37,35 +37,45 @@ The value of nu is interesting to observe.
 module.exports = {
 
   objective: function(w: P2, pointClasses: PointClasses): number {
-    var [class0, class1] = pointClasses;
+    var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]}});
 
-    if (class0.some((p) => dotProduct(p, w) <= 0)) {
-      return 0; // there was a misclassification
-    } else {
-      if (class1.some((p) => dotProduct(p, w) > 0)) {
-        return 0;
+    for (var k = 0, maxk = pointGroups.length; k < maxk; k = k + 1) {
+      var {points, label} = pointGroups[k];
+      if (label == 0) {
+        if (points.some((p) => dotProduct(p, w) <= 0)) {
+          return 0; // there was a misclassification
+        }
       } else {
-        return 0.3;
-      }
-    }
-  },
-
-  optimise: function(startWeight: P2, pointClasses: PointClasses): Array<P2> {
-    var trainingData = pointClassesTransform(pointClasses);
-
-    var resultantWeights = [startWeight];
-    for (var epoch = 0; epoch < EPOCHS; epoch = epoch + 1){
-      for (var i = 0; i < trainingData.length; i = i + 1){
-        var trainingVector = trainingData[i];
-        var lastW = resultantWeights[resultantWeights.length - 1];
-        if (classTransform(classify(lastW, trainingVector)) !== trainingVector.t) {
-          // there was a classification error, so we should add or subtract the trainingVector.
-          var nextWeight = add(lastW)(scale(-1 * PERCEPTRON_NU * trainingVector.t)( trainingVector ));
-          resultantWeights.push(nextWeight);
+        if (points.some((p) => dotProduct(p, w) > 0)) {
+          return 0;
         }
       }
     }
-    return resultantWeights;
+
+    return 0.6;
+  },
+
+  optimise: function(startWeight: P2, pointClasses: PointClasses): Array<P2> {
+    var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]}});
+
+    var w = startWeight;
+    var stops = [w];
+    for (var epoch = 0; epoch < EPOCHS; epoch = epoch + 1){
+
+      for (var k = 0, maxk = pointGroups.length; k < maxk; k = k + 1) {
+        var {points, label} = pointGroups[k];
+
+        for (var i = 0, maxi = points.length; i < maxi; i = i + 1) {
+          var trainingVector = points[i];
+          if (classify(w, trainingVector) !== label) {
+            // there was a classification error, so we should add or subtract the trainingVector.
+            w = add(w)(scale(-1 * PERCEPTRON_NU * classTransform(label))( trainingVector ));
+            stops.push(w);
+          }
+        }
+      }
+    }
+    return stops;
   },
 
 };

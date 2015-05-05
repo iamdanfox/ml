@@ -23,7 +23,6 @@ function sigmoid(wx): number {
 
 // the objective function is used to generate the surface
 function objective(smallW: P2, smallPointClasses: PointClasses): number {
-  var [class0, class1] = smallPointClasses;
   var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]}});
   var sum = 0;
 
