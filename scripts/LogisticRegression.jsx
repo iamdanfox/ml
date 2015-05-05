@@ -48,7 +48,10 @@ var NU = 0.03;
 var ACCEPTING_GRAD = 1; // we reach this in ~ 300 loops, but it takes more like 6000 to reach 0.1!
 var MAX_STOPS = 250;
 
-function optimise(startW: P2, pointClasses: PointClasses): Array<P2> {
+function optimise(startW: P2, smallPointClasses: PointClasses): Array<P2> {
+
+  var pointClasses = smallPointClasses.map((pc) => pc.map(scale(200)));
+
   var points = pointClassesTransformZeroOne(pointClasses);
   var len = points.length;
 

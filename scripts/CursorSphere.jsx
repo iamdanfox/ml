@@ -3,6 +3,7 @@
 
 var React = require("react/addons");
 var THREE = require("three");
+var {scale} = require("./VectorUtils.jsx");
 
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
@@ -24,7 +25,7 @@ var CursorSphere = React.createClass({
 
   getInitialState: function() {
     return {
-      sphere: new THREE.Mesh( new THREE.SphereGeometry(3 / 400, 32, 32) , new THREE.MeshLambertMaterial() )
+      sphere: new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() )
     };
   },
 
@@ -43,9 +44,13 @@ var CursorSphere = React.createClass({
   componentWillReceiveProps: function(nextProps: Props) {
     if (this.shouldComponentUpdate(nextProps)) {
       var highlightedW = nextProps.highlightedW;
+
+      var nextPropsBigPointClasses = nextProps.pointClasses.map((pc) => pc.map(scale(200)));
+
       if (typeof highlightedW !== "undefined" && highlightedW !== null) {
-        var {x, y} = highlightedW;
-        var z = nextProps.projectedError(highlightedW, nextProps.pointClasses);
+        var bigHighlightedW = scale(200)(highlightedW);
+        var {x, y} = bigHighlightedW;
+        var z = nextProps.projectedError(bigHighlightedW, nextPropsBigPointClasses);
         this.state.sphere.position.set(x, y, z);
       }
     }

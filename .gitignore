@@ -4,8 +4,4 @@ node_modules
 
 npm-debug.log
 
-build/
-
-build/bundle.js
-
-build/vendor.bundle.js
+build/*.js

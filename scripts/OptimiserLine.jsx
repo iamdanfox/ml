@@ -3,6 +3,7 @@
 
 var React = require("react/addons");
 var THREE = require("three");
+var {scale} = require("./VectorUtils.jsx");
 
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
@@ -46,9 +47,11 @@ var OptimiserLine = React.createClass({
         var geometry = new THREE.Geometry();
         var line = new THREE.Line(geometry, LINE_MATERIAL);
 
+        var bigPointClasses = nextProps.pointClasses.map((pc) => pc.map(scale(200)));
+
         geometry.vertices = vertices.map(
           (w) => {
-            var z = nextProps.projectedError(w, nextProps.pointClasses);
+            var z = nextProps.projectedError(w, bigPointClasses);
             return new THREE.Vector3(w.x, w.y, z + 0.01); // hack to keep the line above the surface. (better would be smart interpolation)
           }
         );

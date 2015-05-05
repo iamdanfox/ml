@@ -71,7 +71,7 @@ var Immersive = React.createClass({
 
   computePointClasses: function(): PointClasses {
     return [0, 1].map((l) => this.state.pointGroups
-          .reduce((acc, pg) => pg.label === l ? acc.concat(pg.points.map(scale(200))) : acc, []));
+          .reduce((acc, pg) => pg.label === l ? acc.concat(pg.points) : acc, []));
   },
 
   highlightW: function(highlightedW: P2) {
@@ -126,8 +126,8 @@ var Immersive = React.createClass({
             projectedError={LogisticRegression.objective} highlightW={highlightW}>
 
           <OptimiserLine vertices={optimiserLine} />
+          <CursorSphere highlightedW={this.state.highlightedW} />
           <ParametricGraph thetaResolution={24} rResolution={8} />
-          <CursorSphere highlightedW={scale(200)(this.state.highlightedW)} />
 
         </Draggable3DScene>
 

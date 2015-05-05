@@ -5,6 +5,7 @@ type P2 = {x: number; y: number};
 
 var React = require("react/addons");
 var THREE = require("three");
+var {scale} = require("./VectorUtils.jsx");
 
 type State = {
   angle: number;
