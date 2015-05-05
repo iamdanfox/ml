@@ -56,10 +56,13 @@ var PerceptronSection = React.createClass({
   },
 
   advanceStep: function() {
-    if (this.state.nextStep === perceptronSteps.length) {
-      clearTimeout(this.state.timer);
-    } else {
-      this.setState({nextStep: 1 + this.state.nextStep});
+    var {nextStep} = this.state;
+    if (typeof nextStep === "number"){
+      if (nextStep === perceptronSteps.length) {
+        clearTimeout(this.state.timer);
+      } else {
+        this.setState({nextStep: nextStep + 1});
+      }
     }
   },
 

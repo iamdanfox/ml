@@ -7,7 +7,7 @@ var THREE = require("three");
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
 type Props = {
-  highlightedW: ?P2;
+  highlightedW: P2;
   pointClasses: PointClasses;
   objective: (w: P2, pointClasses: PointClasses) => number;
   scene: THREE.Scene;
@@ -16,7 +16,7 @@ type Props = {
 
 var CursorSphere = React.createClass({
   propTypes: {
-    highlightedW: React.PropTypes.object,
+    highlightedW: React.PropTypes.object.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
     objective: React.PropTypes.func.isRequired,
     scene: React.PropTypes.any.isRequired
