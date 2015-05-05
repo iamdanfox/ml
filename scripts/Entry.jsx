@@ -2,8 +2,8 @@
 "use strict";
 
 var React = require("react/addons");
-var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
+var Immersive = require("./Immersive.jsx");
 
 window.React = React;
 
-React.render(<AwesomeDataComponent dim={600} />, document.body);
+React.render(<Immersive />, document.body);

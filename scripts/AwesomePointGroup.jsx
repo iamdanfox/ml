@@ -11,6 +11,7 @@ type State = {
 var React = require("react/addons");
 var {add, subtract, scale, rotate, modulus, dotProduct} = require("./VectorUtils.jsx");
 var {generatePoints, ELLIPSE_FIXED_RADIUS, labelToColour} = require("./AwesomePointUtilities.jsx");
+var {PureRenderMixin} = require("react/addons").addons;
 
 
 var AwesomePointGroup = React.createClass({
@@ -25,6 +26,8 @@ var AwesomePointGroup = React.createClass({
     updateParams: React.PropTypes.func.isRequired,
     dim: React.PropTypes.number.isRequired,
   },
+
+  mixins: [PureRenderMixin],
 
   getInitialState: function(): State {
     return {
