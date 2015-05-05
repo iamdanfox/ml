@@ -17,13 +17,13 @@ var ReplacePointsButton = React.createClass({
 var ReplacePointsBar = React.createClass({
   render: function(): ?ReactElement {
     return <div style={this.props.style}>
-      <ReplacePointsButton callback={this.props.callback} points={require("../data/points.js")}>
+      <ReplacePointsButton callback={this.props.callback} points={require("../../data/points.js")}>
         Default
       </ReplacePointsButton>
-      <ReplacePointsButton callback={this.props.callback} points={require("../data/closePoints.js")}>
+      <ReplacePointsButton callback={this.props.callback} points={require("../../data/closePoints.js")}>
         Close
       </ReplacePointsButton>
-      <ReplacePointsButton callback={this.props.callback} points={require("../data/overlapPoints.js")}>
+      <ReplacePointsButton callback={this.props.callback} points={require("../../data/overlapPoints.js")}>
         Overlap
       </ReplacePointsButton>
     </div>;

@@ -8,11 +8,11 @@ type State = {
 }
 
 var Hyperplane = require("./Hyperplane.jsx");
-var Perceptron = require("./Perceptron.jsx");
+var Perceptron = require("../Perceptron.jsx");
 var React = require("react/addons");
 var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
 
-var INITIAL_POINTS = require("../data/points.js");
+var INITIAL_POINTS = require("../../data/points.js");
 var INITIAL_W = {x: 80, y: 60};
 var perceptronSteps:Array<P2> = Perceptron.optimise(INITIAL_W, INITIAL_POINTS);
 

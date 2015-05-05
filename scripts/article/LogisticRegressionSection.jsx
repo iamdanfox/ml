@@ -3,15 +3,15 @@
 
 type P2 = {x: number; y: number};
 
-var CursorSphere = require("./CursorSphere.jsx");
+var CursorSphere = require("../CursorSphere.jsx");
 var Default2DVis = require("./Default2DVis.jsx");
 var DisplayWNumbers = require("./DisplayWNumbers.jsx");
-var Draggable3DScene = require("./Draggable3DScene.jsx");
+var Draggable3DScene = require("../Draggable3DScene.jsx");
 var K = require("./Katex.jsx");
-var OptimiserLine = require("./OptimiserLine.jsx");
-var WebWorkerGraph = require("./WebWorkerGraph.jsx");
+var OptimiserLine = require("../OptimiserLine.jsx");
+var WebWorkerGraph = require("../WebWorkerGraph.jsx");
 var React = require("react/addons");
-var {objective, optimise, fastOptimise} = require("./LogisticRegression.jsx");
+var {objective, optimise, fastOptimise} = require("../LogisticRegression.jsx");
 
 
 
@@ -19,7 +19,7 @@ var LogisticRegressionVis = React.createClass({
   getInitialState: function(): {highlightedW: ?P2} {
     return {
       highlightedW: null,
-      pointClasses: require("../data/closePoints.js"),
+      pointClasses: require("../../data/closePoints.js"),
     };
   },
 

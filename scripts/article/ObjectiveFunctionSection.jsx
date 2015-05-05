@@ -4,16 +4,16 @@
 type P2 = {x: number; y: number};
 
 
-var CursorSphere = require("./CursorSphere.jsx");
+var CursorSphere = require("../CursorSphere.jsx");
 var Default2DVis = require("./Default2DVis.jsx");
 var DisplayWNumbers = require("./DisplayWNumbers.jsx");
-var Draggable3DScene = require("./Draggable3DScene.jsx");
+var Draggable3DScene = require("../Draggable3DScene.jsx");
 var K = require("./Katex.jsx");
-var OptimiserLine = require("./OptimiserLine.jsx");
-var ParametricGraph = require("./ParametricGraph.jsx");
+var OptimiserLine = require("../OptimiserLine.jsx");
+var ParametricGraph = require("../ParametricGraph.jsx");
 var React = require("react/addons");
 var ReplacePointsBar = require("./ReplacePointsBar.jsx");
-var {objective, optimise} = require("./Perceptron.jsx");
+var {objective, optimise} = require("../Perceptron.jsx");
 
 
 
@@ -21,7 +21,7 @@ var PerceptronVis = React.createClass({
   getInitialState: function(): {highlightedW: ?P2} {
     return {
       highlightedW: null,
-      pointClasses: require("../data/points.js"),
+      pointClasses: require("../../data/points.js"),
     };
   },
 

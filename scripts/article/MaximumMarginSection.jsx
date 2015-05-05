@@ -3,13 +3,13 @@
 
 type P2 = {x: number; y: number};
 
-var CursorSphere = require("./CursorSphere.jsx");
+var CursorSphere = require("../CursorSphere.jsx");
 var DisplayWNumbers = require("./DisplayWNumbers.jsx");
-var Draggable3DScene = require("./Draggable3DScene.jsx");
+var Draggable3DScene = require("../Draggable3DScene.jsx");
 var Hyperplane = require("./Hyperplane.jsx");
 var K = require("./Katex.jsx");
-var MaximumMargin = require("./MaximumMargin.jsx");
-var ParametricGraph = require("./ParametricGraph.jsx");
+var MaximumMargin = require("../MaximumMargin.jsx");
+var ParametricGraph = require("../ParametricGraph.jsx");
 var React = require("react/addons");
 var ReplacePointsBar = require("./ReplacePointsBar.jsx");
 var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
@@ -20,7 +20,7 @@ var MaxMarginVis = React.createClass({
   getInitialState: function(): {highlightedW: ?P2} {
     return {
       highlightedW: null,
-      pointClasses: require("../data/closePoints.js"),
+      pointClasses: require("../../data/closePoints.js"),
     };
   },
 

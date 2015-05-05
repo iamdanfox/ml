@@ -3,7 +3,7 @@
 
 var React = require("react/addons");
 var {PureRenderMixin} = require("react/addons").addons;
-var {rot90: rot90, lineEq: lineEq, scale: scale} = require("./VectorUtils.jsx");
+var {rot90: rot90, lineEq: lineEq, scale: scale} = require("../VectorUtils.jsx");
 
 
 // my stackoverflow explanation: http: //stackoverflow.com/a/24392281/1941552
