@@ -25,6 +25,9 @@ var Draggable3DScene = require("./Draggable3DScene.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 var ParametricGraph = require("./ParametricGraph.jsx");
 var React = require("react/addons");
+var Perceptron = require("./Perceptron.jsx");
+var OptimiserLine = require("./OptimiserLine.jsx");
+
 
 
 var Immersive = React.createClass({
@@ -49,18 +52,29 @@ var Immersive = React.createClass({
   },
 
   render: function(): ?ReactElement {
+
+    // <Draggable3DScene dim={500} pointClasses={this.computePointClasses()}
+    //     projectedError={MaximumMargin.objective} highlightW={this.highlightW}>
+
+    //   <ParametricGraph thetaResolution={120} rResolution={40} />
+    //   <CursorSphere highlightedW={this.state.highlightedW} />
+
+    // </Draggable3DScene>
+    var pointClasses = this.computePointClasses();
+    var optimiserLine = Perceptron.optimise(this.state.highlightedW, pointClasses);
+
     return (
       <div>
         <AwesomeDataComponent dim={500}
           updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
 
 
-        <Draggable3DScene dim={500} pointClasses={this.computePointClasses()}
-            projectedError={MaximumMargin.objective} highlightW={this.highlightW}>
+        <Draggable3DScene dim={500} pointClasses={pointClasses}
+            projectedError={Perceptron.objective} highlightW={this.highlightW}>
 
-          <ParametricGraph thetaResolution={120} rResolution={40} />
+          <ParametricGraph thetaResolution={120} rResolution={20} />
+          <OptimiserLine vertices={optimiserLine} />
           <CursorSphere highlightedW={this.state.highlightedW} />
-
         </Draggable3DScene>
 
 

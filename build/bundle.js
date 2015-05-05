@@ -288,6 +288,83 @@ webpackJsonp([0],{
 
 /***/ },
 
+/***/ 94:
+/*!***********************************!*\
+  !*** ./scripts/OptimiserLine.jsx ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	var React = __webpack_require__(/*! react/addons */ 1);
+	var THREE = __webpack_require__(/*! three */ 2);
+	
+	                                 
+	                                           
+	              
+	                      
+	                             
+	                                                                
+	                     
+	 
+	              
+	                    
+	 
+	
+	
+	var OptimiserLine = React.createClass({displayName: "OptimiserLine",
+	  propTypes: {
+	    vertices: React.PropTypes.array.isRequired,
+	    projectedError: React.PropTypes.func.isRequired,
+	    pointClasses: React.PropTypes.array.isRequired,
+	    scene: React.PropTypes.any.isRequired
+	  },
+	
+	  getInitialState: function()        {
+	    return {line: null};
+	  },
+	
+	  shouldComponentUpdate: function(nextProps       )       {
+	    return (nextProps.vertices !== this.props.vertices ||
+	      nextProps.pointClasses !== this.props.pointClasses ||
+	      nextProps.projectedError !== this.props.projectedError);
+	  },
+	
+	  componentWillReceiveProps: function(nextProps       ) {
+	    if (this.shouldComponentUpdate(nextProps)) {
+	      var vertices = nextProps.vertices;
+	      this.props.scene.remove(this.state.line);
+	
+	      if (typeof vertices !== "undefined" && vertices !== null) {
+	
+	        var LINE_MATERIAL = new THREE.LineBasicMaterial({color: 0xffffff});
+	        var geometry = new THREE.Geometry();
+	        var line = new THREE.Line(geometry, LINE_MATERIAL);
+	
+	        geometry.vertices = vertices.map(
+	          function(w)  {
+	            var z = nextProps.projectedError(w, nextProps.pointClasses);
+	            return new THREE.Vector3(w.x, w.y, z + 0.01); // hack to keep the line above the surface. (better would be smart interpolation)
+	          }
+	        );
+	
+	        nextProps.scene.add(line);
+	        this.setState({line: line});
+	      }
+	    }
+	  },
+	
+	  render: function()                {
+	    return null;
+	  }
+	});
+	
+	module.exports = OptimiserLine;
+
+
+/***/ },
+
 /***/ 95:
 /*!*************************************!*\
   !*** ./scripts/ParametricGraph.jsx ***!
@@ -427,6 +504,87 @@ webpackJsonp([0],{
 	});
 	
 	module.exports = ParametricGraph;
+
+
+/***/ },
+
+/***/ 97:
+/*!********************************!*\
+  !*** ./scripts/Perceptron.jsx ***!
+  \********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	
+	                                 
+	                                          
+	
+	var $__0=       __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,scale=$__0.scale,pointClassesTransform=$__0.pointClassesTransform,classify=$__0.classify,classTransform=$__0.classTransform,dotProduct=$__0.dotProduct;
+	
+	/*
+	The Perceptron training algorithm cycles through each training
+	example (xn) in turn and,
+	
+	if the example is correctly classified no change is made,
+	
+	otherwise the example’s vector is added or subtracted
+	(depending on its class label) from the current weight
+	vector.
+	*/
+	
+	/**
+	Given some data and a start weight, return a list of vectors w such that describes
+	the algorithm's progression.  First w is the start weight, last w is the result of the algorithm
+	
+	Maximum list length = 300 (for non-terminating stuff)
+	*/
+	var PERCEPTRON_NU = 0.1;
+	var EPOCHS = 2;
+	/*
+	The value of nu is interesting to observe.
+	
+	<0.05 - often doesn't reach optimal (runs out of data points)
+	0.1 - almost always reaches the optimum. Occasionally stops just shy of optimal.
+	0.5 - seems to work pretty fast.  Occasionally overshoots a bit.
+	>0.75 - seems to work, but ends up with a large w.
+	*/
+	
+	module.exports = {
+	
+	  objective: function(w    , pointClasses              )         {
+	    var $__0=   pointClasses,class0=$__0[0],class1=$__0[1];
+	
+	    if (class0.some(function(p)  {return dotProduct(p, w) <= 0;})) {
+	      return 0; // there was a misclassification
+	    } else {
+	      if (class1.some(function(p)  {return dotProduct(p, w) > 0;})) {
+	        return 0;
+	      } else {
+	        return 0.3;
+	      }
+	    }
+	  },
+	
+	  optimise: function(startWeight    , pointClasses              )            {
+	    var trainingData = pointClassesTransform(pointClasses);
+	
+	    var resultantWeights = [startWeight];
+	    for (var epoch = 0; epoch < EPOCHS; epoch = epoch + 1){
+	      for (var i = 0; i < trainingData.length; i = i + 1){
+	        var trainingVector = trainingData[i];
+	        var lastW = resultantWeights[resultantWeights.length - 1];
+	        if (classTransform(classify(lastW, trainingVector)) !== trainingVector.t) {
+	          // there was a classification error, so we should add or subtract the trainingVector.
+	          var nextWeight = add(lastW)(scale(-1 * PERCEPTRON_NU * trainingVector.t)( trainingVector ));
+	          resultantWeights.push(nextWeight);
+	        }
+	      }
+	    }
+	    return resultantWeights;
+	  },
+	
+	};
 
 
 /***/ },
@@ -999,6 +1157,9 @@ webpackJsonp([0],{
 	var MaximumMargin = __webpack_require__(/*! ./MaximumMargin.jsx */ 104);
 	var ParametricGraph = __webpack_require__(/*! ./ParametricGraph.jsx */ 95);
 	var React = __webpack_require__(/*! react/addons */ 1);
+	var Perceptron = __webpack_require__(/*! ./Perceptron.jsx */ 97);
+	var OptimiserLine = __webpack_require__(/*! ./OptimiserLine.jsx */ 94);
+	
 	
 	
 	var Immersive = React.createClass({displayName: "Immersive",
@@ -1023,18 +1184,29 @@ webpackJsonp([0],{
 	  },
 	
 	  render: function()                {
+	
+	    // <Draggable3DScene dim={500} pointClasses={this.computePointClasses()}
+	    //     projectedError={MaximumMargin.objective} highlightW={this.highlightW}>
+	
+	    //   <ParametricGraph thetaResolution={120} rResolution={40} />
+	    //   <CursorSphere highlightedW={this.state.highlightedW} />
+	
+	    // </Draggable3DScene>
+	    var pointClasses = this.computePointClasses();
+	    var optimiserLine = Perceptron.optimise(this.state.highlightedW, pointClasses);
+	
 	    return (
 	      React.createElement("div", null, 
 	        React.createElement(AwesomeDataComponent, {dim: 500, 
 	          updatePointGroups: this.updatePointGroups, pointGroups: this.state.pointGroups}), 
 	
 	
-	        React.createElement(Draggable3DScene, {dim: 500, pointClasses: this.computePointClasses(), 
-	            projectedError: MaximumMargin.objective, highlightW: this.highlightW}, 
+	        React.createElement(Draggable3DScene, {dim: 500, pointClasses: pointClasses, 
+	            projectedError: Perceptron.objective, highlightW: this.highlightW}, 
 	
-	          React.createElement(ParametricGraph, {thetaResolution: 120, rResolution: 40}), 
+	          React.createElement(ParametricGraph, {thetaResolution: 120, rResolution: 20}), 
+	          React.createElement(OptimiserLine, {vertices: optimiserLine}), 
 	          React.createElement(CursorSphere, {highlightedW: this.state.highlightedW})
-	
 	        )
 	
 	

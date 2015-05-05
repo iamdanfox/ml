@@ -37,14 +37,16 @@ The value of nu is interesting to observe.
 module.exports = {
 
   objective: function(w: P2, pointClasses: PointClasses): number {
-    var class0 = pointClasses[0].filter(function(p) { return dotProduct(p, w) <= 0; });
-    var class1 = pointClasses[1].filter(function(p) { return dotProduct(p, w) > 0; });
-    var misclassifieds = class0.concat(class1);
+    var [class0, class1] = pointClasses;
 
-    if (misclassifieds.length === 0) {
-      return 100; // incorporates prettiness scaling...
+    if (class0.some((p) => dotProduct(p, w) <= 0)) {
+      return 0; // there was a misclassification
     } else {
-      return 0;
+      if (class1.some((p) => dotProduct(p, w) > 0)) {
+        return 0;
+      } else {
+        return 0.3;
+      }
     }
   },
 
