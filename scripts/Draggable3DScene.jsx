@@ -37,7 +37,7 @@ var Draggable3DScene = React.createClass({
   getInitialState: function(): State {
     var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.01, 1000 ); // Field of view, aspect ratio, near clip, far clip
     initialCamera.up = new THREE.Vector3( 0, 0, 1 );
-    initialCamera.position.z = 180 / 200;
+    initialCamera.position.z = 1;
 
 
     var initialRenderer = new THREE.WebGLRenderer({antialias: true});
@@ -72,17 +72,17 @@ var Draggable3DScene = React.createClass({
   },
 
   updateCamera: function(state: State): void {
-    this.state.camera.position.x = Math.cos(state.angle) * 300 / 200;
-    this.state.camera.position.y = Math.sin(state.angle) * 300 / 200;
+    this.state.camera.position.x = Math.cos(state.angle) * 2;
+    this.state.camera.position.y = Math.sin(state.angle) * 2;
     this.state.camera.lookAt(new THREE.Vector3(0, 0, 0));
   },
 
   mouseDown: function(e: React.SyntheticEvent): void {
-    var intersections = this.raycast(this.state.camera, e).intersectObjects(this.state.scene.children);
+    var intersections = this.getGraphIntersections(e);
     if (intersections.length > 0){ // try to drag
       this.setState({
         mouseDownCamera: this.state.camera.clone(),
-        mouseDownPoint: intersections[0].point
+        mouseDownPoint: intersections[0].point,
       });
     }
     this.setState({
@@ -142,8 +142,15 @@ var Draggable3DScene = React.createClass({
     });
   },
 
+  getGraphIntersections: function(e: React.SyntheticEvent): Array<THREE.Vector3> {
+    // exclude line & CursorSphere
+    var graph = this.state.scene.children.filter((child) =>
+      child instanceof THREE.Mesh && !(child.geometry instanceof THREE.SphereGeometry));
+    return this.raycast(this.state.camera, e).intersectObjects(graph);
+  },
+
   handleHover: function(e: React.SyntheticEvent): void {
-    var intersections = this.raycast(this.state.camera, e).intersectObjects(this.state.scene.children);
+    var intersections = this.getGraphIntersections(e);
     if (intersections.length > 0) {
       this.props.highlightW(intersections[0].point);
     }

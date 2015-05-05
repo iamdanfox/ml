@@ -39,8 +39,7 @@ function objective(smallW: P2, smallPointClasses: PointClasses): number {
   }
 
   // flip representation because Surface.jsx shows maximisation
-  // return 3 - sum / 20;
-  return (100 - Math.log(1 - sum) * 10) / 200;
+  return (7 - Math.log(1 - sum)) / 10;
 }
 
 
