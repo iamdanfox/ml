@@ -14,18 +14,14 @@ function objective(w: P2, pointClasses: PointClasses): number {
 
   var minimumMargin = Infinity;
 
-  if (class0.length > 0) {
-    for (var i = class0.length; i = i - 1;) {
-      var p = class0[i];
-      minimumMargin = Math.min(minimumMargin, w.x * p.x + w.y * p.y)
-    }
+  for (var i = 0, l = class0.length; i < l; i = i + 1) {
+    var p = class0[i];
+    minimumMargin = Math.min(minimumMargin, w.x * p.x + w.y * p.y);
   }
 
-  if (class1.length > 0) {
-    for (var i = class1.length; i = i - 1;) {
-      var p = class1[i];
-      minimumMargin = Math.min(minimumMargin, -1 * (w.x * p.x + w.y * p.y));
-    }
+  for (var j = 0, m = class1.length; j < m; j = j + 1) {
+    var q = class1[j];
+    minimumMargin = Math.min(minimumMargin, -1 * (w.x * q.x + w.y * q.y));
   }
 
   // normalise by w.

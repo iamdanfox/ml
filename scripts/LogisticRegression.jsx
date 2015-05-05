@@ -5,19 +5,19 @@ type PointClasses = [Array<P2>, Array<P2>];
 
 "use strict";
 
-var {pointClassesTransformZeroOne, dotProduct, scale, add, modulus} = require("./VectorUtils.jsx");
+var {pointClassesTransformZeroOne,  scale, add, modulus} = require("./VectorUtils.jsx");
 
 function sigmoid(wx): number {
   return 1 / (1 + Math.exp(-wx));
 }
 
-function logSigmoid(wx): number {
-  return -Math.log(1 + Math.exp(-wx));
-}
+// function logSigmoid(wx): number {
+//   return -Math.log(1 + Math.exp(-wx));
+// }
 
-function logOneMinusSigmoid(wx): number {
-  return -Math.log(Math.exp(wx) + 1); // "equivalent" formulations of this don't give same results!
-}
+// function logOneMinusSigmoid(wx): number {
+//   return -Math.log(Math.exp(wx) + 1); // "equivalent" formulations of this don't give same results!
+// }
 
 
 
@@ -28,14 +28,12 @@ function objective(smallW: P2, smallPointClasses: PointClasses): number {
 
   for (var i = 0, len = class0.length; i < len; i = i + 1) {
     var p = class0[i];
-    var wx = 200 * (smallW.x * p.x + smallW.y * p.y); // inlined dotProduct
-    sum = sum - Math.log(1 + Math.exp(-wx)); // inlined logSigmoid
+    sum = sum - Math.log(1 + Math.exp(-200 * (smallW.x * p.x + smallW.y * p.y))); // inlined logSigmoid
   }
 
-  for (var i = 0, len = class1.length; i < len; i = i + 1) {
-    var p = class1[i];
-    var wx = 200 * (smallW.x * p.x + smallW.y * p.y); // inlined dotProduct
-    sum = sum - Math.log(Math.exp(wx) + 1); // inlined logOneMinusSigmoid
+  for (var j = 0, len2 = class1.length; j < len2; j = j + 1) {
+    var q = class1[j];
+    sum = sum - Math.log(Math.exp(200 * (smallW.x * q.x + smallW.y * q.y)) + 1); // inlined logOneMinusSigmoid
   }
 
   // flip representation because Surface.jsx shows maximisation
