@@ -3,3 +3,9 @@ node_modules
 *.map
 
 npm-debug.log
+
+build/
+
+build/bundle.js
+
+build/vendor.bundle.js

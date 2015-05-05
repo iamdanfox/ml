@@ -19,6 +19,7 @@ type State = {
 
 var React = require("react/addons");
 var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
+var {scale} = require("./VectorUtils.jsx");
 
 // var CursorSphere = require("./CursorSphere.jsx");
 // var Draggable3DScene = require("./Draggable3DScene.jsx");
@@ -31,12 +32,35 @@ var React = require("react/addons");
 // var WebWorkerGraph = require("./WebWorkerGraph.jsx");
 
 
+var [class0, class1] = require("../data/closePoints.js");
+var oldPointGroups = [
+  {
+    points: class0.map(scale(1 / 200)),
+    label: 0,
+    generatedBy: {
+      center: {x: -0.35, y: 0},
+      params: {l: 0.9, theta: -0.4},
+    },
+    mouseDownDiff: null,
+  },
+  {
+    points: class1.map(scale(1 / 200)),
+    label: 1,
+    generatedBy: {
+      center: {x: 0.2, y: -0.2},
+      params: {l: 0.7, theta: -0.4},
+    },
+    mouseDownDiff: null,
+  }
+];
+
+
 
 
 var Immersive = React.createClass({
   getInitialState: function(): State {
     return {
-      pointGroups: require("../data/awesomePointGroups.js"),
+      pointGroups: oldPointGroups,
       highlightedW: {x: 0.2, y: 0.2},
     };
   },
