@@ -23,20 +23,24 @@ function logOneMinusSigmoid(wx): number {
 
 // the objective function is used to generate the surface
 function objective(smallW: P2, smallPointClasses: PointClasses): number {
-  var points = pointClassesTransformZeroOne(smallPointClasses);
+  var [class0, class1] = smallPointClasses;
+  var sum = 0;
 
-  // we're actually trying to minimise this.
-  var sum = -points
-    .map(function sumElement(point: P2t): number { // crucially, t is either 0 or 1.
-      var wx = 200 * dotProduct(smallW, point);
-      return point.t * logSigmoid(wx) + (1 - point.t) * logOneMinusSigmoid(wx);
-    })
-    .reduce(function(a, b) {return a + b;}, 0);
+  for (var i = 0, len = class0.length; i < len; i = i + 1) {
+    var p = class0[i];
+    var wx = 200 * (smallW.x * p.x + smallW.y * p.y); // inlined dotProduct
+    sum = sum - Math.log(1 + Math.exp(-wx)); // inlined logSigmoid
+  }
 
+  for (var i = 0, len = class1.length; i < len; i = i + 1) {
+    var p = class1[i];
+    var wx = 200 * (smallW.x * p.x + smallW.y * p.y); // inlined dotProduct
+    sum = sum - Math.log(Math.exp(wx) + 1); // inlined logOneMinusSigmoid
+  }
 
   // flip representation because Surface.jsx shows maximisation
   // return 3 - sum / 20;
-  return (100 - Math.log(1 + sum) * 10) / 200;
+  return (100 - Math.log(1 - sum) * 10) / 200;
 }
 
 
