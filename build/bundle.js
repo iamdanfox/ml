@@ -449,25 +449,25 @@ webpackJsonp([0],{
 	
 	// the objective function is used to generate the surface
 	function objective(w    , pointClasses              )         {
+	
 	  // compute the `margin` for all points in pointClasses
-	  var points = pointClassesTransform(pointClasses);
-	  var margins = points.map( function(point)  {return -1 * point.t * dotProduct(w, point);} ); // -1 fudge
+	  var $__0=   pointClasses,class0=$__0[0],class1=$__0[1];
+	
+	  // var margins = points.map( (point) => -1 * point.t * dotProduct(w, point) ); // -1 fudge
+	  var margins0 = class0.map( function(point)  {return dotProduct(w, point);} );
+	  var minimumMargin0 = Math.min.apply(null, margins0);
+	
+	  var margins1 = class1.map( function(point)  {return -1 * dotProduct(w, point);} );
+	  var minimumMargin1 = Math.min.apply(null, margins1);
+	
+	  var minimumMargin = Math.min(minimumMargin0, minimumMargin1);
 	  // find the minimum of these
-	  var minimumMargin = Math.min.apply(null, margins);
 	  // normalise by w.
 	  var normalisationFactor = 1 / modulus(w);
 	  return normalisationFactor * minimumMargin;
 	}
 	
-	
-	// optimisation algorithm is used to overlay the line
-	// function optimise(startWeight: P2, pointClasses: PointClasses): Array<P2> {
-	//   return [];
-	// }
-	
-	module.exports = {
-	  objective: objective,
-	};
+	module.exports = {objective:objective};
 
 
 /***/ },
@@ -624,9 +624,10 @@ webpackJsonp([0],{
 	                    
 	  
 	              
-	                              
+	              
+	                               
+	                                                    
 	 
-	
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var AwesomePointGroup = __webpack_require__(/*! ./AwesomePointGroup.jsx */ 227);
 	var $__0=   __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract;
@@ -639,7 +640,9 @@ webpackJsonp([0],{
 	  mixins: [PureRenderMixin],
 	
 	  propTypes: {
+	    dim: React.PropTypes.number.isRequired,
 	    updatePointGroups: React.PropTypes.func.isRequired,
+	    pointGroups: React.PropTypes.array.isRequired,
 	  },
 	
 	  mouseMove: function(e                      ) {
@@ -710,7 +713,6 @@ webpackJsonp([0],{
 	      onMouseDown: onMouseDown, isMouseDown: isMouseDown, onMouseUp: onMouseUp, 
 	      getMouseXY: this.getMouseXY}));
 	  },
-	
 	
 	  render: function()                {
 	    return React.createElement("svg", {
@@ -1019,11 +1021,11 @@ webpackJsonp([0],{
 	  render: function()                {
 	    return (
 	      React.createElement("div", null, 
-	        React.createElement(AwesomeDataComponent, {dim: 600, 
+	        React.createElement(AwesomeDataComponent, {dim: 500, 
 	          updatePointGroups: this.updatePointGroups, pointGroups: this.state.pointGroups}), 
 	
 	
-	        React.createElement(Draggable3DScene, {dim: 600, pointClasses: this.computePointClasses(), 
+	        React.createElement(Draggable3DScene, {dim: 500, pointClasses: this.computePointClasses(), 
 	            projectedError: MaximumMargin.objective, highlightW: this.highlightW}, 
 	
 	          React.createElement(ParametricGraph, {thetaResolution: 120, rResolution: 40}), 

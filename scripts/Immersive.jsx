@@ -51,11 +51,11 @@ var Immersive = React.createClass({
   render: function(): ?ReactElement {
     return (
       <div>
-        <AwesomeDataComponent dim={600}
+        <AwesomeDataComponent dim={500}
           updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
 
 
-        <Draggable3DScene dim={600} pointClasses={this.computePointClasses()}
+        <Draggable3DScene dim={500} pointClasses={this.computePointClasses()}
             projectedError={MaximumMargin.objective} highlightW={this.highlightW}>
 
           <ParametricGraph thetaResolution={120} rResolution={40} />

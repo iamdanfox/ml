@@ -11,10 +11,11 @@ type PointGrp = {
   };
   mouseDownDiff: ?P2
 };
-type State = {
-  pointGroups: Array<PointGrp>
+type Props = {
+  dim: number;
+  pointGroups: Array<PointGrp>;
+  updatePointGroups: (pgs: Array<PointGrp>) => void;
 }
-
 var React = require("react/addons");
 var AwesomePointGroup = require("./AwesomePointGroup.jsx");
 var {add, subtract} = require("./VectorUtils.jsx");
@@ -27,7 +28,9 @@ var AwesomeDataComponent = React.createClass({
   mixins: [PureRenderMixin],
 
   propTypes: {
+    dim: React.PropTypes.number.isRequired,
     updatePointGroups: React.PropTypes.func.isRequired,
+    pointGroups: React.PropTypes.array.isRequired,
   },
 
   mouseMove: function(e: React.SyntheticEvent) {
@@ -98,7 +101,6 @@ var AwesomeDataComponent = React.createClass({
       onMouseDown={onMouseDown} isMouseDown={isMouseDown} onMouseUp={onMouseUp}
       getMouseXY={this.getMouseXY} />;
   },
-
 
   render: function(): ?ReactElement {
     return <svg
