@@ -24,10 +24,11 @@ function logOneMinusSigmoid(wx): number {
 var ANTI_OVERFLOW_FUDGE = 1 / 200;
 
 // the objective function is used to generate the surface
-function objective(w: P2, pointClasses: PointClasses): number {
-  var smallerW = scale(ANTI_OVERFLOW_FUDGE)(w);
+function objective(w: P2, smallPointClasses: PointClasses): number {
+  var pointClasses = smallPointClasses.map((pc) => pc.map(scale(200)));
   var points = pointClassesTransformZeroOne(pointClasses);
 
+  var smallerW = scale(ANTI_OVERFLOW_FUDGE)(w);
   // we're actually trying to minimise this.
   var sum = -points
     .map(function sumElement(point: P2t): number { // crucially, t is either 0 or 1.
@@ -81,9 +82,8 @@ function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
 
 
 
-function fastOptimise(startW: P2, smallPointClasses: PointClasses): number {
-  // var startW = scale(200)(smallStartW);
-
+function fastOptimise(smallStartW: P2, smallPointClasses: PointClasses): number {
+  var startW = scale(200)(smallStartW);
   var pointClasses = smallPointClasses.map((pc) => pc.map(scale(200)));
   var points = pointClassesTransformZeroOne(pointClasses);
 

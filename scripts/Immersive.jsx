@@ -100,14 +100,13 @@ var Immersive = React.createClass({
 
 
     var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
-      // if (Math.random() > 0.995) console.log(vertex1)
 
       var zMin = boundingBox.min.z;
       var zRange = boundingBox.max.z - zMin;
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
 
-      var stops = LogisticRegression.fastOptimise(vertex1, pointClasses) / 250;
+      var stops = LogisticRegression.fastOptimise(scale(1 / 200)(vertex1), pointClasses) / 250;
 
       mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
     };

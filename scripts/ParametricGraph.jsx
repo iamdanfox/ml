@@ -86,11 +86,9 @@ var ParametricGraph = React.createClass({
     if (this.shouldComponentUpdate(nextProps)) {
       var geometry = this.state.graph.geometry;
 
-      var nextPropsBigPointClasses = nextProps.pointClasses.map((pc) => pc.map(scale(200)));
-
       for (var i = 0; i < geometry.vertices.length; i = i + 1) {
         var vertex = geometry.vertices[i];
-        vertex.setZ(nextProps.projectedError(vertex, nextPropsBigPointClasses));
+        vertex.setZ(nextProps.projectedError(vertex, nextProps.pointClasses));
       }
 
       this.colourGeometry(geometry);
@@ -99,14 +97,12 @@ var ParametricGraph = React.createClass({
   },
 
   buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
-    var nextPropsBigPointClasses = props.pointClasses.map((pc) => pc.map(scale(200)));
-
     var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var theta = i * 2 * Math.PI;
       var r = (Math.pow(1.8, j * j) - 1) ; // this ensures there are lots of samples near the origin and gets close to 0!
       var x = r * Math.cos(theta) * props.dim;
       var y = r * Math.sin(theta) * props.dim;
-      var z = props.projectedError({x, y}, nextPropsBigPointClasses);
+      var z = props.projectedError({x, y}, props.pointClasses);
       return new THREE.Vector3(x, y, z);
     };
 

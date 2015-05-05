@@ -45,12 +45,10 @@ var CursorSphere = React.createClass({
     if (this.shouldComponentUpdate(nextProps)) {
       var highlightedW = nextProps.highlightedW;
 
-      var nextPropsBigPointClasses = nextProps.pointClasses.map((pc) => pc.map(scale(200)));
-
       if (typeof highlightedW !== "undefined" && highlightedW !== null) {
         var bigHighlightedW = scale(200)(highlightedW);
         var {x, y} = bigHighlightedW;
-        var z = nextProps.projectedError(bigHighlightedW, nextPropsBigPointClasses);
+        var z = nextProps.projectedError(bigHighlightedW, nextProps.pointClasses);
         this.state.sphere.position.set(x, y, z);
       }
     }
