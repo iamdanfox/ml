@@ -67,8 +67,7 @@ function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
   var grad;
   var stops = [w];
   while (grad = gradient(w), modulus(grad) > ACCEPTING_GRAD && stops.length < MAX_STOPS) {
-    w.x = w.x - NU * grad.x;
-    w.y = w.y - NU * grad.y;
+    w = add(w)(scale(-1 * NU)(grad))
     stops.push(w);
   }
   return stops;
@@ -92,7 +91,7 @@ function fastOptimise(smallStartW: P2, smallPointClasses: PointClasses): number 
     return grad;
   }
 
-  var w = smallStartW;
+  var w = Object.create(smallStartW);
   var grad;
   var stops = 1;
   while (grad = gradient(w), modulus(grad) > ACCEPTING_GRAD && stops < MAX_STOPS) {
