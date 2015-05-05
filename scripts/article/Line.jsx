@@ -58,13 +58,11 @@ var Line = React.createClass({
   },
 
   render: function(): ?ReactElement {
-    var boundaryPoint;
-    if (lineEq({x: 0, y: 0}, this.props.w)) {
-      boundaryPoint = {
-        x: 0,
-        y: 0
-      };
-    } else {
+    var boundaryPoint = {
+      x: 0,
+      y: 0
+    };
+    if (!lineEq({x: 0, y: 0}, this.props.w)) {
       var v = rot90(this.props.w); // v is now the direction of the line
       var first = this.findBorderIntersection(v);
       if (typeof first !== "undefined" && first !== null) {

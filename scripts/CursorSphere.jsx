@@ -16,7 +16,7 @@ type Props = {
 
 var CursorSphere = React.createClass({
   propTypes: {
-    highlightedW: React.PropTypes.object.isRequired,
+    highlightedW: React.PropTypes.object,
     pointClasses: React.PropTypes.array.isRequired,
     objective: React.PropTypes.func.isRequired,
     scene: React.PropTypes.any.isRequired

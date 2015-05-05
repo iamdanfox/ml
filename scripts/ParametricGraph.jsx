@@ -33,34 +33,30 @@ var MATERIAL = new THREE.MeshBasicMaterial({
 
 var ParametricGraph = React.createClass({
   propTypes: {
-    colourFunction: React.PropTypes.func,
+    colourFunction: React.PropTypes.func.isRequired,
     dim: React.PropTypes.number.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
     objective: React.PropTypes.func.isRequired,
-    rResolution: React.PropTypes.number,
+    rResolution: React.PropTypes.number.isRequired,
     scene: React.PropTypes.any.isRequired,
-    thetaResolution: React.PropTypes.number,
+    thetaResolution: React.PropTypes.number.isRequired,
+  },
+
+  statics: {
+    COLOUR_FUNCTION: function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor): void {
+      var zMin = boundingBox.min.z;
+      var zRange = boundingBox.max.z - zMin;
+      var totalZ = vertex1.z + vertex2.z + vertex3.z;
+      var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+      mutableFaceColor.setHSL(0.54, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
+    }
   },
 
   // 120 * 40 looks great... 4800 computations
-  // 96 * 32
+  // 96 * 32 - default
   // 72 * 24
   // 36 * 12
   // 24 * 8 is pretty much a minimum.
-
-  getDefaultProps: function() {
-    return {
-      thetaResolution: 96,
-      rResolution: 32,
-      colourFunction: function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor): void {
-        var zMin = boundingBox.min.z;
-        var zRange = boundingBox.max.z - zMin;
-        var totalZ = vertex1.z + vertex2.z + vertex3.z;
-        var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-        mutableFaceColor.setHSL(0.54, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
-      }
-    };
-  },
 
   getInitialState: function(): State {
     return {

@@ -49,7 +49,7 @@ var MaxMarginVis = React.createClass({
 
         <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
             objective={MaximumMargin.objective} highlightW={this.highlightW}>
-          <ParametricGraph thetaResolution={120} rResolution={40} />
+          <ParametricGraph thetaResolution={120} rResolution={40} colourFunction={ParametricGraph.COLOUR_FUNCTION}  />
           {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}
         </Draggable3DScene>
       </div>

@@ -79,7 +79,7 @@ var LogisticRegressionVis = React.createClass({
         <Draggable3DScene dim={500} pointClasses={this.state.pointClasses}
             objective={MaximumMargin.objective} highlightW={this.props.highlightW}>
 
-          <ParametricGraph thetaResolution={120} rResolution={40} />
+          <ParametricGraph thetaResolution={120} rResolution={40} colourFunction={ParametricGraph.COLOUR_FUNCTION} />
           <CursorSphere highlightedW={this.props.highlightedW} />
 
         </Draggable3DScene>
@@ -87,7 +87,7 @@ var LogisticRegressionVis = React.createClass({
 
         <Draggable3DScene dim={500} pointClasses={this.state.pointClasses}
             objective={Perceptron.objective} highlightW={this.props.highlightW}>
-          <ParametricGraph thetaResolution={120} rResolution={12} />
+          <ParametricGraph thetaResolution={120} rResolution={12} colourFunction={ParametricGraph.COLOUR_FUNCTION}  />
           <OptimiserLine vertices={perceptronOptimiserLine} />
           <CursorSphere highlightedW={this.props.highlightedW} />
         </Draggable3DScene>
