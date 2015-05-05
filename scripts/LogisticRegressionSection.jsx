@@ -59,7 +59,7 @@ var LogisticRegressionVis = React.createClass({
           highlightedW={this.state.highlightedW} updatePointClasses={this.updatePointClasses} />
 
         <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
-            projectedError={objective} highlightW={this.highlightW}>
+            objective={objective} highlightW={this.highlightW}>
           <WebWorkerGraph thetaResolution={24} rResolution={8} />
           {optimiserLine && <OptimiserLine vertices={optimiserLine} />}
           {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}

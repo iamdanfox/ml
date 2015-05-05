@@ -12,7 +12,7 @@ type Props = {
     mutableFaceColor: THREE.Color) => void;
   dim: number;
   pointClasses: PointClasses;
-  projectedError: (w: P2, pointClasses: PointClasses) => number;
+  objective: (w: P2, pointClasses: PointClasses) => number;
   rResolution: number;
   scene: THREE.Scene;
   thetaResolution: number;
@@ -36,7 +36,7 @@ var ParametricGraph = React.createClass({
     colourFunction: React.PropTypes.func,
     dim: React.PropTypes.number.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
-    projectedError: React.PropTypes.func.isRequired,
+    objective: React.PropTypes.func.isRequired,
     rResolution: React.PropTypes.number,
     scene: React.PropTypes.any.isRequired,
     thetaResolution: React.PropTypes.number,
@@ -78,7 +78,7 @@ var ParametricGraph = React.createClass({
 
   shouldComponentUpdate: function(nextProps: Props): bool {
     return (nextProps.pointClasses !== this.props.pointClasses ||
-      nextProps.projectedError !== this.props.projectedError);
+      nextProps.objective !== this.props.objective);
   },
 
   componentWillReceiveProps: function(nextProps: Props) {
@@ -87,7 +87,7 @@ var ParametricGraph = React.createClass({
 
       for (var i = 0; i < geometry.vertices.length; i = i + 1) {
         var vertex = geometry.vertices[i];
-        vertex.setZ(nextProps.projectedError(vertex, nextProps.pointClasses));
+        vertex.setZ(nextProps.objective(vertex, nextProps.pointClasses));
       }
 
       this.colourGeometry(geometry);
@@ -101,7 +101,7 @@ var ParametricGraph = React.createClass({
       var r = (Math.pow(1.8, j * j) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
       var x = r * Math.cos(theta) * props.dim / 200;
       var y = r * Math.sin(theta) * props.dim / 200;
-      var z = props.projectedError({x, y}, props.pointClasses);
+      var z = props.objective({x, y}, props.pointClasses);
       return new THREE.Vector3(x, y, z);
     };
 

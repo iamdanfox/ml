@@ -10,7 +10,7 @@ type PointClasses = [Array<P2>, Array<P2>];
 type Props = {
   vertices: Array<P2>;
   pointClasses: PointClasses;
-  projectedError: (w: P2, pointClasses: PointClasses) => number;
+  objective: (w: P2, pointClasses: PointClasses) => number;
   scene: THREE.Scene;
 }
 type State = {
@@ -21,7 +21,7 @@ type State = {
 var OptimiserLine = React.createClass({
   propTypes: {
     vertices: React.PropTypes.array.isRequired,
-    projectedError: React.PropTypes.func.isRequired,
+    objective: React.PropTypes.func.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
     scene: React.PropTypes.any.isRequired
   },
@@ -33,7 +33,7 @@ var OptimiserLine = React.createClass({
   shouldComponentUpdate: function(nextProps: Props): bool {
     return (nextProps.vertices !== this.props.vertices ||
       nextProps.pointClasses !== this.props.pointClasses ||
-      nextProps.projectedError !== this.props.projectedError);
+      nextProps.objective !== this.props.objective);
   },
 
   componentWillReceiveProps: function(nextProps: Props) {
@@ -49,7 +49,7 @@ var OptimiserLine = React.createClass({
 
         geometry.vertices = vertices.map(
           (w) => {
-            var z = nextProps.projectedError(w, nextProps.pointClasses);
+            var z = nextProps.objective(w, nextProps.pointClasses);
             return new THREE.Vector3(w.x, w.y, z + 0.01); // hack to keep the line above the surface. (better would be smart interpolation)
           }
         );

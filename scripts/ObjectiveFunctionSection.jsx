@@ -55,7 +55,7 @@ var PerceptronVis = React.createClass({
         </div>
 
         <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
-            projectedError={objective} highlightW={this.highlightW}>
+            objective={objective} highlightW={this.highlightW}>
           <ParametricGraph thetaResolution={120} rResolution={20} />
           {optimiserLine && <OptimiserLine vertices={optimiserLine} />}
           {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}

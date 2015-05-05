@@ -21,7 +21,7 @@ type Props = {
   dim: number;
   highlightW: F<P2, void>;
   pointClasses: PointClasses;
-  projectedError: (w: P2, pointClasses: PointClasses) => number;
+  objective: (w: P2, pointClasses: PointClasses) => number;
 }
 
 
@@ -31,7 +31,7 @@ var Draggable3DScene = React.createClass({
     dim: React.PropTypes.number.isRequired,
     highlightW: React.PropTypes.func.isRequired,
     pointClasses: React.PropTypes.array.isRequired,
-    projectedError: React.PropTypes.func.isRequired
+    objective: React.PropTypes.func.isRequired
   },
 
   getInitialState: function(): State {
@@ -163,7 +163,7 @@ var Draggable3DScene = React.createClass({
     var mergeInProps = {
       dim: this.props.dim,
       pointClasses: this.props.pointClasses,
-      projectedError: this.props.projectedError,
+      objective: this.props.objective,
       scene: this.state.scene
     };
     var children = React.Children.map(this.props.children, function(childElement) {

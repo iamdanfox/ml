@@ -76,7 +76,7 @@ var Immersive = React.createClass({
   render: function(): ?ReactElement {
 
     // <Draggable3DScene dim={500} pointClasses={this.computePointClasses()}
-    //     projectedError={MaximumMargin.objective} highlightW={this.highlightW}>
+    //     objective={MaximumMargin.objective} highlightW={this.highlightW}>
 
     //   <ParametricGraph thetaResolution={120} rResolution={40} />
     //   <CursorSphere highlightedW={this.state.highlightedW} />
@@ -85,7 +85,7 @@ var Immersive = React.createClass({
     // var optimiserLine = Perceptron.optimise(this.state.highlightedW, pointClasses);
 
     // <Draggable3DScene dim={500} pointClasses={pointClasses}
-    //     projectedError={Perceptron.objective} highlightW={this.highlightW}>
+    //     objective={Perceptron.objective} highlightW={this.highlightW}>
 
     //   <ParametricGraph thetaResolution={120} rResolution={20} />
     //   <OptimiserLine vertices={optimiserLine} />
@@ -142,7 +142,7 @@ var LogisticRegressionVis = React.createClass({
 
     return (
       <Draggable3DScene dim={500} pointClasses={this.state.pointClasses}
-          projectedError={LogisticRegression.objective} highlightW={this.props.highlightW}>
+          objective={LogisticRegression.objective} highlightW={this.props.highlightW}>
 
         <OptimiserLine vertices={optimiserLine} />
         <CursorSphere highlightedW={this.props.highlightedW} />
