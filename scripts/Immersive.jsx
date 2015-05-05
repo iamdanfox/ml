@@ -110,13 +110,12 @@ var Immersive = React.createClass({
     //   mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
     // };
 
-    var optimiserLine = LogisticRegression.optimise(this.state.highlightedW, pointClasses);
+    var optimiserLine = LogisticRegression.optimise(scale(200)(this.state.highlightedW), pointClasses);
 
           // <WebWorkerGraph thetaResolution={24} rResolution={8} />
 
-          // <OptimiserLine vertices={optimiserLine} />
 // colourFunction={colourFunction}
-
+    var highlightW = (bigW) => this.highlightW(scale(1 / 200)(bigW));
 
     return (
       <div>
@@ -124,10 +123,11 @@ var Immersive = React.createClass({
           updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
 
         <Draggable3DScene dim={500} pointClasses={pointClasses}
-            projectedError={LogisticRegression.objective} highlightW={this.highlightW}>
+            projectedError={LogisticRegression.objective} highlightW={highlightW}>
 
+          <OptimiserLine vertices={optimiserLine} />
           <ParametricGraph thetaResolution={24} rResolution={8} />
-          <CursorSphere highlightedW={this.state.highlightedW} />
+          <CursorSphere highlightedW={scale(200)(this.state.highlightedW)} />
 
         </Draggable3DScene>
 
