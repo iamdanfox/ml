@@ -58,10 +58,9 @@ module.exports = {
     for (var k = 0; k < pointGroups.length * EPOCHS; k = k + 1) {
       var {points, label} = pointGroups[k % pointGroups.length];
       for (var i = 0, maxi = points.length; i < maxi; i = i + 1) {
-        var trainingVector = points[i];
-        if (classify(w, trainingVector) !== label) {
-          // there was a classification error, so we should add or subtract the trainingVector.
-          w = add(w)(scale(-1 * PERCEPTRON_NU * classTransform(label))( trainingVector ));
+        if (classify(w, points[i]) !== label) {
+          // there was a classification error, so we should add or subtract the points[i].
+          w = add(w)(scale(-1 * PERCEPTRON_NU * classTransform(label))( points[i] ));
           stops.push(w);
         }
       }

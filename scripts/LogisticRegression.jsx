@@ -2,6 +2,7 @@
 type P2 = {x: number; y: number};
 type P2t = {x: number; y: number; t: number};
 type PointClasses = [Array<P2>, Array<P2>];
+type PointGrp = {label: number; points: Array<P2>};
 
 "use strict";
 
@@ -20,26 +21,24 @@ function sigmoid(wx): number {
 // }
 
 
-
 // the objective function is used to generate the surface
 function objective(smallW: P2, smallPointClasses: PointClasses): number {
   var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]};});
   var sum = 0;
 
-  for (var k = 0; k < pointGroups.length; k = k + 1) {
-    var {points, label} = pointGroups[k];
-    if (label === 0) {
-      for (var i = 0, len = points.length; i < len; i = i + 1) {
-        var p = points[i];
-        sum = sum - Math.log(1 + Math.exp(-200 * (smallW.x * p.x + smallW.y * p.y))); // inlined logSigmoid
-      }
-    } else {
-      for (var j = 0, len2 = points.length; j < len2; j = j + 1) {
-        var q = points[j];
-        sum = sum - Math.log(Math.exp(200 * (smallW.x * q.x + smallW.y * q.y)) + 1); // inlined logOneMinusSigmoid
-      }
+  pointGroups.filter((pg) => pg.label === 0).forEach(function({points}) {
+    for (var i = 0, len = points.length; i < len; i = i + 1) {
+      var p = points[i];
+      sum = sum - Math.log(1 + Math.exp(-200 * (smallW.x * p.x + smallW.y * p.y))); // inlined logSigmoid
     }
-  }
+  });
+
+  pointGroups.filter((pg) => pg.label === 1).forEach(function({points}) {
+    for (var j = 0, len2 = points.length; j < len2; j = j + 1) {
+      var q = points[j];
+      sum = sum - Math.log(Math.exp(200 * (smallW.x * q.x + smallW.y * q.y)) + 1); // inlined logOneMinusSigmoid
+    }
+  });
 
   // flip representation because Surface.jsx shows maximisation
   return (7 - Math.log(1 - sum)) / 10;
