@@ -24,16 +24,22 @@ function sigmoid(wx): number {
 // the objective function is used to generate the surface
 function objective(smallW: P2, smallPointClasses: PointClasses): number {
   var [class0, class1] = smallPointClasses;
+  var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]}});
   var sum = 0;
 
-  for (var i = 0, len = class0.length; i < len; i = i + 1) {
-    var p = class0[i];
-    sum = sum - Math.log(1 + Math.exp(-200 * (smallW.x * p.x + smallW.y * p.y))); // inlined logSigmoid
-  }
-
-  for (var j = 0, len2 = class1.length; j < len2; j = j + 1) {
-    var q = class1[j];
-    sum = sum - Math.log(Math.exp(200 * (smallW.x * q.x + smallW.y * q.y)) + 1); // inlined logOneMinusSigmoid
+  for (var k = 0, maxk = pointGroups.length; k < maxk; k = k + 1) {
+    var {points, label} = pointGroups[k];
+    if (label === 0) {
+      for (var i = 0, len = points.length; i < len; i = i + 1) {
+        var p = points[i];
+        sum = sum - Math.log(1 + Math.exp(-200 * (smallW.x * p.x + smallW.y * p.y))); // inlined logSigmoid
+      }
+    } else {
+      for (var j = 0, len2 = points.length; j < len2; j = j + 1) {
+        var q = points[j];
+        sum = sum - Math.log(Math.exp(200 * (smallW.x * q.x + smallW.y * q.y)) + 1); // inlined logOneMinusSigmoid
+      }
+    }
   }
 
   // flip representation because Surface.jsx shows maximisation
@@ -47,19 +53,21 @@ var ACCEPTING_GRAD = 1 / 200; // we reach this in ~ 300 loops
 var MAX_STOPS = 250;
 
 function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
-
-  var points = pointClassesTransformZeroOne(smallPointClasses);
-  var len = points.length;
+  var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]}});
 
   function gradient(w: P2): P2 {
     var grad = {x: 0, y: 0};
 
-    for (var i = 0; i < len; i = i + 1) {
-      var point = points[i];
-      var scaleFactor = sigmoid(200 * (w.x * point.x + w.y * point.y)) - point.t;
-      grad.x = grad.x + scaleFactor * point.x;
-      grad.y = grad.y + scaleFactor * point.y; // inlined scale factor and dot products here to reduce GC
+    for (var k = 0, kmax = pointGroups.length; k < kmax; k = k + 1){
+      var {label, points} = pointGroups[k];
+      for (var i = 0, l = points.length; i < l; i = i + 1) {
+        var p = points[i];
+        var scaleFactor = sigmoid(200 * (w.x * p.x + w.y * p.y)) - (1 - label);
+        grad.x = grad.x + scaleFactor * p.x;
+        grad.y = grad.y + scaleFactor * p.y;
+      }
     }
+
     return grad;
   }
 
@@ -67,7 +75,7 @@ function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
   var grad;
   var stops = [w];
   while (grad = gradient(w), modulus(grad) > ACCEPTING_GRAD && stops.length < MAX_STOPS) {
-    w = add(w)(scale(-1 * NU)(grad))
+    w = add(w)(scale(-1 * NU)(grad));
     stops.push(w);
   }
   return stops;
@@ -75,19 +83,21 @@ function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
 
 
 function fastOptimise(smallStartW: P2, smallPointClasses: PointClasses): number {
-
-  var points = pointClassesTransformZeroOne(smallPointClasses);
-  var len = points.length;
+  var pointGroups = [0, 1].map(function(label) {return {label, points: smallPointClasses[label]}});
 
   function gradient(w: P2): P2 {
     var grad = {x: 0, y: 0};
 
-    for (var i = 0; i < len; i = i + 1) {
-      var point = points[i];
-      var scaleFactor = sigmoid(200 * (w.x * point.x + w.y * point.y)) - point.t;
-      grad.x = grad.x + scaleFactor * point.x;
-      grad.y = grad.y + scaleFactor * point.y; // inlined scale factor and dot products here to reduce GC
+    for (var k = 0, kmax = pointGroups.length; k < kmax; k = k + 1){
+      var {label, points} = pointGroups[k];
+      for (var i = 0, l = points.length; i < l; i = i + 1) {
+        var p = points[i];
+        var scaleFactor = sigmoid(200 * (w.x * p.x + w.y * p.y)) - (1 - label);
+        grad.x = grad.x + scaleFactor * p.x;
+        grad.y = grad.y + scaleFactor * p.y;
+      }
     }
+
     return grad;
   }
 
