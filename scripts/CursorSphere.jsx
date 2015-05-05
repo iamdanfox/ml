@@ -25,7 +25,7 @@ var CursorSphere = React.createClass({
 
   getInitialState: function() {
     return {
-      sphere: new THREE.Mesh( new THREE.SphereGeometry(3, 32, 32) , new THREE.MeshLambertMaterial() )
+      sphere: new THREE.Mesh( new THREE.SphereGeometry(3 / 200, 32, 32) , new THREE.MeshLambertMaterial() )
     };
   },
 
@@ -46,9 +46,9 @@ var CursorSphere = React.createClass({
       var highlightedW = nextProps.highlightedW;
 
       if (typeof highlightedW !== "undefined" && highlightedW !== null) {
-        var bigHighlightedW = scale(200)(highlightedW);
+        var bigHighlightedW = scale(1)(highlightedW);
         var {x, y} = bigHighlightedW;
-        var z = nextProps.projectedError(scale(1 / 200)(bigHighlightedW), nextProps.pointClasses);
+        var z = nextProps.projectedError(bigHighlightedW, nextProps.pointClasses);
         this.state.sphere.position.set(x, y, z);
       }
     }

@@ -37,7 +37,7 @@ function objective(smallW: P2, smallPointClasses: PointClasses): number {
 
   // flip representation because Surface.jsx shows maximisation
   // return 3 - sum / 20;
-  return 100 - Math.log(1 + sum) * 10;
+  return (100 - Math.log(1 + sum) * 10) / 200;
 }
 
 
@@ -70,7 +70,7 @@ function optimise(smallStartW: P2, smallPointClasses: PointClasses): Array<P2> {
     w = add(w)(scale(-1 * NU)(grad));
     stops.push(scale(200)(w));
   }
-  return stops;
+  return stops.map(scale( 1 / 200));
 }
 
 

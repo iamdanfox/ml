@@ -106,7 +106,7 @@ var Immersive = React.createClass({
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
 
-      var stops = LogisticRegression.fastOptimise(scale(1 / 200)(vertex1), pointClasses) / 250;
+      var stops = LogisticRegression.fastOptimise(vertex1, pointClasses) / 250;
 
       mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
     };
@@ -115,16 +115,13 @@ var Immersive = React.createClass({
 
           // <WebWorkerGraph thetaResolution={24} rResolution={8} />
 
-
-    var highlightW = (bigW) => this.highlightW(scale(1 / 200)(bigW));
-
     return (
       <div>
         <AwesomeDataComponent dim={500}
           updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
 
         <Draggable3DScene dim={500} pointClasses={pointClasses}
-            projectedError={LogisticRegression.objective} highlightW={highlightW}>
+            projectedError={LogisticRegression.objective} highlightW={this.highlightW}>
 
           <OptimiserLine vertices={optimiserLine} />
           <CursorSphere highlightedW={this.state.highlightedW} />

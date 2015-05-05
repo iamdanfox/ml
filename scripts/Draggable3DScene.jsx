@@ -35,9 +35,9 @@ var Draggable3DScene = React.createClass({
   },
 
   getInitialState: function(): State {
-    var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 ); // Field of view, aspect ratio, near clip, far clip
+    var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.01, 1000 ); // Field of view, aspect ratio, near clip, far clip
     initialCamera.up = new THREE.Vector3( 0, 0, 1 );
-    initialCamera.position.z = 180;
+    initialCamera.position.z = 180 / 200;
 
 
     var initialRenderer = new THREE.WebGLRenderer({antialias: true});
@@ -72,8 +72,8 @@ var Draggable3DScene = React.createClass({
   },
 
   updateCamera: function(state: State): void {
-    this.state.camera.position.x = Math.cos(state.angle) * 300;
-    this.state.camera.position.y = Math.sin(state.angle) * 300;
+    this.state.camera.position.x = Math.cos(state.angle) * 300 / 200;
+    this.state.camera.position.y = Math.sin(state.angle) * 300 / 200;
     this.state.camera.lookAt(new THREE.Vector3(0, 0, 0));
   },
 
