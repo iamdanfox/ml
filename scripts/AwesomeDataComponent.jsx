@@ -1,7 +1,6 @@
 /* @flow */
 "use strict";
 
-type F<U, V> = (x: U) => V;
 type P2 = {x: number; y: number};
 type PointGrp = {
   label: number;
@@ -25,28 +24,7 @@ var {generatePoints} = require("./AwesomePointUtilities.jsx");
 
 var AwesomeDataComponent = React.createClass({
   getInitialState: function(): State {
-    return {
-      pointGroups: [
-        {
-          label: 0,
-          points: [{x: 0, y: 0}, {x: 0.14, y: 0.6}, {x: 0.4, y: 0.20}],
-          generatedBy: {
-            center: {x: 0.10, y: 0.10},
-            params: {l: 0.6, theta: 0},
-          },
-          mouseDownDiff: null,
-        },
-        {
-          points: [{x: 0.50, y: 0.50}],
-          label: 1,
-          generatedBy: {
-            center: {x: 0.50, y: 0.50},
-            params: {l: 0.2, theta: Math.PI / 4},
-          },
-          mouseDownDiff: null,
-        }
-      ]
-    };
+    return {pointGroups: require("../data/awesomePointGroups.js")};
   },
 
   mouseMove: function(e: React.SyntheticEvent) {
@@ -120,6 +98,7 @@ var AwesomeDataComponent = React.createClass({
       getMouseXY={this.getMouseXY} />;
   },
 
+
   render: function(): ?ReactElement {
     return <svg
       ref="canvas"
@@ -132,9 +111,9 @@ var AwesomeDataComponent = React.createClass({
         { this.state.pointGroups.map(this.buildAwesomePointGroup) }
 
         <rect x={-0.97} y={-0.97} height={0.12} width={0.12}
-          fill="red" onClick={this.newPointGroup(0)} />
+          fill="red" onClick={this.newPointGroup(0)} style={{cursor: "pointer"}} />
         <rect x={-0.82} y={-0.97} height={0.12} width={0.12}
-          fill="blue" onClick={this.newPointGroup(1)} />
+          fill="blue" onClick={this.newPointGroup(1)} style={{cursor: "pointer"}} />
 
         </g>
       </svg>;

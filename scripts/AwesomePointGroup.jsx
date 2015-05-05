@@ -1,20 +1,12 @@
 /* @flow */
 "use strict";
 
-type F<U, V> = (x: U) => V;
 type P2 = {x: number; y: number};
-type PointGrp = {
-  label: number;
-  points: Array<P2>;
-  generatedBy: {
-    center: P2;
-    params: {l: number; theta: number};
-  };
-  mouseDownDiff: ?P2
-};
+type Params = {l: number; theta: number};
 type State = {
-  pointGroups: Array<PointGrp>
-}
+  mouseOver: boolean;
+  paramsAtHandleMouseDown: ?Params;
+};
 
 var React = require("react/addons");
 var {add, subtract, scale, rotate, modulus, dotProduct} = require("./VectorUtils.jsx");
@@ -34,7 +26,7 @@ var AwesomePointGroup = React.createClass({
     dim: React.PropTypes.number.isRequired,
   },
 
-  getInitialState: function() {
+  getInitialState: function(): State {
     return {
       mouseOver: false,
       paramsAtHandleMouseDown: null,
@@ -72,15 +64,11 @@ var AwesomePointGroup = React.createClass({
     var theta = this.getAngleFromVertical(fromCenter);
     var l = 2 * modulus(fromCenter);
 
-    // need to make match {l, theta} instead.
-    var thetaDiff = theta - oldTheta;
-
     // update all points
     var stretchDirection = rotate(theta, {x: 0, y: 1});
-
     var newPoints = this.props.points.map((p) => {
       var fromCenter = subtract(p)(center);
-      var rotatedFromCenter = rotate(thetaDiff, fromCenter);
+      var rotatedFromCenter = rotate(theta - oldTheta, fromCenter);
       var stretchAmount = dotProduct(stretchDirection, rotatedFromCenter);
       var subtractProportion = 1 - (l / oldL);
       var subtractVector = scale(stretchAmount * subtractProportion)(stretchDirection);
@@ -104,10 +92,10 @@ var AwesomePointGroup = React.createClass({
   },
 
   onHandleMouseDown: function(e: React.SyntheticEvent) {
-    var {l, theta} = this.props.generatedBy.params;
-    this.setState({paramsAtHandleMouseDown: {l, theta}});
     e.stopPropagation();
     e.preventDefault();
+    var {l, theta} = this.props.generatedBy.params;
+    this.setState({paramsAtHandleMouseDown: {l, theta}});
   },
 
   render: function(): ?ReactElement {

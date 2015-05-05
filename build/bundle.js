@@ -160,7 +160,6 @@ webpackJsonp([0],{
 	/* @flow */
 	"use strict";
 	
-	                           
 	                                 
 	                 
 	                
@@ -184,28 +183,7 @@ webpackJsonp([0],{
 	
 	var AwesomeDataComponent = React.createClass({displayName: "AwesomeDataComponent",
 	  getInitialState: function()        {
-	    return {
-	      pointGroups: [
-	        {
-	          label: 0,
-	          points: [{x: 0, y: 0}, {x: 0.14, y: 0.6}, {x: 0.4, y: 0.20}],
-	          generatedBy: {
-	            center: {x: 0.10, y: 0.10},
-	            params: {l: 0.6, theta: 0},
-	          },
-	          mouseDownDiff: null,
-	        },
-	        {
-	          points: [{x: 0.50, y: 0.50}],
-	          label: 1,
-	          generatedBy: {
-	            center: {x: 0.50, y: 0.50},
-	            params: {l: 0.2, theta: Math.PI / 4},
-	          },
-	          mouseDownDiff: null,
-	        }
-	      ]
-	    };
+	    return {pointGroups: __webpack_require__(/*! ../data/awesomePointGroups.js */ 228)};
 	  },
 	
 	  mouseMove: function(e                      ) {
@@ -279,6 +257,7 @@ webpackJsonp([0],{
 	      getMouseXY: this.getMouseXY}));
 	  },
 	
+	
 	  render: function()                {
 	    return React.createElement("svg", {
 	      ref: "canvas", 
@@ -291,9 +270,9 @@ webpackJsonp([0],{
 	         this.state.pointGroups.map(this.buildAwesomePointGroup), 
 	
 	        React.createElement("rect", {x: -0.97, y: -0.97, height: 0.12, width: 0.12, 
-	          fill: "red", onClick: this.newPointGroup(0)}), 
+	          fill: "red", onClick: this.newPointGroup(0), style: {cursor: "pointer"}}), 
 	        React.createElement("rect", {x: -0.82, y: -0.97, height: 0.12, width: 0.12, 
-	          fill: "blue", onClick: this.newPointGroup(1)})
+	          fill: "blue", onClick: this.newPointGroup(1), style: {cursor: "pointer"}})
 	
 	        )
 	      );
@@ -364,20 +343,12 @@ webpackJsonp([0],{
 	/* @flow */
 	"use strict";
 	
-	                           
 	                                 
-	                 
-	                
-	                    
-	                
-	               
-	                                       
-	    
-	                    
-	  
+	                                         
 	              
-	                              
-	 
+	                     
+	                                   
+	  
 	
 	var React = __webpack_require__(/*! react/addons */ 1);
 	var $__0=       __webpack_require__(/*! ./VectorUtils.jsx */ 170),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
@@ -397,7 +368,7 @@ webpackJsonp([0],{
 	    dim: React.PropTypes.number.isRequired,
 	  },
 	
-	  getInitialState: function() {
+	  getInitialState: function()        {
 	    return {
 	      mouseOver: false,
 	      paramsAtHandleMouseDown: null,
@@ -435,15 +406,11 @@ webpackJsonp([0],{
 	    var theta = this.getAngleFromVertical(fromCenter);
 	    var l = 2 * modulus(fromCenter);
 	
-	    // need to make match {l, theta} instead.
-	    var thetaDiff = theta - oldTheta;
-	
 	    // update all points
 	    var stretchDirection = rotate(theta, {x: 0, y: 1});
-	
 	    var newPoints = this.props.points.map(function(p)  {
 	      var fromCenter = subtract(p)(center);
-	      var rotatedFromCenter = rotate(thetaDiff, fromCenter);
+	      var rotatedFromCenter = rotate(theta - oldTheta, fromCenter);
 	      var stretchAmount = dotProduct(stretchDirection, rotatedFromCenter);
 	      var subtractProportion = 1 - (l / oldL);
 	      var subtractVector = scale(stretchAmount * subtractProportion)(stretchDirection);
@@ -467,10 +434,10 @@ webpackJsonp([0],{
 	  },
 	
 	  onHandleMouseDown: function(e                      ) {
-	    var $__0=   this.props.generatedBy.params,l=$__0.l,theta=$__0.theta;
-	    this.setState({paramsAtHandleMouseDown: {l:l, theta:theta}});
 	    e.stopPropagation();
 	    e.preventDefault();
+	    var $__0=   this.props.generatedBy.params,l=$__0.l,theta=$__0.theta;
+	    this.setState({paramsAtHandleMouseDown: {l:l, theta:theta}});
 	  },
 	
 	  render: function()                {
@@ -521,6 +488,17 @@ webpackJsonp([0],{
 	});
 	
 	module.exports = AwesomePointGroup;
+
+
+/***/ },
+
+/***/ 228:
+/*!************************************!*\
+  !*** ./data/awesomePointGroups.js ***!
+  \************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = [{"label":0,"points":[{"x":-0.5997479449727805,"y":0.3266696424458529},{"x":-0.40911978879586314,"y":0.8414896852756555},{"x":-0.6003797969565033,"y":0.38752330824897496},{"x":-0.5974989282403006,"y":0.16793046373201084},{"x":-0.3731116894435043,"y":0.25446221414788783},{"x":-0.4611574437563745,"y":0.7513580834354632},{"x":-0.5666119173059607,"y":0.1786999017955041},{"x":-0.2660309178401766,"y":0.7466422175867058},{"x":-0.45781364583698203,"y":-0.02543721371721755},{"x":-0.7637313902662306,"y":0.8401606006403106},{"x":-0.6719389189432546,"y":-0.3705455189155673},{"x":-0.7724832708046918,"y":-0.20005680566395434},{"x":-0.6921484832633631,"y":0.027283867565444403},{"x":-0.530968122206404,"y":0.795008094328021},{"x":-0.8273452458511434,"y":-0.002424446162095889},{"x":-0.5185588104892703,"y":0.4620006701485645},{"x":-0.7023706476095739,"y":-0.15958155170093186},{"x":-0.8186378396018115,"y":0.23211487091509184},{"x":-0.5665597344525202,"y":0.524761380696566}],"generatedBy":{"center":{"x":-0.5966666666666667,"y":0.19666666666666655},"params":{"l":0.8658457650695586,"theta":-0.17021192528547435}},"mouseDownDiff":null},{"points":[{"x":0.4163818674864531,"y":-0.23528659967706647},{"x":0.44437265613239896,"y":-0.32627143782971557},{"x":0.23942084809958375,"y":-0.6063253418870334},{"x":0.20789742517139406,"y":-0.4091351995003449},{"x":0.2859242354507277,"y":-0.628035096817553},{"x":0.4479649125412124,"y":-0.32415304169593623},{"x":0.45280865076218857,"y":-0.28336832097127984},{"x":0.4075665078010422,"y":-0.39443831290755565},{"x":0.41222269797067723,"y":-0.5769874083755533},{"x":0.3604938339252303,"y":-0.6174488199442758},{"x":0.32403805174279,"y":-0.4848541835691167},{"x":0.34868895341495887,"y":-0.5032884333079499},{"x":0.5243233489148638,"y":-0.20416220785332426},{"x":0.2691046775763215,"y":-0.5310206893985944}],"label":1,"generatedBy":{"center":{"x":0.36999999999999966,"y":-0.3666666666666666},"params":{"l":0.16719914938645886,"theta":1.1606689862534059}},"mouseDownDiff":null},{"label":1,"points":[{"x":0.6660524477396749,"y":0.08876441212498268},{"x":0.6803536514830696,"y":0.16701383499073325},{"x":0.5737262476146427,"y":0.09345571376890369},{"x":0.740243418325372,"y":0.21788967786543098},{"x":0.5723510298190286,"y":-0.048872997526596906},{"x":0.7230819188867843,"y":0.021448199402366697},{"x":0.801222820812387,"y":0.16978847488949483},{"x":0.703671157000718,"y":-0.09675544323096463},{"x":0.5828143995173792,"y":-0.021816106911635158},{"x":0.610639172868958,"y":-0.020054843756927843},{"x":0.43240212272182954,"y":-0.10731745449670954},{"x":0.4766009580339221,"y":-0.04283729687880106},{"x":0.8295860086096446,"y":0.17175194897798224},{"x":0.6763934813675491,"y":0.20435599390510958},{"x":0.6764534988724937,"y":0.1631264448161256}],"generatedBy":{"center":{"x":0.6364731932586679,"y":0.05456092271332935},"params":{"l":0.2054371382466992,"theta":1.000694039631934}},"mouseDownDiff":null}];
 
 
 /***/ }
