@@ -1,7 +1,7 @@
 /* @flow */
 "use strict";
 
-import type * as THREE from 'three';
+/* flow-include import type * as THREE from 'three'; */
 type P2 = {x: number; y: number};
 type PointClasses = [Array<P2>, Array<P2>];
 type Result = {faces: Array<any>; vertices: Array<any>};
