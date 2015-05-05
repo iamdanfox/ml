@@ -21,15 +21,15 @@ var React = require("react/addons");
 var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
 var {scale} = require("./VectorUtils.jsx");
 
-// var CursorSphere = require("./CursorSphere.jsx");
-// var Draggable3DScene = require("./Draggable3DScene.jsx");
-// var MaximumMargin = require("./MaximumMargin.jsx");
-// var ParametricGraph = require("./ParametricGraph.jsx");
+var CursorSphere = require("./CursorSphere.jsx");
+var Draggable3DScene = require("./Draggable3DScene.jsx");
+var MaximumMargin = require("./MaximumMargin.jsx");
+var ParametricGraph = require("./ParametricGraph.jsx");
 var React = require("react/addons");
-// var Perceptron = require("./Perceptron.jsx");
-// var OptimiserLine = require("./OptimiserLine.jsx");
-// var LogisticRegression = require("./LogisticRegression.jsx");
-// var WebWorkerGraph = require("./WebWorkerGraph.jsx");
+var Perceptron = require("./Perceptron.jsx");
+var OptimiserLine = require("./OptimiserLine.jsx");
+var LogisticRegression = require("./LogisticRegression.jsx");
+var WebWorkerGraph = require("./WebWorkerGraph.jsx");
 
 
 var [class0, class1] = require("../data/closePoints.js");
@@ -71,7 +71,7 @@ var Immersive = React.createClass({
 
   computePointClasses: function(): PointClasses {
     return [0, 1].map((l) => this.state.pointGroups
-          .reduce((acc, pg) => pg.label === l ? acc.concat(pg.points) : acc, []));
+          .reduce((acc, pg) => pg.label === l ? acc.concat(pg.points.map(scale(200))) : acc, []));
   },
 
   highlightW: function(highlightedW: P2) {
@@ -87,7 +87,7 @@ var Immersive = React.createClass({
     //   <CursorSphere highlightedW={this.state.highlightedW} />
 
     // </Draggable3DScene>
-    // var pointClasses = this.computePointClasses();
+    var pointClasses = this.computePointClasses();
     // var optimiserLine = Perceptron.optimise(this.state.highlightedW, pointClasses);
 
     // <Draggable3DScene dim={500} pointClasses={pointClasses}
@@ -110,26 +110,26 @@ var Immersive = React.createClass({
     //   mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
     // };
 
-    // var optimiserLine = LogisticRegression.optimise(this.state.highlightedW, pointClasses);
+    var optimiserLine = LogisticRegression.optimise(this.state.highlightedW, pointClasses);
 
-        // <Draggable3DScene dim={500} pointClasses={pointClasses}
-        //     projectedError={LogisticRegression.objective} highlightW={this.highlightW}>
+          // <WebWorkerGraph thetaResolution={24} rResolution={8} />
 
-
-        //   <WebWorkerGraph thetaResolution={24} rResolution={8} />
-
-
-        //   <CursorSphere highlightedW={this.state.highlightedW} />
-
-        // </Draggable3DScene>
-
-          // <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction} />
           // <OptimiserLine vertices={optimiserLine} />
+// colourFunction={colourFunction}
+
+
     return (
       <div>
         <AwesomeDataComponent dim={500}
           updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
 
+        <Draggable3DScene dim={500} pointClasses={pointClasses}
+            projectedError={LogisticRegression.objective} highlightW={this.highlightW}>
+
+          <ParametricGraph thetaResolution={24} rResolution={8} />
+          <CursorSphere highlightedW={this.state.highlightedW} />
+
+        </Draggable3DScene>
 
 
       </div>

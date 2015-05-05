@@ -21,7 +21,7 @@ function logOneMinusSigmoid(wx): number {
 
 
 
-var ANTI_OVERFLOW_FUDGE = 1;
+var ANTI_OVERFLOW_FUDGE = 1 / 200;
 
 // the objective function is used to generate the surface
 function objective(w: P2, pointClasses: PointClasses): number {
@@ -38,7 +38,8 @@ function objective(w: P2, pointClasses: PointClasses): number {
 
 
   // flip representation because Surface.jsx shows maximisation
-  return 3 - sum / 20;
+  // return 3 - sum / 20;
+  return 100 - Math.log(1 + sum) * 10;
 }
 
 

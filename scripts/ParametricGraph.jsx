@@ -98,7 +98,7 @@ var ParametricGraph = React.createClass({
   buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
     var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var theta = i * 2 * Math.PI;
-      var r = (Math.pow(1.8, j * j) - 1) / 400; // this ensures there are lots of samples near the origin and gets close to 0!
+      var r = (Math.pow(1.8, j * j) - 1) ; // this ensures there are lots of samples near the origin and gets close to 0!
       var x = r * Math.cos(theta) * props.dim;
       var y = r * Math.sin(theta) * props.dim;
       var z = props.projectedError({x, y}, props.pointClasses);
