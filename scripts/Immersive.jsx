@@ -39,15 +39,32 @@ var LogisticRegressionVis = React.createClass({
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
       var stops = LogisticRegression.fastOptimise(vertex1, this.props.pointGroups) / 250;
-      mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
+      mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
     };
 
     var lrOptimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.props.pointGroups);
     var perceptronOptimiserLine = Perceptron.optimise(this.props.highlightedW, this.props.pointGroups);
 
+    // <Draggable3DScene dim={500} pointGroups={this.props.pointGroups}
+    //     objective={MaximumMargin.objective} highlightW={this.props.highlightW}>
+
+    //   <ParametricGraph thetaResolution={120} rResolution={40}
+    //     colourFunction={ParametricGraph.COLOUR_FUNCTION} />
+    //   <CursorSphere highlightedW={this.props.highlightedW} />
+
+    // </Draggable3DScene>
+
+
+    // <Draggable3DScene dim={500} pointGroups={this.props.pointGroups}
+    //     objective={Perceptron.objective} highlightW={this.props.highlightW}>
+    //   <ParametricGraph thetaResolution={120} rResolution={12}
+    //     colourFunction={ParametricGraph.COLOUR_FUNCTION}  />
+    //   <OptimiserLine vertices={perceptronOptimiserLine} />
+    //   <CursorSphere highlightedW={this.props.highlightedW} />
+    // </Draggable3DScene>
     return (
-      <div style={{display: "inline"}}>
-        <Draggable3DScene dim={500} pointGroups={this.props.pointGroups}
+      <div>
+        <Draggable3DScene dim={800} pointGroups={this.props.pointGroups}
             objective={LogisticRegression.objective} highlightW={this.props.highlightW}>
 
           <OptimiserLine vertices={lrOptimiserLine} />
@@ -55,26 +72,6 @@ var LogisticRegressionVis = React.createClass({
           <ParametricGraph thetaResolution={24} rResolution={8} colourFunction={colourFunction} />
 
         </Draggable3DScene>
-
-
-        <Draggable3DScene dim={500} pointGroups={this.props.pointGroups}
-            objective={MaximumMargin.objective} highlightW={this.props.highlightW}>
-
-          <ParametricGraph thetaResolution={120} rResolution={40}
-            colourFunction={ParametricGraph.COLOUR_FUNCTION} />
-          <CursorSphere highlightedW={this.props.highlightedW} />
-
-        </Draggable3DScene>
-
-
-        <Draggable3DScene dim={500} pointGroups={this.props.pointGroups}
-            objective={Perceptron.objective} highlightW={this.props.highlightW}>
-          <ParametricGraph thetaResolution={120} rResolution={12}
-            colourFunction={ParametricGraph.COLOUR_FUNCTION}  />
-          <OptimiserLine vertices={perceptronOptimiserLine} />
-          <CursorSphere highlightedW={this.props.highlightedW} />
-        </Draggable3DScene>
-
       </div>
     );
     // <WebWorkerGraph thetaResolution={24} rResolution={8} />
@@ -104,9 +101,20 @@ var Immersive = React.createClass({
 
 
     return (
-      <div>
-        <AwesomeDataComponent dim={500}
-          updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
+      <div style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "relative",
+          background: "#111"}}>
+        <div style={{
+            top: 0,
+            left: 0,
+            background: "rgba(255, 255, 255, 0.6)"}}>
+          <AwesomeDataComponent dim={450}
+            updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
+        </div>
 
         <LogisticRegressionVis highlightW={this.highlightW}
           highlightedW={this.state.highlightedW} pointGroups={this.state.pointGroups} />

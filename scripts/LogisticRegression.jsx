@@ -37,14 +37,13 @@ function objective(smallW: P2, pointGroups: Array<PointGrp>): number {
       sum = sum - Math.log(Math.exp(200 * (smallW.x * q.x + smallW.y * q.y)) + 1); // inlined logOneMinusSigmoid
     }
   });
-
   // flip representation because Surface.jsx shows maximisation
-  return (7 - Math.log(1 - sum)) / 10;
+  return (7 - Math.log(1 - sum)) / 30;
 }
 
 
 
-var NU = 0.03;
+var NU = 0.02;
 var ACCEPTING_GRAD = 1 / 200; // we reach this in ~ 300 loops
 var MAX_STOPS = 250;
 

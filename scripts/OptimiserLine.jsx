@@ -50,7 +50,7 @@ var OptimiserLine = React.createClass({
         geometry.vertices = vertices.map(
           (w) => {
             var z = nextProps.objective(w, nextProps.pointGroups);
-            return new THREE.Vector3(w.x, w.y, z + 0.01); // hack to keep the line above the surface. (better would be smart interpolation)
+            return new THREE.Vector3(w.x, w.y, z + 1 / this.props.dim); // hack to keep the line above the surface. (better would be smart interpolation)
           }
         );
 
