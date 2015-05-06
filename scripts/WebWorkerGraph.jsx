@@ -18,7 +18,6 @@ type State = {
 
 var React = require("react/addons");
 var THREE = require("three");
-var WebWorkerGraphSlug = require("./WebWorkerGraphSlug.jsx");
 var WorkerBridge = require("./WorkerBridge.jsx");
 
 
@@ -41,10 +40,9 @@ var WebWorkerGraph = React.createClass({
   },
 
   getInitialState: function(): State {
-    var geometry = this.buildInitialGeometry(this.props);
     return {
-      graph: new THREE.Mesh(geometry, MATERIAL.clone())
-    }
+      graph: new THREE.Mesh(this.buildInitialGeometry(this.props), MATERIAL.clone())
+    };
   },
 
   buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
@@ -57,9 +55,9 @@ var WebWorkerGraph = React.createClass({
       return new THREE.Vector3(x, y, z);
     };
     var geometry = new THREE.ParametricGeometry(polarMeshFunction,
-      this.props.thetaResolution, this.props.rResolution, true)
+      this.props.thetaResolution, this.props.rResolution, true);
 
-    var DEFAULT_COLOUR = new THREE.Color()
+    var DEFAULT_COLOUR = new THREE.Color();
     DEFAULT_COLOUR.setHSL(0.54, 0.8, 0.08);
     for (var i = 0; i < geometry.faces.length; i = i + 1) {
       geometry.faces[i].color.copy(DEFAULT_COLOUR);
@@ -99,10 +97,9 @@ var WebWorkerGraph = React.createClass({
 
   asyncRequestColouring: function(props: Props) {
     var {vertices, faces, boundingBox} = this.state.graph.geometry;
-    var {pointGroups} = this.props;
+    var {pointGroups} = props;
     WorkerBridge.request({vertices, faces, pointGroups, boundingBox}, (result) => {
       var {faces} = result;
-      console.log("Graph received", result);
       this.state.graph.geometry.faces = faces;
       this.state.graph.geometry.colorsNeedUpdate = true;
       this.props.forceParentUpdate();

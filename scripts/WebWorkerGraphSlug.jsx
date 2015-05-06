@@ -18,7 +18,7 @@ var THREE = require("three");
 
 
 module.exports = {
-  startProcessing: function(request: Request): {result: Result, continuation: any} {
+  startProcessing: function(request: Request): {result: Result; continuation: any} {
     var {boundingBox, faces, vertices, pointGroups} = request;
 
     var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
@@ -31,18 +31,17 @@ module.exports = {
     };
 
     // get necessary prototypes & functions all set up
-    var faces = faces.map((f) => {
+    faces = faces.map((f) => {
       var {r, g, b} = f.color;
-      return new THREE.Face3(f.a, f.b, f.c, f.normal, new THREE.Color(r, g, b), f.materialIndex)
+      return new THREE.Face3(f.a, f.b, f.c, f.normal, new THREE.Color(r, g, b), f.materialIndex);
       // Note this isnt exactly replicating the originals... the vertexNormals are [] for example...
     });
     var numFaces = faces.length;
 
     // do face 0.
-    var face = faces[0];
-    colourFunction(boundingBox, vertices[face.a], vertices[face.b], vertices[face.c], face.color);
+    colourFunction(boundingBox, vertices[faces[0].a], vertices[faces[0].b], vertices[faces[0].c], faces[0].color);
 
-    var processStep = function(base: number): {result: Result, continuation: any} {
+    var processStep = function(base: number): {result: Result; continuation: any} {
 
       for (var i = 0; i < numFaces; i = i + 1) {
         var face = faces[i];
@@ -65,7 +64,7 @@ module.exports = {
       };
     };
 
-    var nextBiggestPowerOf2 = Math.pow(2, Math.floor(Math.log2(faces.length)))
+    var nextBiggestPowerOf2 = Math.pow(2, Math.floor(Math.log2(faces.length)));
     return processStep(nextBiggestPowerOf2);
   }
-}
+};
