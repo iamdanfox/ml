@@ -15,7 +15,7 @@ var {fastOptimise, objective} = require("./LogisticRegression.jsx");
 var THREE = require("three");
 
 var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry {
-  var polarMeshFunction = function(j: number, i: number): THREE.Vector3 {
+  var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
     var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
     var theta = j * 2 * Math.PI;
     var x = r * Math.cos(theta);
@@ -24,7 +24,7 @@ var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry 
     return new THREE.Vector3(x, y, z);
   };
   var geometry = new THREE.ParametricGeometry(polarMeshFunction,
-    request.thetaResolution, request.rResolution, true);
+    request.rResolution, request.thetaResolution, true);
 
   geometry.computeBoundingBox();
   return geometry;
@@ -43,7 +43,7 @@ module.exports = {
       var zRange = boundingBox.max.z - zMin;
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-      var stops = fastOptimise(vertex1, pointGroups) / 250;
+      var stops = fastOptimise(vertex2, pointGroups) / 250;
       mutableHSL.h = 0.54 + stops * 0.3;
       mutableHSL.s = 0.8;
       mutableHSL.l = 0.08 + 0.82 * Math.pow(normalizedZ, 2);

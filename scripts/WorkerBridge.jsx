@@ -21,7 +21,11 @@ module.exports = {
     worker.onmessage = function(event: any) {
       callback(event.data.result);
     };
-    console.log('call to postmessage');
-    worker.postMessage({request}); // this is taking 6 seconds.
+    worker.postMessage({request});
+  },
+
+  abort: function(): void {
+    console.log("[Bridge] abort");
+    worker.postMessage({});
   }
 };

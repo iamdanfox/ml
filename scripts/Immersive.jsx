@@ -42,7 +42,7 @@ var LogisticRegressionVis = React.createClass({
           <OptimiserLine vertices={lrOptimiserLine} />
           <CursorSphere highlightedW={this.props.highlightedW} />
 
-          <WebWorkerGraph thetaResolution={250} rResolution={83} />
+          <WebWorkerGraph thetaResolution={252} rResolution={84} />
 
         </Draggable3DScene>
       </div>
