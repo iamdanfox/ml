@@ -4,7 +4,6 @@
 var Hyperplane = require("./Hyperplane.jsx");
 var Line = require("./Line.jsx");
 var React = require("react/addons");
-var ReplacePointsBar = require("./ReplacePointsBar.jsx");
 var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
 var {PureRenderMixin} = require("react/addons").addons;
 

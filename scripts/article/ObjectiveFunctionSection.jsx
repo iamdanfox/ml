@@ -12,7 +12,6 @@ var K = require("./Katex.jsx");
 var OptimiserLine = require("../OptimiserLine.jsx");
 var ParametricGraph = require("../ParametricGraph.jsx");
 var React = require("react/addons");
-var ReplacePointsBar = require("./ReplacePointsBar.jsx");
 var {objective, optimise} = require("../Perceptron.jsx");
 
 
