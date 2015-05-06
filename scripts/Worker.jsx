@@ -37,7 +37,7 @@ self.addEventListener('message', function(event) {
     // continue processing
     if (continuation) {
       console.log("[WORKER continuing]", continuation);
-      inProgressTimer = setTimeout(() => doConstrainedProcessing(continuation), 300); // allows us to receive messages in between.
+      inProgressTimer = setTimeout(() => doConstrainedProcessing(continuation), 1); // allows us to receive messages in between.
     } else {
       console.log("[WORKER done]");
       inProgressTimer = null;

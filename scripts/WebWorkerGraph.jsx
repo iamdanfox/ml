@@ -10,6 +10,7 @@ type Props = {
   scene: THREE.Scene;
   thetaResolution: number;
   objective: (w: P2, pointGroups: Array<PointGrp>) => number;
+  forceParentUpdate: () => void;
 }
 type State = {
   graph: THREE.Mesh;
@@ -36,6 +37,7 @@ var WebWorkerGraph = React.createClass({
     scene: React.PropTypes.any.isRequired,
     objective: React.PropTypes.func.isRequired,
     thetaResolution: React.PropTypes.number.isRequired, // 24
+    forceParentUpdate: React.PropTypes.func.isRequired,
   },
 
   getInitialState: function(): State {
@@ -99,7 +101,11 @@ var WebWorkerGraph = React.createClass({
     var {vertices, faces, boundingBox} = this.state.graph.geometry;
     var {pointGroups} = this.props;
     WorkerBridge.request({vertices, faces, pointGroups, boundingBox}, (result) => {
+      var {faces} = result;
       console.log("Graph received", result);
+      this.state.graph.geometry.faces = faces;
+      this.state.graph.geometry.colorsNeedUpdate = true;
+      this.props.forceParentUpdate();
     });
   },
 
