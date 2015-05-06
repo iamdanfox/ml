@@ -8,12 +8,12 @@ var worker = new Worker("./build/worker.bundle.js");
 var subscribers = {};
 
 worker.onmessage = function(event: any) {
-  var {reactElementId, result} = event.data;
+  var {reactElementId, requestNumber, result} = event.data;
 
   if (reactElementId in subscribers) {
-    subscribers[reactElementId](result);
+    subscribers[reactElementId](requestNumber, result);
   } else {
-    console.log("no subscriber for: ", reactElementId, result, event);
+    console.log("no subscriber for: ", reactElementId, requestNumber, result, event);
   }
 };
 
@@ -22,17 +22,20 @@ module.exports = {
 
   subscribe: function(
       reactElementId: string,
-      callback: F<any, void>): (t: number, r: number, d: number, pointGroups: Array<PointGrp>) => void {
+      callback: (n:number, r:any) => void): (rn: number, t: number, r: number, d: number, pointGroups: Array<PointGrp>) => void {
     console.assert(!(reactElementId in subscribers), "No repeat subscribing: " + reactElementId);
     subscribers[reactElementId] = callback;
 
-    return function request(thetaResolution: number, rResolution: number, dim: number, pointGroups: Array<PointGrp>) {
+    return function request(requestNumber: number, thetaResolution: number, rResolution: number, dim: number, pointGroups: Array<PointGrp>) {
       console.assert(
         typeof thetaResolution === "number" &&
         typeof rResolution === "number" &&
         pointGroups instanceof Array);
-      console.log('sending', reactElementId, pointGroups);
-      worker.postMessage({reactElementId, thetaResolution, rResolution, dim, pointGroups});
+      if (reactElementId in subscribers) {
+        worker.postMessage({requestNumber, reactElementId, thetaResolution, rResolution, dim, pointGroups});
+      } else {
+        console.log('ignoring');
+      }
     };
   },
 

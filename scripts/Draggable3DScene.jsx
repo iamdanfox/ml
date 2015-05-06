@@ -171,7 +171,8 @@ var Draggable3DScene = React.createClass({
       dim: this.props.dim,
       pointGroups: this.props.pointGroups,
       objective: this.props.objective,
-      scene: this.state.scene
+      scene: this.state.scene,
+      forceParentUpdate: () => this.forceUpdate()
     };
     var children = React.Children.map(this.props.children, function(childElement) {
       if (React.isValidElement(childElement)) {

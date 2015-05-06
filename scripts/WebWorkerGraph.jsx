@@ -44,9 +44,9 @@ var WebWorkerGraph = React.createClass({
     if (this.shouldComponentUpdate(nextProps)) {
       this.unsubscribeFromWebWorker(); // ignore outstanding responses
       this.synchronouslyComputeInitialGraph(nextProps);
-
+      // start rendering afresh
       var webWorkerChannel = this.subscribeToWebWorker();
-      this.asyncRequestGraphs(webWorkerChannel, nextProps);
+      setTimeout(() => this.asyncRequestGraphs(0, webWorkerChannel, nextProps), 100);
     }
   },
 
@@ -65,24 +65,38 @@ var WebWorkerGraph = React.createClass({
     props.scene.add(graph);
   },
 
-  asyncRequestGraphs: function(webWorkerChannel, props: Props) {
-    webWorkerChannel(36, 12, props.dim, props.pointGroups);
-    webWorkerChannel(72, 24, props.dim, props.pointGroups);
-    webWorkerChannel(120, 40, props.dim, props.pointGroups);
+  asyncRequestGraphs: function(requestNumber: number, webWorkerChannel, props: Props) {
+     var requestQueue = [
+      {thetaResolution: 36, rResolution: 12},
+      {thetaResolution: 72, rResolution: 24}
+    ];
+    if (requestNumber < requestQueue.length) {
+      console.log("SENDING", requestNumber);
+      var {thetaResolution, rResolution} = requestQueue[requestNumber];
+      webWorkerChannel(requestNumber, thetaResolution, rResolution, props.dim, props.pointGroups);
+    } else {
+      console.log('done requesting')
+    }
   },
 
   subscribeToWebWorker: function() {
-    var uuid = this._reactInternalInstance._rootNodeID + Math.random().toString();
+    var uuid = Math.random().toString();
     var webWorkerChannel = WorkerBridge.subscribe(uuid, this.receiveWebWorkerResponse);
     this.setState({uuid});
     return webWorkerChannel;
   },
 
-  receiveWebWorkerResponse: function(result: Result): void {
+  receiveWebWorkerResponse: function(requestNumber: number, result: Result): void {
+    console.log("RECEIVE ", requestNumber);
     var newGraph = WebWorkerGraphSlug.reconstruct(result);
     this.props.scene.remove(this.state.graph);
     this.props.scene.add(newGraph);
     this.setState({graph: newGraph});
+    this.props.forceParentUpdate();
+
+    this.unsubscribeFromWebWorker();
+    var channel = this.subscribeToWebWorker();
+    this.asyncRequestGraphs(requestNumber + 1, channel, this.props);
   },
 
   unsubscribeFromWebWorker: function() {
@@ -95,7 +109,7 @@ var WebWorkerGraph = React.createClass({
   componentWillMount: function() {
     this.synchronouslyComputeInitialGraph(this.props);
     var webWorkerChannel = this.subscribeToWebWorker();
-    this.asyncRequestGraphs(webWorkerChannel, this.props);
+    this.asyncRequestGraphs(0, webWorkerChannel, this.props);
   },
 
   componentWillUnmount: function() {
