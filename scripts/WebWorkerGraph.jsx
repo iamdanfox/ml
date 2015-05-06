@@ -14,6 +14,7 @@ type Props = {
 }
 type State = {
   graph: THREE.Mesh;
+  timer: ?number;
 }
 
 var React = require("react/addons");
@@ -41,13 +42,15 @@ var WebWorkerGraph = React.createClass({
 
   getInitialState: function(): State {
     return {
-      graph: new THREE.Mesh(this.buildInitialGeometry(this.props), MATERIAL.clone())
+      graph: new THREE.Mesh(this.buildInitialGeometry(this.props), MATERIAL.clone()),
+      timer: null,
     };
   },
 
   buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
     var polarMeshFunction = function(j: number, i: number): THREE.Vector3 {
-      var r = (Math.pow(1.8, i * i) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
+      // var r = (Math.pow(1.8, i * i) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
+      var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
       var theta = j * 2 * Math.PI;
       var x = r * Math.cos(theta);
       var y = r * Math.sin(theta);
@@ -91,16 +94,30 @@ var WebWorkerGraph = React.createClass({
       }
 
       this.state.graph.geometry.verticesNeedUpdate = true;
-      this.asyncRequestColouring(nextProps);
+      // debounces mousemove events so that we only send to the web worker when mouse stops moving
+      if (this.state.timer) {
+        clearTimeout(this.state.timer);
+      }
+      var timer = setTimeout(() => {
+        console.log('[React] requesting')
+        this.asyncRequestColouring(nextProps)
+      }, 100)
+      this.setState({timer});
     }
   },
 
   asyncRequestColouring: function(props: Props) {
     var {vertices, faces, boundingBox} = this.state.graph.geometry;
     var {pointGroups} = props;
+    console.log("[React] Request colouring")
     WorkerBridge.request({vertices, faces, pointGroups, boundingBox}, (result) => {
-      var {faces} = result;
-      this.state.graph.geometry.faces = faces;
+      var {hsls} = result;
+      // this.state.graph.geometry.faces = faces;
+      var len = hsls.length;
+      for (var i = 0; i < len; i = i + 1) {
+        var {h, s, l} = hsls[i];
+        this.state.graph.geometry.faces[i].color.setHSL(h, s, l);
+      }
       this.state.graph.geometry.colorsNeedUpdate = true;
       this.props.forceParentUpdate();
     });

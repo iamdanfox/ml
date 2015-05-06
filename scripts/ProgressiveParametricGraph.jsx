@@ -105,7 +105,7 @@ var ProgressiveParametricGraph = React.createClass({
 
   buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
     var polarMeshFunction = function(j: number, i: number): THREE.Vector3 {
-      var r = (Math.pow(1.8, i * i) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
+      var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
       var theta = j * 2 * Math.PI;
       var x = r * Math.cos(theta);
       var y = r * Math.sin(theta);

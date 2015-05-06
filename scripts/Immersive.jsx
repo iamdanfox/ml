@@ -21,7 +21,7 @@ var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
 var CursorSphere = require("./CursorSphere.jsx");
 var Draggable3DScene = require("./Draggable3DScene.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
-// var ProgressiveParametricGraph = require("./ProgressiveParametricGraph.jsx");
+var ProgressiveParametricGraph = require("./ProgressiveParametricGraph.jsx");
 var WebWorkerGraph = require("./WebWorkerGraph.jsx");
 var OptimiserLine = require("./OptimiserLine.jsx");
 var React = require("react/addons");
@@ -50,12 +50,18 @@ var LogisticRegressionVis = React.createClass({
           <OptimiserLine vertices={lrOptimiserLine} />
           <CursorSphere highlightedW={this.props.highlightedW} />
 
-          <WebWorkerGraph thetaResolution={24} rResolution={8}
+          <WebWorkerGraph thetaResolution={250} rResolution={83}
             colourFunction={colourFunction} />
 
         </Draggable3DScene>
       </div>
     );
+
+          // <WebWorkerGraph thetaResolution={250} rResolution={83}
+          //   colourFunction={colourFunction} />
+
+          // <ProgressiveParametricGraph thetaResolution={120} rResolution={40}
+          //   colourFunction={ProgressiveParametricGraph.COLOUR_FUNCTION} />
   }
 });
 

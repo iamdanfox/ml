@@ -11,7 +11,7 @@ type Request = {
   pointGroups: Array<PointGrp>;
 };
 type Callback = (r: Result) => void;
-type Result = {faces: Array<any>};
+type Result = {hsls: Array<any>};
 
 
 var worker = new Worker("./build/worker.bundle.js");
@@ -22,7 +22,7 @@ module.exports = {
     worker.onmessage = function(event: any) {
       callback(event.data.result);
     };
-
-    worker.postMessage({request});
+    console.log('call to postmessage');
+    worker.postMessage({request}); // this is taking 6 seconds.
   }
 };
