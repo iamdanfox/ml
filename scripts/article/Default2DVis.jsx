@@ -17,13 +17,12 @@ var Default2DVis = React.createClass({
     highlightedW: React.PropTypes.object,
     highlightW: React.PropTypes.func.isRequired,
     optimiserLine: React.PropTypes.array,
-    pointClasses: React.PropTypes.array.isRequired,
-    updatePointClasses: React.PropTypes.func.isRequired,
+    pointGroups: React.PropTypes.array.isRequired,
   },
 
   render: function(): ?ReactElement {
     return <div style={{position: "relative"}}>
-      <SimpleHyperplaneVis dim={this.props.dim} pointClasses={this.props.pointClasses}
+      <SimpleHyperplaneVis dim={this.props.dim} pointGroups={this.props.pointGroups}
         highlightW={this.props.highlightW}>
 
         { this.props.optimiserLine && this.props.optimiserLine.length > 0 &&
@@ -33,9 +32,6 @@ var Default2DVis = React.createClass({
           <Hyperplane w={this.props.highlightedW} dim={this.props.dim} /> }
 
       </SimpleHyperplaneVis>
-
-      <ReplacePointsBar callback={this.props.updatePointClasses}
-        style={{position: "absolute", bottom: 0, left: 0}} />
     </div>;
   }
 });

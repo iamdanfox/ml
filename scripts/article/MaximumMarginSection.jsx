@@ -20,16 +20,12 @@ var MaxMarginVis = React.createClass({
   getInitialState: function(): {highlightedW: ?P2} {
     return {
       highlightedW: null,
-      pointClasses: require("../../data/closePoints.js"),
+      pointGroups: require("../../data/awesomePointGroups.js"),
     };
   },
 
   highlightW: function(point: P2): void {
     this.setState({highlightedW: point});
-  },
-
-  updatePointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): void {
-    this.setState({pointClasses: newPointClasses});
   },
 
   render: function() {
@@ -38,16 +34,13 @@ var MaxMarginVis = React.createClass({
       <div style={{display: "flex", justifyContent: "space-between"}}>
 
         <div style={{position: "relative"}}>
-          <SimpleHyperplaneVis dim={dim} pointClasses={this.state.pointClasses}
+          <SimpleHyperplaneVis dim={dim} pointGroups={this.state.pointGroups}
             highlightW={this.highlightW}>
             { this.state.highlightedW && <Hyperplane w={this.state.highlightedW} dim={dim} /> }
           </SimpleHyperplaneVis>
-
-          <ReplacePointsBar callback={this.updatePointClasses}
-            style={{position: "absolute", bottom: 0, left: 0}} />
         </div>
 
-        <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
+        <Draggable3DScene dim={dim} pointGroups={this.state.pointGroups}
             objective={MaximumMargin.objective} highlightW={this.highlightW}>
           <ParametricGraph thetaResolution={120} rResolution={40} colourFunction={ParametricGraph.COLOUR_FUNCTION}  />
           {this.state.highlightedW && <CursorSphere highlightedW={this.state.highlightedW} />}

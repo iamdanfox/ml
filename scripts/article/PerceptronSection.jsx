@@ -12,7 +12,7 @@ var Perceptron = require("../Perceptron.jsx");
 var React = require("react/addons");
 var SimpleHyperplaneVis = require("./SimpleHyperplaneVis.jsx");
 
-var INITIAL_POINTS = require("../../data/points.js");
+var INITIAL_POINTS = require("../../data/awesomePointGroups.js");
 var INITIAL_W = {x: 80, y: 60};
 var perceptronSteps:Array<P2> = Perceptron.optimise(INITIAL_W, INITIAL_POINTS);
 
@@ -85,7 +85,7 @@ var PerceptronSection = React.createClass({
       </code>
 
       <div ref="container">
-        <SimpleHyperplaneVis dim={400} highlightW={function() {}} pointClasses={INITIAL_POINTS}>
+        <SimpleHyperplaneVis dim={400} highlightW={function() {}} pointGroups={INITIAL_POINTS}>
           { this.state.nextStep && <Hyperplane w={perceptronSteps[this.state.nextStep - 1]} dim={400} />}
         </SimpleHyperplaneVis>
         <div>

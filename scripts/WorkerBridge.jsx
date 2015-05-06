@@ -2,7 +2,7 @@
 "use strict";
 type F<U, V> = (x: U) => V;
 type P2 = {x: number; y: number};
-type PointClasses = [Array<P2>, Array<P2>];
+type PointGrp = {label: number; points: Array<P2>};
 
 var worker = new Worker("./build/worker.bundle.js");
 var subscribers = {};
@@ -22,17 +22,17 @@ module.exports = {
 
   subscribe: function(
       reactElementId: string,
-      callback: F<any, void>): (t: number, r: number, d: number, pc: PointClasses) => void {
+      callback: F<any, void>): (t: number, r: number, d: number, pointGroups: Array<PointGrp>) => void {
     console.assert(!(reactElementId in subscribers), "No repeat subscribing: " + reactElementId);
     subscribers[reactElementId] = callback;
 
-    return function request(thetaResolution: number, rResolution: number, dim: number, pointClasses: PointClasses) {
+    return function request(thetaResolution: number, rResolution: number, dim: number, pointGroups: Array<PointGrp>) {
       console.assert(
         typeof thetaResolution === "number" &&
         typeof rResolution === "number" &&
-        pointClasses instanceof Array);
-      console.log('sending', reactElementId, pointClasses);
-      worker.postMessage({reactElementId, thetaResolution, rResolution, dim, pointClasses});
+        pointGroups instanceof Array);
+      console.log('sending', reactElementId, pointGroups);
+      worker.postMessage({reactElementId, thetaResolution, rResolution, dim, pointGroups});
     };
   },
 

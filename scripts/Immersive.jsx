@@ -2,7 +2,6 @@
 "use strict";
 
 type P2 = {x: number; y: number};
-type PointClasses = [Array<P2>, Array<P2>];
 type PointGrp = {
   label: number;
   points: Array<P2>;
@@ -32,24 +31,6 @@ var React = require("react/addons");
 
 
 var LogisticRegressionVis = React.createClass({
-  getInitialState: function() {
-    return {
-      pointClasses: this.computePointClasses(this.props.pointGroups)
-    };
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    if (nextProps.pointGroups !== this.props.pointGroups) {
-      this.setState({
-        pointClasses: this.computePointClasses(nextProps.pointGroups)
-      });
-    }
-  },
-
-  computePointClasses: function(pointGroups): PointClasses {
-    return [0, 1].map((l) => pointGroups
-          .reduce((acc, pg) => pg.label === l ? acc.concat(pg.points) : acc, []));
-  },
 
   render: function(): ?ReactElement {
     var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
@@ -57,16 +38,16 @@ var LogisticRegressionVis = React.createClass({
       var zRange = boundingBox.max.z - zMin;
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-      var stops = LogisticRegression.fastOptimise(vertex1, this.state.pointClasses) / 250;
+      var stops = LogisticRegression.fastOptimise(vertex1, this.props.pointGroups) / 250;
       mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
     };
 
-    var lrOptimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.state.pointClasses);
-    var perceptronOptimiserLine = Perceptron.optimise(this.props.highlightedW, this.state.pointClasses);
+    var lrOptimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.props.pointGroups);
+    var perceptronOptimiserLine = Perceptron.optimise(this.props.highlightedW, this.props.pointGroups);
 
     return (
       <div style={{display: "inline"}}>
-        <Draggable3DScene dim={500} pointClasses={this.state.pointClasses}
+        <Draggable3DScene dim={500} pointGroups={this.props.pointGroups}
             objective={LogisticRegression.objective} highlightW={this.props.highlightW}>
 
           <OptimiserLine vertices={lrOptimiserLine} />
@@ -76,7 +57,7 @@ var LogisticRegressionVis = React.createClass({
         </Draggable3DScene>
 
 
-        <Draggable3DScene dim={500} pointClasses={this.state.pointClasses}
+        <Draggable3DScene dim={500} pointGroups={this.props.pointGroups}
             objective={MaximumMargin.objective} highlightW={this.props.highlightW}>
 
           <ParametricGraph thetaResolution={120} rResolution={40}
@@ -86,7 +67,7 @@ var LogisticRegressionVis = React.createClass({
         </Draggable3DScene>
 
 
-        <Draggable3DScene dim={500} pointClasses={this.state.pointClasses}
+        <Draggable3DScene dim={500} pointGroups={this.props.pointGroups}
             objective={Perceptron.objective} highlightW={this.props.highlightW}>
           <ParametricGraph thetaResolution={120} rResolution={12}
             colourFunction={ParametricGraph.COLOUR_FUNCTION}  />

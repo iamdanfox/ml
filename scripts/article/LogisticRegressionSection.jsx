@@ -19,16 +19,12 @@ var LogisticRegressionVis = React.createClass({
   getInitialState: function(): {highlightedW: ?P2} {
     return {
       highlightedW: null,
-      pointClasses: require("../../data/closePoints.js"),
+      pointGroups: require("../../data/awesomePointGroups.js"),
     };
   },
 
   highlightW: function(point: P2): void {
     this.setState({highlightedW: point});
-  },
-
-  updatePointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): void {
-    this.setState({pointClasses: newPointClasses});
   },
 
   render: function() {
@@ -37,7 +33,7 @@ var LogisticRegressionVis = React.createClass({
     var optimiserLine;
     if (typeof this.state.highlightedW !== "undefined" &&
        this.state.highlightedW !== null) {
-      optimiserLine = optimise(this.state.highlightedW, this.state.pointClasses);
+      optimiserLine = optimise(this.state.highlightedW, this.state.pointGroups);
     }
 
     var colourFunction = (function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor): void {
@@ -46,7 +42,7 @@ var LogisticRegressionVis = React.createClass({
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
 
-      var stops = fastOptimise(vertex1, this.state.pointClasses) / 250; // should match MAX_STOPS
+      var stops = fastOptimise(vertex1, this.state.pointGroups) / 250; // should match MAX_STOPS
 
       mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
     }).bind(this);
@@ -54,11 +50,11 @@ var LogisticRegressionVis = React.createClass({
     return <div style={{width: "1000px"}}>
       <div style={{display: "flex", justifyContent: "space-between"}}>
 
-        <Default2DVis dim={dim} pointClasses={this.state.pointClasses}
+        <Default2DVis dim={dim} pointGroups={this.state.pointGroups}
           highlightW={this.highlightW} optimiserLine={optimiserLine}
-          highlightedW={this.state.highlightedW} updatePointClasses={this.updatePointClasses} />
+          highlightedW={this.state.highlightedW} />
 
-        <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
+        <Draggable3DScene dim={dim} pointGroups={this.state.pointGroups}
             objective={objective} highlightW={this.highlightW}>
           <WebWorkerGraph thetaResolution={24} rResolution={8} />
           {optimiserLine && <OptimiserLine vertices={optimiserLine} />}

@@ -2,7 +2,6 @@
 type F<U, V> = (x: U) => V;
 type P2 = {x: number; y: number};
 type P2t = {x: number; y: number; t: number};
-type PointClasses = [Array<P2>,Array<P2>];
 
 "use strict";
 
@@ -79,28 +78,6 @@ module.exports = {
         y: a.y - b.y
       };
     };
-  },
-
-  pointClassesTransform: function(pointClasses: PointClasses): Array<P2t> {
-    var [class0, class1] = pointClasses;
-    var transformedClass0 = class0.map(function(p) {
-      return {x: p.x, y: p.y, t: -1};
-    });
-    var transformedClass1 = class1.map(function(p) {
-      return {x: p.x, y: p.y, t: 1};
-    });
-    return transformedClass0.concat(transformedClass1);
-  },
-
-  pointClassesTransformZeroOne: function(pointClasses: PointClasses): Array<P2t> {
-    var [class0, class1] = pointClasses;
-    var transformedClass0 = class0.map(function(p) {
-      return {x: p.x, y: p.y, t: 1};
-    });
-    var transformedClass1 = class1.map(function(p) {
-      return {x: p.x, y: p.y, t: 0};
-    });
-    return transformedClass0.concat(transformedClass1);
   },
 
   classify: function(w: P2, vectorToClassify: P2): number {

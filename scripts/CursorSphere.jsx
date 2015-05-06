@@ -5,11 +5,11 @@ var React = require("react/addons");
 var THREE = require("three");
 
 type P2 = {x: number; y: number};
-type PointClasses = [Array<P2>, Array<P2>];
+type PointGrp = {label: number; points: Array<P2>};
 type Props = {
   highlightedW: P2;
-  pointClasses: PointClasses;
-  objective: (w: P2, pointClasses: PointClasses) => number;
+  pointGroups: Array<PointGrp>;
+  objective: (w: P2, pointGroups: Array<PointGrp>) => number;
   scene: THREE.Scene;
 }
 
@@ -17,7 +17,7 @@ type Props = {
 var CursorSphere = React.createClass({
   propTypes: {
     highlightedW: React.PropTypes.object.isRequired,
-    pointClasses: React.PropTypes.array.isRequired,
+    pointGroups: React.PropTypes.array.isRequired,
     objective: React.PropTypes.func.isRequired,
     scene: React.PropTypes.any.isRequired
   },
@@ -46,7 +46,7 @@ var CursorSphere = React.createClass({
 
       if (typeof highlightedW !== "undefined" && highlightedW !== null) {
         var {x, y} = highlightedW;
-        var z = nextProps.objective(highlightedW, nextProps.pointClasses);
+        var z = nextProps.objective(highlightedW, nextProps.pointGroups);
         this.state.sphere.position.set(x, y, z);
       }
     }

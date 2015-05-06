@@ -21,16 +21,12 @@ var PerceptronVis = React.createClass({
   getInitialState: function(): {highlightedW: ?P2} {
     return {
       highlightedW: null,
-      pointClasses: require("../../data/points.js"),
+      pointGroups: require("../../data/awesomePointGroups.js"),
     };
   },
 
   highlightW: function(point: P2): void {
     this.setState({highlightedW: point});
-  },
-
-  updatePointClasses: function(newPointClasses: [Array<P2>, Array<P2>]): void {
-    this.setState({pointClasses: newPointClasses});
   },
 
   render: function() {
@@ -39,22 +35,19 @@ var PerceptronVis = React.createClass({
     var optimiserLine;
     if (typeof this.state.highlightedW !== "undefined" &&
        this.state.highlightedW !== null) {
-      optimiserLine = optimise(this.state.highlightedW, this.state.pointClasses);
+      optimiserLine = optimise(this.state.highlightedW, this.state.pointGroups);
     }
 
     return <div style={{width: "850px"}}>
       <div style={{display: "flex", justifyContent: "space-between"}}>
 
         <div style={{position: "relative"}}>
-          <Default2DVis dim={dim} pointClasses={this.state.pointClasses}
+          <Default2DVis dim={dim} pointGroups={this.state.pointGroups}
             highlightW={this.highlightW} optimiserLine={optimiserLine}
-            highlightedW={this.state.highlightedW} updatePointClasses={this.updatePointClasses} />
-
-          <ReplacePointsBar callback={this.updatePointClasses}
-            style={{position: "absolute", bottom: 0, left: 0}} />
+            highlightedW={this.state.highlightedW} />
         </div>
 
-        <Draggable3DScene dim={dim} pointClasses={this.state.pointClasses}
+        <Draggable3DScene dim={dim} pointGroups={this.state.pointGroups}
             objective={objective} highlightW={this.highlightW}>
           <ParametricGraph thetaResolution={120} rResolution={20} colourFunction={ParametricGraph.COLOUR_FUNCTION} />
           {optimiserLine && <OptimiserLine vertices={optimiserLine} />}

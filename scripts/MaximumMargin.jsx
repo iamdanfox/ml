@@ -1,6 +1,6 @@
 /* @flow */
 type P2 = {x: number; y: number};
-type PointClasses = [Array<P2>, Array<P2>];
+type PointGrp = {label: number; points: Array<P2>};
 
 "use strict";
 
@@ -8,9 +8,7 @@ var {modulus, classTransform} = require("./VectorUtils.jsx");
 
 
 // the objective function is used to generate the surface
-function objective(w: P2, pointClasses: PointClasses): number {
-  var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]};});
-
+function objective(w: P2, pointGroups: Array<PointGrp>): number {
   var minimumMargin = Infinity;
 
   for (var k = 0, maxk = pointGroups.length; k < maxk; k = k + 1) {

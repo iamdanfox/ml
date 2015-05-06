@@ -5,14 +5,14 @@ var React = require("react/addons");
 var THREE = require("three");
 
 type P2 = {x: number; y: number};
-type PointClasses = [Array<P2>, Array<P2>];
+type PointGrp = {label: number; points: Array<P2>};
 type Props = {
   colourFunction: (boundingBox: any,
     v1: THREE.Vector3, v2: THREE.Vector3, v3: THREE.Vector3,
     mutableFaceColor: THREE.Color) => void;
   dim: number;
-  pointClasses: PointClasses;
-  objective: (w: P2, pointClasses: PointClasses) => number;
+  pointGroups: Array<PointGrp>;
+  objective: (w: P2, pointGroups: Array<PointGrp>) => number;
   rResolution: number;
   scene: THREE.Scene;
   thetaResolution: number;
@@ -35,7 +35,7 @@ var ParametricGraph = React.createClass({
   propTypes: {
     colourFunction: React.PropTypes.func.isRequired,
     dim: React.PropTypes.number.isRequired,
-    pointClasses: React.PropTypes.array.isRequired,
+    pointGroups: React.PropTypes.array.isRequired,
     objective: React.PropTypes.func.isRequired,
     rResolution: React.PropTypes.number.isRequired,
     scene: React.PropTypes.any.isRequired,
@@ -73,7 +73,7 @@ var ParametricGraph = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps: Props): bool {
-    return (nextProps.pointClasses !== this.props.pointClasses ||
+    return (nextProps.pointGroups !== this.props.pointGroups ||
       nextProps.objective !== this.props.objective);
   },
 
@@ -83,7 +83,7 @@ var ParametricGraph = React.createClass({
 
       for (var i = 0; i < geometry.vertices.length; i = i + 1) {
         var vertex = geometry.vertices[i];
-        vertex.setZ(nextProps.objective(vertex, nextProps.pointClasses));
+        vertex.setZ(nextProps.objective(vertex, nextProps.pointGroups));
       }
 
       this.colourGeometry(geometry);
@@ -97,7 +97,7 @@ var ParametricGraph = React.createClass({
       var r = (Math.pow(1.8, j * j) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
       var x = r * Math.cos(theta) * props.dim / 200;
       var y = r * Math.sin(theta) * props.dim / 200;
-      var z = props.objective({x, y}, props.pointClasses);
+      var z = props.objective({x, y}, props.pointGroups);
       return new THREE.Vector3(x, y, z);
     };
 

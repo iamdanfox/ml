@@ -6,11 +6,11 @@ var THREE = require("three");
 
 
 type P2 = {x: number; y: number};
-type PointClasses = [Array<P2>, Array<P2>];
+type PointGrp = {label: number; points: Array<P2>};
 type Props = {
   vertices: Array<P2>;
-  pointClasses: PointClasses;
-  objective: (w: P2, pointClasses: PointClasses) => number;
+  pointGroups: Array<PointGrp>;
+  objective: (w: P2, pointGroups: Array<PointGrp>) => number;
   scene: THREE.Scene;
 }
 type State = {
@@ -22,7 +22,7 @@ var OptimiserLine = React.createClass({
   propTypes: {
     vertices: React.PropTypes.array.isRequired,
     objective: React.PropTypes.func.isRequired,
-    pointClasses: React.PropTypes.array.isRequired,
+    pointGroups: React.PropTypes.array.isRequired,
     scene: React.PropTypes.any.isRequired
   },
 
@@ -32,7 +32,7 @@ var OptimiserLine = React.createClass({
 
   shouldComponentUpdate: function(nextProps: Props): bool {
     return (nextProps.vertices !== this.props.vertices ||
-      nextProps.pointClasses !== this.props.pointClasses ||
+      nextProps.pointGroups !== this.props.pointGroups ||
       nextProps.objective !== this.props.objective);
   },
 
@@ -49,7 +49,7 @@ var OptimiserLine = React.createClass({
 
         geometry.vertices = vertices.map(
           (w) => {
-            var z = nextProps.objective(w, nextProps.pointClasses);
+            var z = nextProps.objective(w, nextProps.pointGroups);
             return new THREE.Vector3(w.x, w.y, z + 0.01); // hack to keep the line above the surface. (better would be smart interpolation)
           }
         );

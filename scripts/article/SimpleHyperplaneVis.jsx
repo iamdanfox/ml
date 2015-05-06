@@ -12,7 +12,7 @@ var SimpleHyperplaneVis = React.createClass({
 
   propTypes: {
     dim: React.PropTypes.number.isRequired,
-    pointClasses: React.PropTypes.array.isRequired,
+    pointGroups: React.PropTypes.array.isRequired,
     highlightW: React.PropTypes.func.isRequired,
   },
 
@@ -34,7 +34,7 @@ var SimpleHyperplaneVis = React.createClass({
         <g transform={"translate(" + this.props.dim / 2 + " " + this.props.dim / 2 + ") scale(1 -1)"}>
 
           <Axes dim={this.props.dim} />
-          <AllPoints pointClasses={this.props.pointClasses} />
+          <AllPoints pointGroups={this.props.pointGroups} />
 
           { this.props.children }
         </g>

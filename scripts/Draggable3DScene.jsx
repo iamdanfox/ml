@@ -16,12 +16,12 @@ type State = {
   scene: THREE.Scene;
   startAngle: ?number;
 }
-type PointClasses = [Array<P2>, Array<P2>];
+type PointGrp = {label: number; points: Array<P2>};
 type Props = {
   dim: number;
   highlightW: F<P2, void>;
-  pointClasses: PointClasses;
-  objective: (w: P2, pointClasses: PointClasses) => number;
+  pointGroups: Array<PointGrp>;
+  objective: (w: P2, pointGroups: Array<PointGrp>) => number;
 }
 
 
@@ -30,7 +30,7 @@ var Draggable3DScene = React.createClass({
   propTypes: {
     dim: React.PropTypes.number.isRequired,
     highlightW: React.PropTypes.func.isRequired,
-    pointClasses: React.PropTypes.array.isRequired,
+    pointGroups: React.PropTypes.array.isRequired,
     objective: React.PropTypes.func.isRequired
   },
 
@@ -169,7 +169,7 @@ var Draggable3DScene = React.createClass({
   render: function(): ?ReactElement {
     var mergeInProps = {
       dim: this.props.dim,
-      pointClasses: this.props.pointClasses,
+      pointGroups: this.props.pointGroups,
       objective: this.props.objective,
       scene: this.state.scene
     };

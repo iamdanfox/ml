@@ -3,11 +3,11 @@
 
 /* flow-include import type * as THREE from 'three'; */
 type P2 = {x: number; y: number};
-type PointClasses = [Array<P2>, Array<P2>];
+type PointGrp = {label: number; points: Array<P2>};
 type Result = {faces: Array<any>; vertices: Array<any>};
 type Props = {
   dim: number;
-  pointClasses: PointClasses;
+  pointGroups: Array<PointGrp>;
   rResolution: number;
   scene: THREE.Scene;
   thetaResolution: number;
@@ -27,7 +27,7 @@ var WorkerBridge = require("./WorkerBridge.jsx");
 var WebWorkerGraph = React.createClass({
   propTypes: {
     dim: React.PropTypes.number.isRequired,
-    pointClasses: React.PropTypes.array.isRequired,
+    pointGroups: React.PropTypes.array.isRequired,
     rResolution: React.PropTypes.number.isRequired, // 8
     scene: React.PropTypes.any.isRequired,
     thetaResolution: React.PropTypes.number.isRequired, // 24
@@ -51,24 +51,24 @@ var WebWorkerGraph = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps: Props): bool {
-    return (nextProps.pointClasses !== this.props.pointClasses);
+    return (nextProps.pointGroups !== this.props.pointGroups);
   },
 
   synchronouslyComputeInitialGraph: function(props: Props) {
     if (this.state.graph) {
       this.props.scene.remove(this.state.graph);
     }
-    var {thetaResolution, rResolution, dim, pointClasses} = props;
-    var result = WebWorkerGraphSlug.respond(thetaResolution, rResolution, dim, pointClasses);
+    var {thetaResolution, rResolution, dim, pointGroups} = props;
+    var result = WebWorkerGraphSlug.respond(thetaResolution, rResolution, dim, pointGroups);
     var graph = WebWorkerGraphSlug.reconstruct(result);
     this.setState({graph: graph});
     props.scene.add(graph);
   },
 
   asyncRequestGraphs: function(webWorkerChannel, props: Props) {
-    webWorkerChannel(36, 12, props.dim, props.pointClasses);
-    webWorkerChannel(72, 24, props.dim, props.pointClasses);
-    webWorkerChannel(120, 40, props.dim, props.pointClasses);
+    webWorkerChannel(36, 12, props.dim, props.pointGroups);
+    webWorkerChannel(72, 24, props.dim, props.pointGroups);
+    webWorkerChannel(120, 40, props.dim, props.pointGroups);
   },
 
   subscribeToWebWorker: function() {

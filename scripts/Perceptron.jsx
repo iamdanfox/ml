@@ -2,7 +2,7 @@
 "use strict";
 
 type P2 = {x: number; y: number};
-type PointClasses = [Array<P2>,Array<P2>];
+type PointGrp = {label: number; points: Array<P2>};
 
 var {add, scale, classify, classTransform} = require("./VectorUtils.jsx");
 
@@ -36,9 +36,7 @@ The value of nu is interesting to observe.
 
 module.exports = {
 
-  objective: function(w: P2, pointClasses: PointClasses): number {
-    var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]};});
-
+  objective: function(w: P2, pointGroups: Array<PointGrp>): number {
     for (var k = 0; k < pointGroups.length; k = k + 1) {
       var {points, label} = pointGroups[k];
       if (points.some((p) => classify(p, w) !== label)) {
@@ -49,9 +47,7 @@ module.exports = {
     return 0.6;
   },
 
-  optimise: function(startWeight: P2, pointClasses: PointClasses): Array<P2> {
-    var pointGroups = [0, 1].map(function(label) {return {label, points: pointClasses[label]};});
-
+  optimise: function(startWeight: P2, pointGroups: Array<PointGrp>): Array<P2> {
     var w = startWeight;
     var stops = [w];
 
