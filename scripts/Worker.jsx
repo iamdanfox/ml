@@ -21,11 +21,8 @@ self.addEventListener('message', function(event) {
   var request: Request = event.data.request;
 
   if (inProgressTimer) {
-    console.log("[WORKER aborting]");
     clearTimeout(inProgressTimer); // aborts current job
   }
-
-  console.log("[WORKER received request]");
 
   var doConstrainedProcessing = (closure) => {
     // execute closure, then async recurse or terminate
@@ -36,15 +33,12 @@ self.addEventListener('message', function(event) {
 
     // continue processing
     if (continuation) {
-      console.log("[WORKER continuing]", continuation);
       inProgressTimer = setTimeout(() => doConstrainedProcessing(continuation), 1); // allows us to receive messages in between.
     } else {
-      console.log("[WORKER done]");
       inProgressTimer = null;
     }
   };
 
   doConstrainedProcessing(() => WebWorkerGraphSlug.startProcessing(request));
-
 });
 

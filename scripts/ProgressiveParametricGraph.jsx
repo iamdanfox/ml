@@ -76,7 +76,7 @@ var ProgressiveParametricGraph = React.createClass({
     }
     var {geometry} = this.state.graph;
     geometry.computeBoundingBox();
-    var nextBiggestPowerOf2 = Math.pow(2, Math.floor(Math.log2(geometry.faces.length)))
+    var nextBiggestPowerOf2 = Math.pow(2, Math.floor(Math.log2(geometry.faces.length)));
     this.colourStep(nextBiggestPowerOf2);
   },
 
@@ -113,9 +113,9 @@ var ProgressiveParametricGraph = React.createClass({
       return new THREE.Vector3(x, y, z);
     };
     var geometry = new THREE.ParametricGeometry(polarMeshFunction,
-      this.props.thetaResolution, this.props.rResolution, true)
+      this.props.thetaResolution, this.props.rResolution, true);
 
-    var DEFAULT_COLOUR = new THREE.Color()
+    var DEFAULT_COLOUR = new THREE.Color();
     DEFAULT_COLOUR.setHSL(0.54, 0.8, 0.08);
     for (var i = 0; i < geometry.faces.length; i = i + 1) {
       geometry.faces[i].color.copy(DEFAULT_COLOUR);
@@ -129,12 +129,12 @@ var ProgressiveParametricGraph = React.createClass({
     var numFaces = geometry.faces.length;
 
     if (base === numFaces) {
-      var face = geometry.faces[0];
+      var firstFace = geometry.faces[0];
       this.props.colourFunction(geometry.boundingBox,
-        geometry.vertices[face.a],
-        geometry.vertices[face.b],
-        geometry.vertices[face.c],
-        face.color);
+        geometry.vertices[firstFace.a],
+        geometry.vertices[firstFace.b],
+        geometry.vertices[firstFace.c],
+        firstFace.color);
     }
 
     for (var i = 0; i < numFaces; i = i + 1) {
