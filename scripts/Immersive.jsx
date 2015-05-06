@@ -49,7 +49,8 @@ var LogisticRegressionVis = React.createClass({
           <OptimiserLine vertices={lrOptimiserLine} />
           <CursorSphere highlightedW={this.props.highlightedW} />
 
-          <ProgressiveParametricGraph resolution={4} colourFunction={ProgressiveParametricGraph.COLOUR_FUNCTION} />
+          <ProgressiveParametricGraph thetaResolution={96} rResolution={32}
+            colourFunction={colourFunction} />
 
         </Draggable3DScene>
       </div>

@@ -14,7 +14,8 @@ type Props = {
   pointGroups: Array<PointGrp>;
   objective: (w: P2, pointGroups: Array<PointGrp>) => number;
   scene: THREE.Scene;
-  resolution: number;
+  thetaResolution: number;
+  rResolution: number;
 }
 type State = {
   graph: THREE.Mesh;
@@ -37,7 +38,8 @@ var ProgressiveParametricGraph = React.createClass({
     pointGroups: React.PropTypes.array.isRequired,
     objective: React.PropTypes.func.isRequired,
     scene: React.PropTypes.any.isRequired,
-    resolution: React.PropTypes.number.isRequired,
+    rResolution: React.PropTypes.number.isRequired,
+    thetaResolution: React.PropTypes.number.isRequired,
     forceParentUpdate: React.PropTypes.func.isRequired,
   },
 
@@ -67,10 +69,17 @@ var ProgressiveParametricGraph = React.createClass({
 
   componentWillMount: function() {
     this.props.scene.add(this.state.graph);
+    this.startProgressiveColouring();
+  },
 
+  startProgressiveColouring: function() {
+    if (this.state.timer !== null) {
+      clearTimeout(this.state.timer);
+    }
     var {geometry} = this.state.graph;
     geometry.computeBoundingBox();
-    this.colourStep(geometry.faces.length);
+    var nextBiggestPowerOf2 = Math.pow(2, Math.floor(Math.log2(geometry.faces.length)))
+    this.colourStep(nextBiggestPowerOf2);
   },
 
   componentWillUnmount: function() {
@@ -92,25 +101,32 @@ var ProgressiveParametricGraph = React.createClass({
       }
 
       this.state.graph.geometry.verticesNeedUpdate = true;
+      this.startProgressiveColouring();
     }
   },
 
   buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
-    var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
-      var theta = i * 2 * Math.PI;
-      var r = (Math.pow(1.8, j * j) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
+    var polarMeshFunction = function(j: number, i: number): THREE.Vector3 {
+      var r = (Math.pow(1.8, i * i) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
+      var theta = j * 2 * Math.PI;
       var x = r * Math.cos(theta);
       var y = r * Math.sin(theta);
       var z = props.objective({x, y}, props.pointGroups);
       return new THREE.Vector3(x, y, z);
     };
+    var geometry = new THREE.ParametricGeometry(polarMeshFunction,
+      this.props.thetaResolution, this.props.rResolution, true)
 
-    return new THREE.ParametricGeometry(polarMeshFunction,
-      Math.pow(2, this.props.resolution), Math.pow(2, this.props.resolution), true);
+    var DEFAULT_COLOUR = new THREE.Color()
+    DEFAULT_COLOUR.setHSL(0.54, 0.8, 0.08);
+    for (var i = 0; i < geometry.faces.length; i = i + 1) {
+      geometry.faces[i].color.copy(DEFAULT_COLOUR);
+    }
+
+    return geometry;
   },
 
   colourStep: function(base: number): void {
-    console.log('[BASE] = ', base)
     var {geometry} = this.state.graph;
     var numFaces = geometry.faces.length;
 
@@ -133,6 +149,7 @@ var ProgressiveParametricGraph = React.createClass({
           geometry.vertices[face.b],
           geometry.vertices[face.c],
           face.color);
+        face.hasBeenComputed = true;
       } else {
         // otherwise, just use the last computed number
         var previousComputedColour = Math.floor(i / base) * base;
@@ -147,25 +164,9 @@ var ProgressiveParametricGraph = React.createClass({
     var nextBase = Math.floor(base / 2);
     if (nextBase > 0) {
       this.setState({
-        timer: setTimeout(() => this.colourStep(nextBase), 100)
+        timer: setTimeout(() => this.colourStep(nextBase), 1)
       });
     }
-  },
-
-  colourGeometry: function(graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
-    graphGeometry.computeBoundingBox();
-
-    for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
-      var face = graphGeometry.faces[i];
-      this.props.colourFunction(graphGeometry.boundingBox,
-        graphGeometry.vertices[face.a],
-        graphGeometry.vertices[face.b],
-        graphGeometry.vertices[face.c],
-        face.color);
-    }
-
-    graphGeometry.colorsNeedUpdate = true;
-    return graphGeometry;
   },
 
   render: function(): ?ReactElement {
