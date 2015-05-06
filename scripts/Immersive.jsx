@@ -23,8 +23,6 @@ var Draggable3DScene = require("./Draggable3DScene.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
 var WebWorkerGraph = require("./WebWorkerGraph.jsx");
 var OptimiserLine = require("./OptimiserLine.jsx");
-var Perceptron = require("./Perceptron.jsx");
-var ParametricGraph = require("./ParametricGraph.jsx");
 var React = require("react/addons");
 
 
@@ -42,25 +40,7 @@ var LogisticRegressionVis = React.createClass({
     };
 
     var lrOptimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.props.pointGroups);
-    var perceptronOptimiserLine = Perceptron.optimise(this.props.highlightedW, this.props.pointGroups);
 
-    // <Draggable3DScene dim={500} pointGroups={this.props.pointGroups}
-    //     objective={MaximumMargin.objective} highlightW={this.props.highlightW}>
-
-    //   <ParametricGraph thetaResolution={120} rResolution={40}
-    //     colourFunction={ParametricGraph.COLOUR_FUNCTION} />
-    //   <CursorSphere highlightedW={this.props.highlightedW} />
-
-    // </Draggable3DScene>
-
-
-    // <Draggable3DScene dim={500} pointGroups={this.props.pointGroups}
-    //     objective={Perceptron.objective} highlightW={this.props.highlightW}>
-    //   <ParametricGraph thetaResolution={120} rResolution={12}
-    //     colourFunction={ParametricGraph.COLOUR_FUNCTION}  />
-    //   <OptimiserLine vertices={perceptronOptimiserLine} />
-    //   <CursorSphere highlightedW={this.props.highlightedW} />
-    // </Draggable3DScene>
     return (
       <div>
         <Draggable3DScene dim={800} pointGroups={this.props.pointGroups}
@@ -69,12 +49,11 @@ var LogisticRegressionVis = React.createClass({
           <OptimiserLine vertices={lrOptimiserLine} />
           <CursorSphere highlightedW={this.props.highlightedW} />
 
-          <WebWorkerGraph thetaResolution={14} rResolution={7} colourFunction={colourFunction} />
+        <WebWorkerGraph thetaResolution={14} rResolution={7} colourFunction={colourFunction} />
 
         </Draggable3DScene>
       </div>
     );
-    // <WebWorkerGraph thetaResolution={24} rResolution={8} />
   }
 });
 

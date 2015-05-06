@@ -66,16 +66,18 @@ var WebWorkerGraph = React.createClass({
   },
 
   asyncRequestGraphs: function(requestNumber: number, webWorkerChannel, props: Props) {
-     var requestQueue = [
-      {thetaResolution: 36, rResolution: 12},
-      {thetaResolution: 72, rResolution: 24}
+    var requestQueue = [
+      {thetaResolution: Math.pow(2, 4), rResolution: Math.pow(2, 4)},
+      {thetaResolution: Math.pow(2, 5), rResolution: Math.pow(2, 5)},
+      {thetaResolution: Math.pow(2, 6), rResolution: Math.pow(2, 6)},
+      {thetaResolution: Math.pow(2, 7), rResolution: Math.pow(2, 7)},
     ];
     if (requestNumber < requestQueue.length) {
       console.log("SENDING", requestNumber);
       var {thetaResolution, rResolution} = requestQueue[requestNumber];
       webWorkerChannel(requestNumber, thetaResolution, rResolution, props.dim, props.pointGroups);
     } else {
-      console.log('done requesting')
+      console.log('done requesting');
     }
   },
 
