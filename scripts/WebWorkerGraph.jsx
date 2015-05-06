@@ -107,10 +107,9 @@ var WebWorkerGraph = React.createClass({
   },
 
   asyncRequestColouring: function(props: Props) {
-    var {vertices, faces, boundingBox} = this.state.graph.geometry;
-    var {pointGroups} = props;
+    var {thetaResolution, rResolution, pointGroups} = props;
     console.log("[React] Request colouring")
-    WorkerBridge.request({vertices, faces, pointGroups, boundingBox}, (result) => {
+    WorkerBridge.request({thetaResolution, rResolution, pointGroups}, (result) => {
       var {hsls} = result;
       // this.state.graph.geometry.faces = faces;
       var len = hsls.length;

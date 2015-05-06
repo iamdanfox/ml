@@ -5,9 +5,8 @@ type P2 = {x: number; y: number};
 
 type PointGrp = {label: number; points: Array<P2>};
 type Request = {
-  vertices: Array<any>;
-  faces: Array<any>;
-  boundingBox: any;
+  thetaResolution: number;
+  rResolution: number;
   pointGroups: Array<PointGrp>;
 };
 type Callback = (r: Result) => void;

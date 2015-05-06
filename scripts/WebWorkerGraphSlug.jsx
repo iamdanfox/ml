@@ -4,22 +4,39 @@
 type P2 = {x: number; y: number};
 type PointGrp = {label: number; points: Array<P2>};
 type Request = {
-  vertices: Array<any>;
-  faces: Array<any>;
-  boundingBox: any;
+  thetaResolution: number;
+  rResolution: number;
   pointGroups: Array<PointGrp>;
 };
 type Result = {hsls: Array<any>};
 
 
-var {fastOptimise} = require("./LogisticRegression.jsx");
+var {fastOptimise, objective} = require("./LogisticRegression.jsx");
 var THREE = require("three");
 
+var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry {
+  var polarMeshFunction = function(j: number, i: number): THREE.Vector3 {
+    var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
+    var theta = j * 2 * Math.PI;
+    var x = r * Math.cos(theta);
+    var y = r * Math.sin(theta);
+    var z = objective({x, y}, request.pointGroups);
+    return new THREE.Vector3(x, y, z);
+  };
+  var geometry = new THREE.ParametricGeometry(polarMeshFunction,
+    request.thetaResolution, request.rResolution, true);
+
+  geometry.computeBoundingBox();
+  return geometry;
+};
 
 
 module.exports = {
   startProcessing: function(request: Request): {result: Result; continuation: any} {
-    var {boundingBox, faces, vertices, pointGroups} = request;
+    // construct Worker-side clone of the entire graph.
+
+    var {pointGroups} = request;
+    var {boundingBox, faces, vertices} = buildInitialGeometry(request);
 
     var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableHSL) => {
       var zMin = boundingBox.min.z;
@@ -27,9 +44,8 @@ module.exports = {
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
       var stops = fastOptimise(vertex1, pointGroups) / 250;
-      // mutableHSL.setHSL(0.54 + stops * 0.3, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
       mutableHSL.h = 0.54 + stops * 0.3;
-      // mutableHSL.s = 0.8
+      mutableHSL.s = 0.8;
       mutableHSL.l = 0.08 + 0.82 * Math.pow(normalizedZ, 2);
     };
 
