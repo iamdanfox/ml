@@ -31,14 +31,6 @@ var React = require("react/addons");
 var LogisticRegressionVis = React.createClass({
 
   render: function(): ?ReactElement {
-    var colourFunction = (boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
-      var zMin = boundingBox.min.z;
-      var zRange = boundingBox.max.z - zMin;
-      var totalZ = vertex1.z + vertex2.z + vertex3.z;
-      var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-      var stops = LogisticRegression.fastOptimise(vertex1, this.props.pointGroups) / 250;
-      mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
-    };
 
     var lrOptimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.props.pointGroups);
 
@@ -50,8 +42,7 @@ var LogisticRegressionVis = React.createClass({
           <OptimiserLine vertices={lrOptimiserLine} />
           <CursorSphere highlightedW={this.props.highlightedW} />
 
-          <WebWorkerGraph thetaResolution={250} rResolution={83}
-            colourFunction={colourFunction} />
+          <WebWorkerGraph thetaResolution={250} rResolution={83} />
 
         </Draggable3DScene>
       </div>

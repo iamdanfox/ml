@@ -20,6 +20,7 @@ type State = {
 var React = require("react/addons");
 var THREE = require("three");
 var WorkerBridge = require("./WorkerBridge.jsx");
+var LogisticRegression = require("./LogisticRegression.jsx");
 
 
 
@@ -29,6 +30,16 @@ var MATERIAL = new THREE.MeshBasicMaterial({
   opacity: 0.8,
   transparent: true,
 });
+
+var colourFunction = (pointGroups, boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
+  var zMin = boundingBox.min.z;
+  var zRange = boundingBox.max.z - zMin;
+  var totalZ = vertex1.z + vertex2.z + vertex3.z;
+  var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+  var stops = LogisticRegression.fastOptimise(vertex1, pointGroups) / 250;
+  mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
+};
+
 
 var WebWorkerGraph = React.createClass({
   propTypes: {
@@ -43,12 +54,13 @@ var WebWorkerGraph = React.createClass({
   getInitialState: function(): State {
     return {
       graph: new THREE.Mesh(this.buildInitialGeometry(this.props), MATERIAL.clone()),
+      coarseGraph: new THREE.Mesh(this.buildCoarseGeometry(this.props), MATERIAL.clone()),
       timer: null,
     };
   },
 
-  buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
-    var polarMeshFunction = function(j: number, i: number): THREE.Vector3 {
+  polarMeshFunction: function(props: Props): any {
+    return function(j: number, i: number): THREE.Vector3 {
       // var r = (Math.pow(1.8, i * i) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
       var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
       var theta = j * 2 * Math.PI;
@@ -56,8 +68,11 @@ var WebWorkerGraph = React.createClass({
       var y = r * Math.sin(theta);
       var z = props.objective({x, y}, props.pointGroups);
       return new THREE.Vector3(x, y, z);
-    };
-    var geometry = new THREE.ParametricGeometry(polarMeshFunction,
+    }
+  },
+
+  buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
+    var geometry = new THREE.ParametricGeometry(this.polarMeshFunction(props),
       this.props.thetaResolution, this.props.rResolution, true);
 
     var DEFAULT_COLOUR = new THREE.Color();
@@ -70,8 +85,30 @@ var WebWorkerGraph = React.createClass({
     return geometry;
   },
 
+  buildCoarseGeometry: function(props: Props): THREE.ParametricGeometry {
+    var geometry = new THREE.ParametricGeometry(this.polarMeshFunction(props),
+      Math.floor(props.thetaResolution / 7), Math.floor(props.rResolution / 7), true);
+    return this.colourGeometry(props, geometry);
+  },
+
+  colourGeometry: function(props: Props, graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
+    graphGeometry.computeBoundingBox();
+
+    for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
+      var face = graphGeometry.faces[i];
+      colourFunction(props.pointGroups, graphGeometry.boundingBox,
+        graphGeometry.vertices[face.a],
+        graphGeometry.vertices[face.b],
+        graphGeometry.vertices[face.c],
+        face.color);
+    }
+
+    graphGeometry.colorsNeedUpdate = true;
+    return graphGeometry;
+  },
+
   componentWillMount: function() {
-    this.props.scene.add(this.state.graph);
+    this.props.scene.add(this.state.coarseGraph);
     this.asyncRequestColouring(this.props);
   },
 
@@ -86,22 +123,28 @@ var WebWorkerGraph = React.createClass({
 
   componentWillReceiveProps: function(nextProps: Props) {
     if (this.shouldComponentUpdate(nextProps)) {
-      var geometry = this.state.graph.geometry;
+      // show coarse one, colour synchronously
+      this.props.scene.remove(this.state.graph);
+      this.props.scene.add(this.state.coarseGraph);
+      this.colourGeometry(nextProps, this.state.coarseGraph.geometry);
+      this.props.forceParentUpdate();
 
-      for (var i = 0; i < geometry.vertices.length; i = i + 1) {
-        var vertex = geometry.vertices[i];
-        vertex.setZ(nextProps.objective(vertex, nextProps.pointGroups));
-      }
-
-      this.state.graph.geometry.verticesNeedUpdate = true;
       // debounces mousemove events so that we only send to the web worker when mouse stops moving
       if (this.state.timer) {
         clearTimeout(this.state.timer);
       }
       var timer = setTimeout(() => {
-        console.log('[React] requesting')
-        this.asyncRequestColouring(nextProps)
-      }, 100)
+        // compute new fine geometry
+        var geometry = this.state.graph.geometry;
+        for (var i = 0; i < geometry.vertices.length; i = i + 1) {
+          var vertex = geometry.vertices[i];
+          vertex.setZ(nextProps.objective(vertex, nextProps.pointGroups));
+        }
+        this.state.graph.geometry.verticesNeedUpdate = true;
+
+        console.log('[React] requesting');
+        this.asyncRequestColouring(nextProps);
+      }, 300);
       this.setState({timer});
     }
   },
@@ -111,13 +154,14 @@ var WebWorkerGraph = React.createClass({
     console.log("[React] Request colouring")
     WorkerBridge.request({thetaResolution, rResolution, pointGroups}, (result) => {
       var {hsls} = result;
-      // this.state.graph.geometry.faces = faces;
       var len = hsls.length;
       for (var i = 0; i < len; i = i + 1) {
         var {h, s, l} = hsls[i];
         this.state.graph.geometry.faces[i].color.setHSL(h, s, l);
       }
       this.state.graph.geometry.colorsNeedUpdate = true;
+      this.props.scene.remove(this.state.coarseGraph);
+      this.props.scene.add(this.state.graph);
       this.props.forceParentUpdate();
     });
   },
