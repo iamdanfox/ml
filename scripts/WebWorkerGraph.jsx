@@ -153,14 +153,13 @@ var WebWorkerGraph = React.createClass({
     WorkerBridge.request({thetaResolution, rResolution, pointGroups}, (result) => {
       var {hsls} = result;
       var len = hsls.length;
-      for (var i = 0; i < len; i = i + 3) {
-        this.state.graph.geometry.faces[i / 3].color.setHSL(
+      for (var i = 0; i < len; i = i + 2) {
+        this.state.graph.geometry.faces[i / 2].color.setHSL(
           hsls[i] / 256,
-          hsls[i + 1] / 256,
-          hsls[i + 2] / 256
+          0.8,
+          hsls[i + 1] / 256
         );
       }
-      console.log(hsls[0], hsls[1], hsls[2]);
 
       this.state.graph.geometry.colorsNeedUpdate = true;
       this.props.scene.remove(this.state.coarseGraph);

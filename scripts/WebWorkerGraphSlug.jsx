@@ -22,8 +22,7 @@ var colourFunction = function(pointGroups, boundingBox, vertex1, vertex2, vertex
   var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
   var stops = fastOptimise(vertex2, pointGroups) / 250;
   hsls[startIndex] = 256 * (0.54 + stops * 0.3);
-  // hsls[startIndex + 1] = 0.8; // unchanged
-  hsls[startIndex + 2] = 256 * (0.08 + 0.82 * Math.pow(normalizedZ, 2));
+  hsls[startIndex + 1] = 256 * (0.08 + 0.82 * Math.pow(normalizedZ, 2));
 };
 
 var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry {
@@ -50,14 +49,12 @@ module.exports = {
 
     // get necessary prototypes & functions all set up
     var numFaces = faces.length;
-    var hsls = new Uint8Array(3 * numFaces);
+    var hsls = new Uint8Array(2 * numFaces);
     var H0 = 0.54 * 256;
-    var S0 = 0.8 * 256;
     var L0 = 0.08 * 256;
-    for (var i = 0; i < numFaces * 3; i = i + 3) {
+    for (var i = 0; i < numFaces * 2; i = i + 2) {
       hsls[i] = H0;
-      hsls[i + 1] = S0;
-      hsls[i + 2] = L0;
+      hsls[i + 1] = L0;
     }
 
     // do face 0.
@@ -73,13 +70,12 @@ module.exports = {
         if (i % base === 0 && i % (2 * base) !== 0) {
           // compute this face
           colourFunction(request.pointGroups, boundingBox,
-            vertices[face.a], vertices[face.b], vertices[face.c], hsls, 3 * i);
+            vertices[face.a], vertices[face.b], vertices[face.c], hsls, 2 * i);
         } else {
           // otherwise, just use the last computed number
           var lastComputed = base * Math.floor(i / base);
-          hsls[3 * i] = hsls[3 * lastComputed];
-          // hsls[3 * i + 1] = hsls[3 * lastComputed + 1];
-          hsls[3 * i + 2] = hsls[3 * lastComputed + 2];
+          hsls[2 * i] = hsls[2 * lastComputed];
+          hsls[2 * i + 1] = hsls[2 * lastComputed + 1];
         }
       }
 
