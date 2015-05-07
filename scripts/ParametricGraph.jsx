@@ -3,6 +3,7 @@
 
 var React = require("react/addons");
 var THREE = require("three");
+var FasterGeometry = require("./FasterGeometry.js");
 
 type P2 = {x: number; y: number};
 type PointGrp = {label: number; points: Array<P2>};
@@ -91,7 +92,7 @@ var ParametricGraph = React.createClass({
     }
   },
 
-  buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
+  buildInitialGeometry: function(props: Props): FasterGeometry {
     var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var theta = i * 2 * Math.PI;
       var r = (Math.pow(1.8, j * j) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
@@ -101,11 +102,11 @@ var ParametricGraph = React.createClass({
       return new THREE.Vector3(x, y, z);
     };
 
-    return new THREE.ParametricGeometry(polarMeshFunction,
+    return new FasterGeometry(polarMeshFunction,
       this.props.thetaResolution, this.props.rResolution, true);
   },
 
-  colourGeometry: function(graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
+  colourGeometry: function(graphGeometry: FasterGeometry): FasterGeometry {
     graphGeometry.computeBoundingBox();
 
     for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {

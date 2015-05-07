@@ -21,6 +21,7 @@ var React = require("react/addons");
 var THREE = require("three");
 var WorkerBridge = require("./WorkerBridge.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
+var FasterGeometry = require("./FasterGeometry.js");
 
 
 
@@ -71,21 +72,21 @@ var WebWorkerGraph = React.createClass({
     };
   },
 
-  buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
-    var geometry = new THREE.ParametricGeometry(this.polarMeshFunction(props),
+  buildInitialGeometry: function(props: Props): FasterGeometry {
+    var geometry = new FasterGeometry(this.polarMeshFunction(props),
       this.props.rResolution, this.props.thetaResolution, true);
 
     geometry.computeBoundingBox();
     return geometry;
   },
 
-  buildCoarseGeometry: function(props: Props): THREE.ParametricGeometry {
-    var geometry = new THREE.ParametricGeometry(this.polarMeshFunction(props),
+  buildCoarseGeometry: function(props: Props): FasterGeometry {
+    var geometry = new FasterGeometry(this.polarMeshFunction(props),
       Math.floor(props.rResolution / 12), Math.floor(props.thetaResolution / 12), true);
     return this.colourGeometry(props, geometry);
   },
 
-  colourGeometry: function(props: Props, graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
+  colourGeometry: function(props: Props, graphGeometry: FasterGeometry): FasterGeometry {
     graphGeometry.computeBoundingBox();
 
     for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {

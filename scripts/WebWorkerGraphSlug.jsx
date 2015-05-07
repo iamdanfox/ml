@@ -13,7 +13,7 @@ type Result = {hsls: Uint8Array};
 
 var {fastOptimise, objective} = require("./LogisticRegression.jsx");
 var THREE = require("three");
-
+var FasterGeometry = require("./FasterGeometry.js");
 
 var colourFunction = function(pointGroups, boundingBox, vertex1, vertex2, vertex3, hsls, startIndex) {
   var zMin = boundingBox.min.z;
@@ -25,7 +25,7 @@ var colourFunction = function(pointGroups, boundingBox, vertex1, vertex2, vertex
   hsls[startIndex + 1] = 256 * (0.08 + 0.82 * Math.pow(normalizedZ, 2));
 };
 
-var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry {
+var buildInitialGeometry = function(request: Request): FasterGeometry {
   var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
     var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
     var theta = j * 2 * Math.PI;
@@ -34,7 +34,7 @@ var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry 
     var z = objective({x, y}, request.pointGroups);
     return new THREE.Vector3(x, y, z);
   };
-  var geometry = new THREE.ParametricGeometry(polarMeshFunction,
+  var geometry = new FasterGeometry(polarMeshFunction,
     request.rResolution, request.thetaResolution, true);
 
   geometry.computeBoundingBox();
@@ -50,17 +50,14 @@ module.exports = {
     // get necessary prototypes & functions all set up
     var numFaces = faces.length;
     var hsls = new Uint8Array(2 * numFaces);
-    var H0 = 0.54 * 256;
-    var L0 = 0.08 * 256;
     for (var i = 0; i < numFaces * 2; i = i + 2) {
-      hsls[i] = H0;
-      hsls[i + 1] = L0;
+      hsls[i] = 138;
+      hsls[i + 1] = 20;
     }
 
     // do face 0.
-    var firstFace = faces[0];
     colourFunction(request.pointGroups, boundingBox,
-      vertices[firstFace.a], vertices[firstFace.b], vertices[firstFace.c], hsls, 0);
+      vertices[faces[0].a], vertices[faces[0].b], vertices[faces[0].c], hsls, 0);
 
     var processStep = function(base: number): {result: Result; continuation: any} {
 

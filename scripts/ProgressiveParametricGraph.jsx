@@ -3,6 +3,7 @@
 
 var React = require("react/addons");
 var THREE = require("three");
+var FasterGeometry = require("./FasterGeometry.js");
 
 type F<U,V> = (x: U) => V;
 type P2 = {x: number; y: number};
@@ -143,7 +144,7 @@ var ProgressiveParametricGraph = React.createClass({
     }
   },
 
-  buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
+  buildInitialGeometry: function(props: Props): FasterGeometry {
     var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
       var theta = j * 2 * Math.PI;
@@ -152,7 +153,7 @@ var ProgressiveParametricGraph = React.createClass({
       var z = props.objective({x, y}, props.pointGroups);
       return new THREE.Vector3(x, y, z);
     };
-    var geometry = new THREE.ParametricGeometry(polarMeshFunction,
+    var geometry = new FasterGeometry(polarMeshFunction,
       this.props.rResolution, this.props.thetaResolution, true);
 
     var DEFAULT_COLOUR = new THREE.Color();
