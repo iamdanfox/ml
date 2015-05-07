@@ -8,21 +8,16 @@ type Request = {
   rResolution: number;
   pointGroups: Array<PointGrp>;
 };
-type Result = {hsls: Uint8Array};
+type Result = {hues: Uint8Array};
 
 
 var {fastOptimise, objective} = require("./LogisticRegression.jsx");
 var THREE = require("three");
 var FasterGeometry = require("./FasterGeometry.js");
 
-var colourFunction = function(pointGroups, boundingBox, vertex1, vertex2, vertex3, hsls, startIndex) {
-  var zMin = boundingBox.min.z;
-  var zRange = boundingBox.max.z - zMin;
-  var totalZ = vertex1.z + vertex2.z + vertex3.z;
-  var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-  var stops = fastOptimise(vertex2, pointGroups) / 250;
-  hsls[startIndex] = 256 * (0.54 + stops * 0.3);
-  hsls[startIndex + 1] = 256 * (0.08 + 0.82 * Math.pow(normalizedZ, 2));
+var colourFunction = function(pointGroups, vertex, hues, index) {
+  var stops = fastOptimise(vertex, pointGroups) / 250;
+  hues[index] = 256 * (0.54 + stops * 0.3);
 };
 
 var buildInitialGeometry = function(request: Request): FasterGeometry {
@@ -37,7 +32,6 @@ var buildInitialGeometry = function(request: Request): FasterGeometry {
   var geometry = new FasterGeometry(polarMeshFunction,
     request.rResolution, request.thetaResolution, true);
 
-  geometry.computeBoundingBox();
   return geometry;
 };
 
@@ -45,19 +39,17 @@ var buildInitialGeometry = function(request: Request): FasterGeometry {
 module.exports = {
   startProcessing: function(request: Request): {result: Result; continuation: any} {
     // construct Worker-side clone of the entire graph.
-    var {boundingBox, faces, vertices} = buildInitialGeometry(request);
+    var {faces, vertices} = buildInitialGeometry(request);
 
     // get necessary prototypes & functions all set up
     var numFaces = faces.length;
-    var hsls = new Uint8Array(2 * numFaces);
-    for (var i = 0; i < numFaces * 2; i = i + 2) {
-      hsls[i] = 138;
-      hsls[i + 1] = 20;
+    var hues = new Uint8Array(numFaces);
+    for (var i = 0; i < numFaces; i = i + 1) {
+      hues[i] = 20; // just compute hue! 256 * 0.08
     }
 
     // do face 0.
-    colourFunction(request.pointGroups, boundingBox,
-      vertices[faces[0].a], vertices[faces[0].b], vertices[faces[0].c], hsls, 0);
+    colourFunction(request.pointGroups, vertices[faces[0].b], hues, 0);
 
     var processStep = function(base: number): {result: Result; continuation: any} {
 
@@ -66,18 +58,15 @@ module.exports = {
         // we want to colour pixels that have not been coloured already!
         if (i % base === 0 && i % (2 * base) !== 0) {
           // compute this face
-          colourFunction(request.pointGroups, boundingBox,
-            vertices[face.a], vertices[face.b], vertices[face.c], hsls, 2 * i);
+          colourFunction(request.pointGroups, vertices[face.b], hues, i);
         } else {
           // otherwise, just use the last computed number
-          var lastComputed = base * Math.floor(i / base);
-          hsls[2 * i] = hsls[2 * lastComputed];
-          hsls[2 * i + 1] = hsls[2 * lastComputed + 1];
+          hues[i] = hues[base * Math.floor(i / base)];
         }
       }
 
       return {
-        result: {hsls},
+        result: {hues},
         continuation: (Math.floor(base / 2) > 1) ? () => processStep(Math.floor(base / 2)) : null
       };
     };

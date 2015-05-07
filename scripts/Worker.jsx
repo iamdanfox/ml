@@ -8,7 +8,7 @@ type Request = {
   rResolution: number;
   pointGroups: Array<PointGrp>;
 };
-type Result = {hsls: Uint8Array};
+type Result = {hues: Uint8Array};
 
 
 var WebWorkerGraphSlug = require("./WebWorkerGraphSlug.jsx");

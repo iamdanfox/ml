@@ -148,22 +148,18 @@ var WebWorkerGraph = React.createClass({
     }
   },
 
-  asyncRequestColouring: function(props: Props) {
-    var {thetaResolution, rResolution, pointGroups} = props;
+  asyncRequestColouring: function({thetaResolution, rResolution, pointGroups}: Props) {
     console.log('[React] sending request');
-    WorkerBridge.request({thetaResolution, rResolution, pointGroups}, (result) => {
-      var {hsls} = result;
+
+    WorkerBridge.request({thetaResolution, rResolution, pointGroups}, ({hues}) => {
       var {boundingBox, faces, vertices} = this.state.graph.geometry;
       var zRange = boundingBox.max.z - boundingBox.min.z;
-      for (var i = 0, len = hsls.length; i < len; i = i + 2) {
-        var face = faces[i / 2];
-        var totalZ = vertices[face.a].z + vertices[face.a].z + vertices[face.a].z;
-        var normalizedZ = (totalZ - 3 * boundingBox.min.z) / (3 * zRange);
-        face.color.setHSL(
-          hsls[i] / 256,
-          0.8,
-          0.08 + 0.82 * Math.pow(normalizedZ, 2),
-        );
+
+      for (var i = 0, len = hues.length; i < len; i = i + 1) {
+        var face = faces[i];
+        var normalizedZ = (vertices[face.a].z + vertices[face.a].z + vertices[face.a].z -
+          3 * boundingBox.min.z) / (3 * zRange);
+        face.color.setHSL(hues[i] / 256, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
       }
 
       this.state.graph.geometry.colorsNeedUpdate = true;
