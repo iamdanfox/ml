@@ -68,18 +68,12 @@ var WebWorkerGraph = React.createClass({
       var y = r * Math.sin(theta);
       var z = props.objective({x, y}, props.pointGroups);
       return new THREE.Vector3(x, y, z);
-    }
+    };
   },
 
   buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
     var geometry = new THREE.ParametricGeometry(this.polarMeshFunction(props),
       this.props.rResolution, this.props.thetaResolution, true);
-
-    var DEFAULT_COLOUR = new THREE.Color();
-    DEFAULT_COLOUR.setHSL(0.54, 0.8, 0.08);
-    for (var i = 0; i < geometry.faces.length; i = i + 1) {
-      geometry.faces[i].color.copy(DEFAULT_COLOUR);
-    }
 
     geometry.computeBoundingBox();
     return geometry;
@@ -87,7 +81,7 @@ var WebWorkerGraph = React.createClass({
 
   buildCoarseGeometry: function(props: Props): THREE.ParametricGeometry {
     var geometry = new THREE.ParametricGeometry(this.polarMeshFunction(props),
-      Math.floor(props.rResolution / 10), Math.floor(props.thetaResolution / 10), true);
+      Math.floor(props.rResolution / 12), Math.floor(props.thetaResolution / 12), true);
     return this.colourGeometry(props, geometry);
   },
 
@@ -131,20 +125,23 @@ var WebWorkerGraph = React.createClass({
     geometry.verticesNeedUpdate = true;
   },
 
+  swapCoarseGraphBackIn: function(props: Props) {
+    this.props.scene.remove(this.state.graph);
+    this.refreshGeometryZValues(props, this.state.coarseGraph.geometry);
+    this.colourGeometry(props, this.state.coarseGraph.geometry);
+    this.props.scene.add(this.state.coarseGraph);
+    this.props.forceParentUpdate();
+  },
+
   componentWillReceiveProps: function(nextProps: Props) {
     if (this.shouldComponentUpdate(nextProps)) {
-      // show coarse one, colour synchronously
-      this.props.scene.remove(this.state.graph);
-      this.refreshGeometryZValues(nextProps, this.state.coarseGraph.geometry);
-      this.colourGeometry(nextProps, this.state.coarseGraph.geometry);
-      this.props.scene.add(this.state.coarseGraph);
-      this.props.forceParentUpdate();
+      this.swapCoarseGraphBackIn(nextProps);
 
       WorkerBridge.abort();
 
       var mouseDown = nextProps.pointGroups.some((pg) => pg.mouseDownDiff);
       if (!mouseDown) {
-        this.refreshGeometryZValues(nextProps, this.state.graph.geometry)
+        this.refreshGeometryZValues(nextProps, this.state.graph.geometry);
         this.asyncRequestColouring(nextProps);
       }
     }

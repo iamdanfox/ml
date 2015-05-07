@@ -23,27 +23,31 @@ self.addEventListener('message', function(event) {
 
   if (event.data.request) {
     var t0 = (new Date()).getTime();
-    var doConstrainedProcessing = (closure) => {
-      // execute closure, then async recurse or terminate
+    var processThenReturnResult = (task) => {
+      // execute task, then async recurse or terminate
       var t1 = (new Date()).getTime();
-      var {result, continuation} = closure();
+      var {result, continuation} = task();
       var t2 = (new Date()).getTime();
       console.log('[Worker] task:', t2 - t1, t2 - t0);
 
-      if (t2 - t0 > 2700) {
-        self.postMessage({result});
-      }
+      // if an abort message arrives during a long computation, it should get scheduled here and
+      // prevent the postMessage
+      inProgressTimer = setTimeout(() => {
+        if (t2 - t0 > 3000) {
+          self.postMessage({result}); // v. slow.
+        }
 
-      // continue processing
-      if (continuation) {
-        inProgressTimer = setTimeout(() => doConstrainedProcessing(continuation), 10); // allows us to receive messages in between.
-      } else {
-        console.log("[Worker] done.");
-        inProgressTimer = null;
-      }
-    }
+        // continue processing
+        if (continuation) {
+          inProgressTimer = setTimeout(() => processThenReturnResult(continuation), 10); // allows us to receive messages in between.
+        } else {
+          console.log("[Worker] done.");
+          inProgressTimer = null;
+        }
+      }, 10);
+    };
 
-    doConstrainedProcessing(() => WebWorkerGraphSlug.startProcessing(event.data.request));
+    processThenReturnResult(() => WebWorkerGraphSlug.startProcessing(event.data.request));
   }
 });
 
