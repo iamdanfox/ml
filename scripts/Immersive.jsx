@@ -60,6 +60,8 @@ var Immersive = React.createClass({
     return {
       pointGroups: require("../data/awesomePointGroups.js"),
       highlightedW: {x: 0.2, y: 0.2},
+      innerHeight: window.innerHeight,
+      innerWidth: window.innerWidth,
     };
   },
 
@@ -71,9 +73,20 @@ var Immersive = React.createClass({
     this.setState({highlightedW});
   },
 
+  componentDidMount: function() {
+    window.addEventListener('resize', this.updateWindowSize);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('resize', this.updateWindowSize);
+  },
+
+  updateWindowSize: function(e) {
+    var {innerHeight, innerWidth} = window;
+    this.setState({innerHeight, innerWidth});
+  },
+
   render: function(): ?ReactElement {
-
-
     return (
       <div style={{
           width: "100%",
