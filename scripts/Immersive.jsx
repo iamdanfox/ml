@@ -84,7 +84,7 @@ var Immersive = React.createClass({
     window.removeEventListener('resize', this.updateWindowSize);
   },
 
-  updateWindowSize: function(e: Event) {
+  updateWindowSize: function() {
     var {innerHeight, innerWidth} = window;
     this.setState({innerHeight, innerWidth});
   },

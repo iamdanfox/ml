@@ -153,12 +153,16 @@ var WebWorkerGraph = React.createClass({
     console.log('[React] sending request');
     WorkerBridge.request({thetaResolution, rResolution, pointGroups}, (result) => {
       var {hsls} = result;
-      var len = hsls.length;
-      for (var i = 0; i < len; i = i + 2) {
-        this.state.graph.geometry.faces[i / 2].color.setHSL(
+      var {boundingBox, faces, vertices} = this.state.graph.geometry;
+      var zRange = boundingBox.max.z - boundingBox.min.z;
+      for (var i = 0, len = hsls.length; i < len; i = i + 2) {
+        var face = faces[i / 2];
+        var totalZ = vertices[face.a].z + vertices[face.a].z + vertices[face.a].z;
+        var normalizedZ = (totalZ - 3 * boundingBox.min.z) / (3 * zRange);
+        face.color.setHSL(
           hsls[i] / 256,
           0.8,
-          hsls[i + 1] / 256
+          0.08 + 0.82 * Math.pow(normalizedZ, 2),
         );
       }
 
