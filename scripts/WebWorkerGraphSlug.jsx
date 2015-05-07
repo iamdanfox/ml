@@ -46,7 +46,12 @@ var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry 
 module.exports = {
   startProcessing: function(request: Request): {result: Result; continuation: any} {
     // construct Worker-side clone of the entire graph.
-    var {boundingBox, faces, vertices} = buildInitialGeometry(request);
+    var geometry = buildInitialGeometry(request);
+    var {boundingBox, faces, vertices} = geometry;
+
+    var experiment = new THREE.BufferGeometry();
+    experiment.fromGeometry(geometry, {vertexColors: true});
+    console.log(experiment);
 
     // get necessary prototypes & functions all set up
     var hsls = [];
