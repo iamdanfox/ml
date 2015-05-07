@@ -37,7 +37,7 @@ var LogisticRegressionVis = React.createClass({
     var dim = Math.max(width, height);
 
     return (
-      <div style={{width: width, height: height}}>
+      <div style={{width: '100%'}}>
         <Draggable3DScene dim={dim} pointGroups={this.props.pointGroups}
             objective={LogisticRegression.objective} highlightW={this.props.highlightW}>
 
