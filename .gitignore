@@ -3,5 +3,3 @@ node_modules
 *.map
 
 npm-debug.log
-
-build/*.js
