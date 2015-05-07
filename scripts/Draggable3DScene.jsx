@@ -168,7 +168,6 @@ var Draggable3DScene = React.createClass({
 
   render: function(): ?ReactElement {
     var mergeInProps = {
-      dim: this.props.dim,
       pointGroups: this.props.pointGroups,
       objective: this.props.objective,
       scene: this.state.scene,
