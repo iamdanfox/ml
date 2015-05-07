@@ -4,6 +4,7 @@
 var React = require("react/addons");
 var THREE = require("three");
 
+type F<U,V> = (x: U) => V;
 type P2 = {x: number; y: number};
 type PointGrp = {label: number; points: Array<P2>};
 type Props = {
@@ -74,10 +75,49 @@ var ProgressiveParametricGraph = React.createClass({
     if (this.state.timer !== null) {
       clearTimeout(this.state.timer);
     }
+
     var {geometry} = this.state.graph;
     geometry.computeBoundingBox();
-    var nextBiggestPowerOf2 = Math.pow(2, Math.floor(Math.log2(geometry.faces.length)));
-    this.colourStep(nextBiggestPowerOf2);
+    var numFaces = geometry.faces.length;
+
+    this.props.colourFunction(geometry.boundingBox,
+      geometry.vertices[geometry.faces[0].a],
+      geometry.vertices[geometry.faces[0].b],
+      geometry.vertices[geometry.faces[0].c],
+      geometry.faces[0].color);
+
+    var colourStep = (base) => {
+      for (var i = 0; i < numFaces; i = i + 1) {
+        var face = geometry.faces[i];
+        // we want to colour pixels that have not been coloured already!
+        if (i % base === 0 && i % (2 * base) !== 0) {
+          // compute this face
+          this.props.colourFunction(geometry.boundingBox,
+            geometry.vertices[face.a],
+            geometry.vertices[face.b],
+            geometry.vertices[face.c],
+            face.color);
+          face.hasBeenComputed = true;
+        } else {
+          // otherwise, just use the last computed number
+          var lastComputedColour = geometry.faces[base * Math.floor(i / base)].color;
+          face.color.copy(lastComputedColour);
+        }
+      }
+      return Math.floor(base / 2) > 0 ? () => colourStep(Math.floor(base / 2)) : null;
+    };
+
+    var timeoutRecurse: F<any, void> = (step) => {
+      geometry.colorsNeedUpdate = true;
+      this.props.forceParentUpdate();
+      var continuation = step();
+      if (continuation !== null) {
+        this.setState({timer: setTimeout(() => timeoutRecurse(continuation), 100)});
+      }
+    };
+
+    var nextBiggestPowerOf2 = Math.pow(2, Math.floor(Math.log2(numFaces)));
+    timeoutRecurse(() => colourStep(nextBiggestPowerOf2));
   },
 
   componentWillUnmount: function() {
@@ -104,7 +144,7 @@ var ProgressiveParametricGraph = React.createClass({
   },
 
   buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
-    var polarMeshFunction = function(j: number, i: number): THREE.Vector3 {
+    var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
       var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
       var theta = j * 2 * Math.PI;
       var x = r * Math.cos(theta);
@@ -113,7 +153,7 @@ var ProgressiveParametricGraph = React.createClass({
       return new THREE.Vector3(x, y, z);
     };
     var geometry = new THREE.ParametricGeometry(polarMeshFunction,
-      this.props.thetaResolution, this.props.rResolution, true);
+      this.props.rResolution, this.props.thetaResolution, true);
 
     var DEFAULT_COLOUR = new THREE.Color();
     DEFAULT_COLOUR.setHSL(0.54, 0.8, 0.08);
@@ -122,49 +162,6 @@ var ProgressiveParametricGraph = React.createClass({
     }
 
     return geometry;
-  },
-
-  colourStep: function(base: number): void {
-    var {geometry} = this.state.graph;
-    var numFaces = geometry.faces.length;
-
-    if (base === numFaces) {
-      var firstFace = geometry.faces[0];
-      this.props.colourFunction(geometry.boundingBox,
-        geometry.vertices[firstFace.a],
-        geometry.vertices[firstFace.b],
-        geometry.vertices[firstFace.c],
-        firstFace.color);
-    }
-
-    for (var i = 0; i < numFaces; i = i + 1) {
-      var face = geometry.faces[i];
-      // we want to colour pixels that have not been coloured already!
-      if (i % base === 0 && i % (2 * base) !== 0) {
-        // compute this face
-        this.props.colourFunction(geometry.boundingBox,
-          geometry.vertices[face.a],
-          geometry.vertices[face.b],
-          geometry.vertices[face.c],
-          face.color);
-        face.hasBeenComputed = true;
-      } else {
-        // otherwise, just use the last computed number
-        var previousComputedColour = Math.floor(i / base) * base;
-        var lastComputedColour = geometry.faces[previousComputedColour].color;
-        face.color.copy(lastComputedColour);
-      }
-    }
-
-    geometry.colorsNeedUpdate = true;
-    this.props.forceParentUpdate();
-
-    var nextBase = Math.floor(base / 2);
-    if (nextBase > 0) {
-      this.setState({
-        timer: setTimeout(() => this.colourStep(nextBase), 1)
-      });
-    }
   },
 
   render: function(): ?ReactElement {
