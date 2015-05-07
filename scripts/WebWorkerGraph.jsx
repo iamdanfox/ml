@@ -32,11 +32,12 @@ var MATERIAL = new THREE.MeshBasicMaterial({
   transparent: true,
 });
 
-var colourFunction = (pointGroups, boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
+var colourFunction = (pointGroups, boundingBox, vertex2, vertex3, mutableFaceColor) => {
   var zMin = boundingBox.min.z;
   var zRange = boundingBox.max.z - zMin;
-  var totalZ = vertex1.z + vertex2.z + vertex3.z;
-  var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+  // only using two because the avg of these is the middle of two faces (ie one square).
+  var totalZ = vertex2.z + vertex3.z;
+  var normalizedZ = (totalZ - 2 * zMin) / (2 * zRange);
   var stops = LogisticRegression.fastOptimise(vertex2, pointGroups) / 250;
   mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
 };
@@ -61,9 +62,9 @@ var WebWorkerGraph = React.createClass({
   },
 
   polarMeshFunction: function(props: Props): any {
-    return function(i: number, j: number): THREE.Vector3 {
+    return function(r: number, j: number): THREE.Vector3 {
       // var r = (Math.pow(1.8, i * i) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
-      var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
+      // var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
       var theta = j * 2 * Math.PI;
       var x = r * Math.cos(theta);
       var y = r * Math.sin(theta);
@@ -89,13 +90,13 @@ var WebWorkerGraph = React.createClass({
   colourGeometry: function(props: Props, graphGeometry: FasterGeometry): FasterGeometry {
     graphGeometry.computeBoundingBox();
 
-    for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
+    for (var i = 0, len = graphGeometry.faces.length; i < len; i = i + 2) {
       var face = graphGeometry.faces[i];
       colourFunction(props.pointGroups, graphGeometry.boundingBox,
-        graphGeometry.vertices[face.a],
         graphGeometry.vertices[face.b],
         graphGeometry.vertices[face.c],
         face.color);
+      graphGeometry.faces[i + 1].color.copy(face.color);
     }
 
     graphGeometry.colorsNeedUpdate = true;

@@ -21,8 +21,7 @@ var colourFunction = function(pointGroups, vertex, hues, index) {
 };
 
 var buildInitialGeometry = function(request: Request): FasterGeometry {
-  var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
-    var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
+  var polarMeshFunction = function(r: number, j: number): THREE.Vector3 {
     var theta = j * 2 * Math.PI;
     var x = r * Math.cos(theta);
     var y = r * Math.sin(theta);
