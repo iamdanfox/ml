@@ -8,22 +8,22 @@ type Request = {
   rResolution: number;
   pointGroups: Array<PointGrp>;
 };
-type Result = {hsls: Array<any>};
+type Result = {hsls: Uint8Array};
 
 
 var {fastOptimise, objective} = require("./LogisticRegression.jsx");
 var THREE = require("three");
 
 
-var colourFunction = function(pointGroups, boundingBox, vertex1, vertex2, vertex3, mutableHSL) {
+var colourFunction = function(pointGroups, boundingBox, vertex1, vertex2, vertex3, hsls, startIndex) {
   var zMin = boundingBox.min.z;
   var zRange = boundingBox.max.z - zMin;
   var totalZ = vertex1.z + vertex2.z + vertex3.z;
   var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
   var stops = fastOptimise(vertex2, pointGroups) / 250;
-  mutableHSL.h = 0.54 + stops * 0.3;
-  mutableHSL.s = 0.8;
-  mutableHSL.l = 0.08 + 0.82 * Math.pow(normalizedZ, 2);
+  hsls[startIndex] = 256 * (0.54 + stops * 0.3);
+  // hsls[startIndex + 1] = 0.8; // unchanged
+  hsls[startIndex + 2] = 256 * (0.08 + 0.82 * Math.pow(normalizedZ, 2));
 };
 
 var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry {
@@ -46,41 +46,40 @@ var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry 
 module.exports = {
   startProcessing: function(request: Request): {result: Result; continuation: any} {
     // construct Worker-side clone of the entire graph.
-    var geometry = buildInitialGeometry(request);
-    var {boundingBox, faces, vertices} = geometry;
-
-    var experiment = new THREE.BufferGeometry();
-    experiment.fromGeometry(geometry, {vertexColors: true});
-    console.log(experiment);
+    var {boundingBox, faces, vertices} = buildInitialGeometry(request);
 
     // get necessary prototypes & functions all set up
-    var hsls = [];
     var numFaces = faces.length;
-    for (var i = 0; i < numFaces; i = i + 1) {
-      hsls.push({h: 0.54, s: 0.8, l: 0.08});
+    var hsls = new Uint8Array(3 * numFaces);
+    var H0 = 0.54 * 256;
+    var S0 = 0.8 * 256;
+    var L0 = 0.08 * 256;
+    for (var i = 0; i < numFaces * 3; i = i + 3) {
+      hsls[i] = H0;
+      hsls[i + 1] = S0;
+      hsls[i + 2] = L0;
     }
 
     // do face 0.
     var firstFace = faces[0];
     colourFunction(request.pointGroups, boundingBox,
-      vertices[firstFace.a], vertices[firstFace.b], vertices[firstFace.c], firstFace.color);
+      vertices[firstFace.a], vertices[firstFace.b], vertices[firstFace.c], hsls, 0);
 
     var processStep = function(base: number): {result: Result; continuation: any} {
 
       for (var i = 0; i < numFaces; i = i + 1) {
         var face = faces[i];
-        var hsl = hsls[i];
         // we want to colour pixels that have not been coloured already!
         if (i % base === 0 && i % (2 * base) !== 0) {
           // compute this face
           colourFunction(request.pointGroups, boundingBox,
-            vertices[face.a], vertices[face.b], vertices[face.c], hsl);
+            vertices[face.a], vertices[face.b], vertices[face.c], hsls, 3 * i);
         } else {
           // otherwise, just use the last computed number
-          var lastComputed = hsls[base * Math.floor(i / base)];
-          hsl.h = lastComputed.h;
-          hsl.s = lastComputed.s;
-          hsl.l = lastComputed.l;
+          var lastComputed = base * Math.floor(i / base);
+          hsls[3 * i] = hsls[3 * lastComputed];
+          // hsls[3 * i + 1] = hsls[3 * lastComputed + 1];
+          hsls[3 * i + 2] = hsls[3 * lastComputed + 2];
         }
       }
 

@@ -8,7 +8,7 @@ type Request = {
   rResolution: number;
   pointGroups: Array<PointGrp>;
 };
-type Result = {hsls: Array<any>};
+type Result = {hsls: Uint8Array};
 
 
 var WebWorkerGraphSlug = require("./WebWorkerGraphSlug.jsx");
@@ -33,7 +33,7 @@ self.addEventListener('message', function(event) {
       // if an abort message arrives during a long computation, it should get scheduled here and
       // prevent the postMessage
       inProgressTimer = setTimeout(() => {
-        if (t2 - t0 > 3000) {
+        if (t2 - t0 > 2000) {
           self.postMessage({result}); // v. slow.
         }
 
