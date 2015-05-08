@@ -22,7 +22,7 @@ function objective(w: P2, pointGroups: Array<PointGrp>): number {
   }
 
   // normalise by w.
-  return minimumMargin / modulus(w);
+  return 0.5 * minimumMargin / modulus(w);
 }
 
 module.exports = {objective};
