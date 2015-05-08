@@ -38,13 +38,13 @@ webpackJsonp([0],{
 	 
 
 
-	var AwesomeDataComponent = __webpack_require__(17);
-	var CursorSphere = __webpack_require__(18);
-	var Draggable3DScene = __webpack_require__(19);
-	var LogisticRegression = __webpack_require__(20);
-	var WebWorkerGraph = __webpack_require__(21);
+	var AwesomeDataComponent = __webpack_require__(18);
+	var CursorSphere = __webpack_require__(19);
+	var Draggable3DScene = __webpack_require__(20);
+	var LogisticRegression = __webpack_require__(21);
+	var WebWorkerGraph = __webpack_require__(22);
 	// var ProgressiveParametricGraph = require("./ProgressiveParametricGraph.jsx");
-	var OptimiserLine = __webpack_require__(22);
+	var OptimiserLine = __webpack_require__(23);
 	var React = __webpack_require__(1);
 
 
@@ -54,13 +54,16 @@ webpackJsonp([0],{
 	  render: function()                {
 	    var lrOptimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.props.pointGroups);
 
+	    var $__0=   this.props,width=$__0.width,height=$__0.height;
+	    var dim = Math.max(width, height);
+
 	    return (
-	      React.createElement("div", null, 
-	        React.createElement(Draggable3DScene, {dim: 800, pointGroups: this.props.pointGroups, 
+	      React.createElement("div", {style: {width: '100%'}}, 
+	        React.createElement(Draggable3DScene, {dim: dim, pointGroups: this.props.pointGroups, 
 	            objective: LogisticRegression.objective, highlightW: this.props.highlightW}, 
 
-	          React.createElement(OptimiserLine, {vertices: lrOptimiserLine}), 
-	          React.createElement(CursorSphere, {highlightedW: this.props.highlightedW}), 
+	          React.createElement(OptimiserLine, {vertices: lrOptimiserLine, dim: dim}), 
+	          React.createElement(CursorSphere, {highlightedW: this.props.highlightedW, dim: dim}), 
 
 	          React.createElement(WebWorkerGraph, {thetaResolution: 252, rResolution: 84})
 
@@ -79,8 +82,10 @@ webpackJsonp([0],{
 	var Immersive = React.createClass({displayName: "Immersive",
 	  getInitialState: function()        {
 	    return {
-	      pointGroups: __webpack_require__(23),
+	      pointGroups: __webpack_require__(24),
 	      highlightedW: {x: 0.2, y: 0.2},
+	      innerHeight: window.innerHeight,
+	      innerWidth: window.innerWidth,
 	    };
 	  },
 
@@ -92,18 +97,24 @@ webpackJsonp([0],{
 	    this.setState({highlightedW:highlightedW});
 	  },
 
+	  componentDidMount: function() {
+	    window.addEventListener('resize', this.updateWindowSize);
+	  },
+
+	  componentWillUnmount: function() {
+	    window.removeEventListener('resize', this.updateWindowSize);
+	  },
+
+	  updateWindowSize: function() {
+	    var $__0=   window,innerHeight=$__0.innerHeight,innerWidth=$__0.innerWidth;
+	    this.setState({innerHeight:innerHeight, innerWidth:innerWidth});
+	  },
+
 	  render: function()                {
-
-
 	    return (
-	      React.createElement("div", {style: {
-	          width: "100%",
-	          display: "flex",
-	          justifyContent: "center",
-	          alignItems: "center",
-	          position: "relative",
-	          background: "#111"}}, 
+	      React.createElement("div", {style: {position: 'relative'}}, 
 	        React.createElement("div", {style: {
+	            position: 'absolute',
 	            top: 0,
 	            left: 0,
 	            background: "rgba(255, 255, 255, 0.6)"}}, 
@@ -111,8 +122,9 @@ webpackJsonp([0],{
 	            updatePointGroups: this.updatePointGroups, pointGroups: this.state.pointGroups})
 	        ), 
 
-	        React.createElement(LogisticRegressionVis, {highlightW: this.highlightW, 
-	          highlightedW: this.state.highlightedW, pointGroups: this.state.pointGroups})
+	        React.createElement(LogisticRegressionVis, {width: this.state.innerWidth, height: this.state.innerHeight, 
+	          highlightW: this.highlightW, highlightedW: this.state.highlightedW, 
+	          pointGroups: this.state.pointGroups})
 
 
 	      )
@@ -126,7 +138,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 17:
+/***/ 18:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -148,9 +160,9 @@ webpackJsonp([0],{
 	                                                    
 	 
 	var React = __webpack_require__(1);
-	var AwesomePointGroup = __webpack_require__(70);
-	var $__0=   __webpack_require__(71),add=$__0.add,subtract=$__0.subtract;
-	var $__1=  __webpack_require__(72),generatePoints=$__1.generatePoints;
+	var AwesomePointGroup = __webpack_require__(73);
+	var $__0=   __webpack_require__(70),add=$__0.add,subtract=$__0.subtract;
+	var $__1=  __webpack_require__(74),generatePoints=$__1.generatePoints;
 	var $__2=  __webpack_require__(1).addons,PureRenderMixin=$__2.PureRenderMixin;
 
 
@@ -259,7 +271,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 18:
+/***/ 19:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -326,7 +338,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 19:
+/***/ 20:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -355,6 +367,7 @@ webpackJsonp([0],{
 	                                                             
 	 
 
+	var DISTANCE = 50;
 
 
 	var Draggable3DScene = React.createClass({displayName: "Draggable3DScene",
@@ -368,11 +381,11 @@ webpackJsonp([0],{
 	  getInitialState: function()        {
 	    var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.01, 1000 ); // Field of view, aspect ratio, near clip, far clip
 	    initialCamera.up = new THREE.Vector3( 0, 0, 1 );
-	    initialCamera.position.z = 300 / this.props.dim;
-
+	    initialCamera.position.z = DISTANCE / (Math.sqrt(this.props.dim) * 2.3);
 
 	    var initialRenderer = new THREE.WebGLRenderer({antialias: true});
 	    initialRenderer.setClearColor( 0x111111, 1 );
+	    initialRenderer.setSize(this.props.dim, this.props.dim);
 
 	    return {
 	      angle: 0,
@@ -387,7 +400,6 @@ webpackJsonp([0],{
 	  },
 
 	  componentWillMount: function() {
-	    this.state.renderer.setSize( this.props.dim, this.props.dim );
 	    this.updateCamera(this.state);
 	  },
 
@@ -400,12 +412,15 @@ webpackJsonp([0],{
 	    if (typeof nextState !== "undefined" && nextState !== null) {
 	      this.updateCamera(nextState);
 	    }
+	    if (nextProps.dim !== this.props.dim) {
+	      this.state.renderer.setSize(nextProps.dim, nextProps.dim);
+	    }
 	  },
 
 	  updateCamera: function(state       )       {
-	    this.state.camera.position.x = Math.cos(state.angle) * 600 / this.props.dim;
-	    this.state.camera.position.y = Math.sin(state.angle) * 600 / this.props.dim;
-	    this.state.camera.lookAt(new THREE.Vector3(0, 0, 0));
+	    this.state.camera.position.x = Math.cos(state.angle) * DISTANCE / Math.sqrt(this.props.dim);
+	    this.state.camera.position.y = Math.sin(state.angle) * DISTANCE / Math.sqrt(this.props.dim);
+	    this.state.camera.lookAt(new THREE.Vector3(0, 0, -0.3));
 	  },
 
 	  mouseDown: function(e                      )       {
@@ -499,7 +514,6 @@ webpackJsonp([0],{
 
 	  render: function()                {
 	    var mergeInProps = {
-	      dim: this.props.dim,
 	      pointGroups: this.props.pointGroups,
 	      objective: this.props.objective,
 	      scene: this.state.scene,
@@ -531,7 +545,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 20:
+/***/ 21:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -541,7 +555,7 @@ webpackJsonp([0],{
 
 	"use strict";
 
-	var $__0=    __webpack_require__(71),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
+	var $__0=    __webpack_require__(70),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
 
 	function sigmoid(wx)         {
 	  return 1 / (1 + Math.exp(-wx));
@@ -650,7 +664,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 21:
+/***/ 22:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -674,8 +688,9 @@ webpackJsonp([0],{
 
 	var React = __webpack_require__(1);
 	var THREE = __webpack_require__(2);
-	var WorkerBridge = __webpack_require__(73);
-	var LogisticRegression = __webpack_require__(20);
+	var WorkerBridge = __webpack_require__(71);
+	var LogisticRegression = __webpack_require__(21);
+	var FasterGeometry = __webpack_require__(72);
 
 
 
@@ -686,11 +701,12 @@ webpackJsonp([0],{
 	  transparent: true,
 	});
 
-	var colourFunction = function(pointGroups, boundingBox, vertex1, vertex2, vertex3, mutableFaceColor)  {
+	var colourFunction = function(pointGroups, boundingBox, vertex2, vertex3, mutableFaceColor)  {
 	  var zMin = boundingBox.min.z;
 	  var zRange = boundingBox.max.z - zMin;
-	  var totalZ = vertex1.z + vertex2.z + vertex3.z;
-	  var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+	  // only using two because the avg of these is the middle of two faces (ie one square).
+	  var totalZ = vertex2.z + vertex3.z;
+	  var normalizedZ = (totalZ - 2 * zMin) / (2 * zRange);
 	  var stops = LogisticRegression.fastOptimise(vertex2, pointGroups) / 250;
 	  mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
 	};
@@ -715,9 +731,9 @@ webpackJsonp([0],{
 	  },
 
 	  polarMeshFunction: function(props       )      {
-	    return function(i        , j        )                {
+	    return function(r        , j        )                {
 	      // var r = (Math.pow(1.8, i * i) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
-	      var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
+	      // var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
 	      var theta = j * 2 * Math.PI;
 	      var x = r * Math.cos(theta);
 	      var y = r * Math.sin(theta);
@@ -726,30 +742,30 @@ webpackJsonp([0],{
 	    };
 	  },
 
-	  buildInitialGeometry: function(props       )                           {
-	    var geometry = new THREE.ParametricGeometry(this.polarMeshFunction(props),
+	  buildInitialGeometry: function(props       )                 {
+	    var geometry = new FasterGeometry(this.polarMeshFunction(props),
 	      this.props.rResolution, this.props.thetaResolution, true);
 
 	    geometry.computeBoundingBox();
 	    return geometry;
 	  },
 
-	  buildCoarseGeometry: function(props       )                           {
-	    var geometry = new THREE.ParametricGeometry(this.polarMeshFunction(props),
+	  buildCoarseGeometry: function(props       )                 {
+	    var geometry = new FasterGeometry(this.polarMeshFunction(props),
 	      Math.floor(props.rResolution / 12), Math.floor(props.thetaResolution / 12), true);
 	    return this.colourGeometry(props, geometry);
 	  },
 
-	  colourGeometry: function(props       , graphGeometry                          )                           {
+	  colourGeometry: function(props       , graphGeometry                )                 {
 	    graphGeometry.computeBoundingBox();
 
-	    for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
+	    for (var i = 0, len = graphGeometry.faces.length; i < len; i = i + 2) {
 	      var face = graphGeometry.faces[i];
 	      colourFunction(props.pointGroups, graphGeometry.boundingBox,
-	        graphGeometry.vertices[face.a],
 	        graphGeometry.vertices[face.b],
 	        graphGeometry.vertices[face.c],
 	        face.color);
+	      graphGeometry.faces[i + 1].color.copy(face.color);
 	    }
 
 	    graphGeometry.colorsNeedUpdate = true;
@@ -802,15 +818,18 @@ webpackJsonp([0],{
 	    }
 	  },
 
-	  asyncRequestColouring: function(props       ) {
-	    var $__0=    props,thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,pointGroups=$__0.pointGroups;
+	  asyncRequestColouring: function($__0         ) {var thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,pointGroups=$__0.pointGroups;
 	    console.log('[React] sending request');
-	    WorkerBridge.request({thetaResolution:thetaResolution, rResolution:rResolution, pointGroups:pointGroups}, function(result)  {
-	      var $__0=  result,hsls=$__0.hsls;
-	      var len = hsls.length;
-	      for (var i = 0; i < len; i = i + 1) {
-	        var $__1=    hsls[i],h=$__1.h,s=$__1.s,l=$__1.l;
-	        this.state.graph.geometry.faces[i].color.setHSL(h, s, l);
+
+	    WorkerBridge.request({thetaResolution:thetaResolution, rResolution:rResolution, pointGroups:pointGroups}, function($__0)  {var hues=$__0.hues;
+	      var $__1=    this.state.graph.geometry,boundingBox=$__1.boundingBox,faces=$__1.faces,vertices=$__1.vertices;
+	      var zRange = boundingBox.max.z - boundingBox.min.z;
+
+	      for (var i = 0, len = hues.length; i < len; i = i + 1) {
+	        var face = faces[i];
+	        var normalizedZ = (vertices[face.a].z + vertices[face.a].z + vertices[face.a].z -
+	          3 * boundingBox.min.z) / (3 * zRange);
+	        face.color.setHSL(hues[i] / 256, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
 	      }
 
 	      this.state.graph.geometry.colorsNeedUpdate = true;
@@ -830,7 +849,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 22:
+/***/ 23:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -905,7 +924,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 23:
+/***/ 24:
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = [{"label":0,"points":[{"x":-0.5997479449727805,"y":0.3266696424458529},{"x":-0.40911978879586314,"y":0.8414896852756555},{"x":-0.6003797969565033,"y":0.38752330824897496},{"x":-0.5974989282403006,"y":0.16793046373201084},{"x":-0.3731116894435043,"y":0.25446221414788783},{"x":-0.4611574437563745,"y":0.7513580834354632},{"x":-0.5666119173059607,"y":0.1786999017955041},{"x":-0.2660309178401766,"y":0.7466422175867058},{"x":-0.45781364583698203,"y":-0.02543721371721755},{"x":-0.7637313902662306,"y":0.8401606006403106},{"x":-0.6719389189432546,"y":-0.3705455189155673},{"x":-0.7724832708046918,"y":-0.20005680566395434},{"x":-0.6921484832633631,"y":0.027283867565444403},{"x":-0.530968122206404,"y":0.795008094328021},{"x":-0.8273452458511434,"y":-0.002424446162095889},{"x":-0.5185588104892703,"y":0.4620006701485645},{"x":-0.7023706476095739,"y":-0.15958155170093186},{"x":-0.8186378396018115,"y":0.23211487091509184},{"x":-0.5665597344525202,"y":0.524761380696566}],"generatedBy":{"center":{"x":-0.5966666666666667,"y":0.19666666666666655},"params":{"l":0.8658457650695586,"theta":-0.17021192528547435}},"mouseDownDiff":null},{"points":[{"x":0.4163818674864531,"y":-0.23528659967706647},{"x":0.44437265613239896,"y":-0.32627143782971557},{"x":0.23942084809958375,"y":-0.6063253418870334},{"x":0.20789742517139406,"y":-0.4091351995003449},{"x":0.2859242354507277,"y":-0.628035096817553},{"x":0.4479649125412124,"y":-0.32415304169593623},{"x":0.45280865076218857,"y":-0.28336832097127984},{"x":0.4075665078010422,"y":-0.39443831290755565},{"x":0.41222269797067723,"y":-0.5769874083755533},{"x":0.3604938339252303,"y":-0.6174488199442758},{"x":0.32403805174279,"y":-0.4848541835691167},{"x":0.34868895341495887,"y":-0.5032884333079499},{"x":0.5243233489148638,"y":-0.20416220785332426},{"x":0.2691046775763215,"y":-0.5310206893985944}],"label":1,"generatedBy":{"center":{"x":0.36999999999999966,"y":-0.3666666666666666},"params":{"l":0.16719914938645886,"theta":1.1606689862534059}},"mouseDownDiff":null},{"label":1,"points":[{"x":0.6660524477396749,"y":0.08876441212498268},{"x":0.6803536514830696,"y":0.16701383499073325},{"x":0.5737262476146427,"y":0.09345571376890369},{"x":0.740243418325372,"y":0.21788967786543098},{"x":0.5723510298190286,"y":-0.048872997526596906},{"x":0.7230819188867843,"y":0.021448199402366697},{"x":0.801222820812387,"y":0.16978847488949483},{"x":0.703671157000718,"y":-0.09675544323096463},{"x":0.5828143995173792,"y":-0.021816106911635158},{"x":0.610639172868958,"y":-0.020054843756927843},{"x":0.43240212272182954,"y":-0.10731745449670954},{"x":0.4766009580339221,"y":-0.04283729687880106},{"x":0.8295860086096446,"y":0.17175194897798224},{"x":0.6763934813675491,"y":0.20435599390510958},{"x":0.6764534988724937,"y":0.1631264448161256}],"generatedBy":{"center":{"x":0.6364731932586679,"y":0.05456092271332935},"params":{"l":0.2054371382466992,"theta":1.000694039631934}},"mouseDownDiff":null}];
@@ -914,6 +933,188 @@ webpackJsonp([0],{
 /***/ },
 
 /***/ 70:
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	                           
+	                                 
+	                                             
+
+	"use strict";
+
+	function sizeSquared(arg    )         {
+	  var x = arg.x;
+	  var y = arg.y;
+	  return x * x + y * y;
+	}
+
+	function dotProduct(a    , b    )         {
+	  var $__0=     a,x1=$__0.x,y1=$__0.y;
+	  var $__1=     b,x2=$__1.x,y2=$__1.y;
+	  return x1 * x2 + y1 * y2;
+	}
+
+	function modulus(arg    )         {
+	  return Math.sqrt(sizeSquared(arg));
+	}
+
+	function scale(sf        )            {
+	  return function(arg    )     {
+	    var $__0=     arg,x=$__0.x,y=$__0.y;
+	    return {
+	      x: x * sf,
+	      y: y * sf
+	    };
+	  };
+	}
+
+	module.exports = {
+	  lineEq: function(p1    , p2    )          {
+	    return (typeof p1 !== "undefined" && p1 !== null &&
+	      typeof p2 !== "undefined" && p2 !== null) &&
+	      (p1.x === p2.x) && (p1.y === p2.y);
+	  },
+
+	  // counter clockwise rotation of a vector, by 90 degrees
+	  rot90: function(arg    )     {
+	    var $__0=     arg,x=$__0.x,y=$__0.y;
+	    return {
+	      x: -y,
+	      y: x
+	    };
+	  },
+
+	  rotate: function(theta        , arg    )     {
+	    return {
+	      x: arg.x * Math.cos(theta) - arg.y * Math.sin(theta),
+	      y: arg.x * Math.sin(theta) + arg.y * Math.cos(theta),
+	    };
+	  },
+
+	  dotProduct: dotProduct,
+
+	  scale: scale,
+
+	  sizeSquared: sizeSquared,
+
+	  modulus: modulus,
+
+	  add: function(a    )            {
+	    return function(b    )     {
+	      return {
+	        x: a.x + b.x,
+	        y: a.y + b.y
+	      };
+	    };
+	  },
+
+	  subtract: function(a    )            {
+	    return function(b    )     {
+	      return {
+	        x: a.x - b.x,
+	        y: a.y - b.y
+	      };
+	    };
+	  },
+
+	  classify: function(w    , vectorToClassify    )         {
+	    if (dotProduct(vectorToClassify, w) > 0) {
+	      return 0;
+	    } else {
+	      return 1;
+	    }
+	  },
+
+	  classTransform: function(classificationResult        )         {
+	    if (classificationResult === 0) {
+	      return -1;
+	    } else {
+	      console.assert(classificationResult === 1);
+	      return 1;
+	    }
+	  },
+	};
+
+
+/***/ },
+
+/***/ 71:
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	                           
+	                                 
+
+	                                                   
+	                
+	                          
+	                      
+	                               
+	  
+	                                    
+	                                 
+
+
+	var worker = new Worker("./build/worker.bundle.js");
+
+	module.exports = {
+	  request: function(request         , callback          )       {
+	    // set up return path.  I think this should overwrite old listeners.
+	    worker.onmessage = function(event     ) {
+	      callback(event.data.result);
+	    };
+	    worker.postMessage({request:request});
+	  },
+
+	  abort: function()       {
+	    console.log("[Bridge] abort");
+	    worker.postMessage({});
+	  }
+	};
+
+
+/***/ },
+
+/***/ 72:
+/***/ function(module, exports, __webpack_require__) {
+
+	var THREE = __webpack_require__(2);
+
+	var FasterGeometry = function(func, slices, stacks) {
+
+	  THREE.Geometry.call( this );
+
+	  for ( var i = 0; i <= stacks; i = i + 1 ) {
+	    var v = i / stacks;
+	    for ( var j = 0; j <= slices; j = j + 1 ) {
+	      this.vertices.push( func( j / slices, v ) );
+	    }
+	  }
+
+	  var sliceCount = slices + 1;
+
+	  for ( var p = 0; p < stacks; p = p + 1 ) {
+	    for ( var q = 0; q < slices; q = q + 1 ) {
+	      var a = p * sliceCount + q;
+	      var b = p * sliceCount + q + 1;
+	      var c = (p + 1) * sliceCount + q + 1;
+	      var d = (p + 1) * sliceCount + q;
+	      this.faces.push( new THREE.Face3( a, b, d ) );
+	      this.faces.push( new THREE.Face3( b, c, d ) );
+	    }
+	  }
+	};
+
+	FasterGeometry.prototype = Object.create( THREE.Geometry.prototype );
+	FasterGeometry.prototype.constructor = FasterGeometry;
+
+	module.exports = FasterGeometry;
+
+
+/***/ },
+
+/***/ 73:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -927,8 +1128,8 @@ webpackJsonp([0],{
 	  
 
 	var React = __webpack_require__(1);
-	var $__0=       __webpack_require__(71),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
-	var $__1=    __webpack_require__(72),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
+	var $__0=       __webpack_require__(70),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
+	var $__1=    __webpack_require__(74),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
 	var $__2=  __webpack_require__(1).addons,PureRenderMixin=$__2.PureRenderMixin;
 
 
@@ -1071,113 +1272,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 71:
-/***/ function(module, exports, __webpack_require__) {
-
-	/* @flow */
-	                           
-	                                 
-	                                             
-
-	"use strict";
-
-	function sizeSquared(arg    )         {
-	  var x = arg.x;
-	  var y = arg.y;
-	  return x * x + y * y;
-	}
-
-	function dotProduct(a    , b    )         {
-	  var $__0=     a,x1=$__0.x,y1=$__0.y;
-	  var $__1=     b,x2=$__1.x,y2=$__1.y;
-	  return x1 * x2 + y1 * y2;
-	}
-
-	function modulus(arg    )         {
-	  return Math.sqrt(sizeSquared(arg));
-	}
-
-	function scale(sf        )            {
-	  return function(arg    )     {
-	    var $__0=     arg,x=$__0.x,y=$__0.y;
-	    return {
-	      x: x * sf,
-	      y: y * sf
-	    };
-	  };
-	}
-
-	module.exports = {
-	  lineEq: function(p1    , p2    )          {
-	    return (typeof p1 !== "undefined" && p1 !== null &&
-	      typeof p2 !== "undefined" && p2 !== null) &&
-	      (p1.x === p2.x) && (p1.y === p2.y);
-	  },
-
-	  // counter clockwise rotation of a vector, by 90 degrees
-	  rot90: function(arg    )     {
-	    var $__0=     arg,x=$__0.x,y=$__0.y;
-	    return {
-	      x: -y,
-	      y: x
-	    };
-	  },
-
-	  rotate: function(theta        , arg    )     {
-	    return {
-	      x: arg.x * Math.cos(theta) - arg.y * Math.sin(theta),
-	      y: arg.x * Math.sin(theta) + arg.y * Math.cos(theta),
-	    };
-	  },
-
-	  dotProduct: dotProduct,
-
-	  scale: scale,
-
-	  sizeSquared: sizeSquared,
-
-	  modulus: modulus,
-
-	  add: function(a    )            {
-	    return function(b    )     {
-	      return {
-	        x: a.x + b.x,
-	        y: a.y + b.y
-	      };
-	    };
-	  },
-
-	  subtract: function(a    )            {
-	    return function(b    )     {
-	      return {
-	        x: a.x - b.x,
-	        y: a.y - b.y
-	      };
-	    };
-	  },
-
-	  classify: function(w    , vectorToClassify    )         {
-	    if (dotProduct(vectorToClassify, w) > 0) {
-	      return 0;
-	    } else {
-	      return 1;
-	    }
-	  },
-
-	  classTransform: function(classificationResult        )         {
-	    if (classificationResult === 0) {
-	      return -1;
-	    } else {
-	      console.assert(classificationResult === 1);
-	      return 1;
-	    }
-	  },
-	};
-
-
-/***/ },
-
-/***/ 72:
+/***/ 74:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1190,7 +1285,7 @@ webpackJsonp([0],{
 	                                     
 	  
 
-	var $__0=   __webpack_require__(71),add=$__0.add,rotate=$__0.rotate;
+	var $__0=   __webpack_require__(70),add=$__0.add,rotate=$__0.rotate;
 
 
 
@@ -1220,44 +1315,6 @@ webpackJsonp([0],{
 	};
 
 	module.exports = {generatePoints:generatePoints, ELLIPSE_FIXED_RADIUS:ELLIPSE_FIXED_RADIUS, labelToColour:labelToColour};
-
-
-/***/ },
-
-/***/ 73:
-/***/ function(module, exports, __webpack_require__) {
-
-	/* @flow */
-	"use strict";
-	                           
-	                                 
-
-	                                                   
-	                
-	                          
-	                      
-	                               
-	  
-	                                    
-	                                 
-
-
-	var worker = new Worker("./build/worker.bundle.js");
-
-	module.exports = {
-	  request: function(request         , callback          )       {
-	    // set up return path.  I think this should overwrite old listeners.
-	    worker.onmessage = function(event     ) {
-	      callback(event.data.result);
-	    };
-	    worker.postMessage({request:request});
-	  },
-
-	  abort: function()       {
-	    console.log("[Bridge] abort");
-	    worker.postMessage({});
-	  }
-	};
 
 
 /***/ }

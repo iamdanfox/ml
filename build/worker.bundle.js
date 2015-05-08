@@ -57,7 +57,7 @@
 	                                 
 
 
-	var WebWorkerGraphSlug = __webpack_require__(1);
+	var QuadSplitGraphSlug = __webpack_require__(1);
 	var inProgressTimer = null;
 
 
@@ -79,8 +79,8 @@
 	      // if an abort message arrives during a long computation, it should get scheduled here and
 	      // prevent the postMessage
 	      inProgressTimer = setTimeout(function()  {
-	        if (t2 - t0 > 3000) {
-	          self.postMessage({result:result}); // v. slow.
+	        if (t2 - t0 > 1000) {
+	          self.postMessage({result:result});
 	        }
 
 	        // continue processing
@@ -93,7 +93,7 @@
 	      }, 10);
 	    };
 
-	    processThenReturnResult(function()  {return WebWorkerGraphSlug.startProcessing(event.data.request);});
+	    processThenReturnResult(function()  {return QuadSplitGraphSlug.startProcessing(event.data.request);});
 	  }
 	});
 
@@ -117,81 +117,88 @@
 
 
 	var $__0=   __webpack_require__(2),fastOptimise=$__0.fastOptimise,objective=$__0.objective;
-	var THREE = __webpack_require__(3);
+	var THREE = __webpack_require__(4);
+	var FasterGeometry = __webpack_require__(3);
 
-
-	var colourFunction = function(pointGroups, boundingBox, vertex1, vertex2, vertex3, mutableHSL) {
-	  var zMin = boundingBox.min.z;
-	  var zRange = boundingBox.max.z - zMin;
-	  var totalZ = vertex1.z + vertex2.z + vertex3.z;
-	  var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-	  var stops = fastOptimise(vertex2, pointGroups) / 250;
-	  mutableHSL.h = 0.54 + stops * 0.3;
-	  mutableHSL.s = 0.8;
-	  mutableHSL.l = 0.08 + 0.82 * Math.pow(normalizedZ, 2);
+	var colourFunction = function(pointGroups, vertex, hues, index) {
+	  var stops = fastOptimise(vertex, pointGroups) / 250;
+	  hues[index] = 256 * (0.54 + stops * 0.3);
 	};
 
-	var buildInitialGeometry = function(request         )                           {
-	  var polarMeshFunction = function(i        , j        )                {
-	    var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
+	var buildInitialGeometry = function(request         )                 {
+	  var polarMeshFunction = function(r        , j        )                {
 	    var theta = j * 2 * Math.PI;
 	    var x = r * Math.cos(theta);
 	    var y = r * Math.sin(theta);
 	    var z = objective({x:x, y:y}, request.pointGroups);
 	    return new THREE.Vector3(x, y, z);
 	  };
-	  var geometry = new THREE.ParametricGeometry(polarMeshFunction,
+	  var geometry = new FasterGeometry(polarMeshFunction,
 	    request.rResolution, request.thetaResolution, true);
 
-	  geometry.computeBoundingBox();
 	  return geometry;
 	};
-
 
 	module.exports = {
 	  startProcessing: function(request         )                                      {
 	    // construct Worker-side clone of the entire graph.
-	    var $__0=    buildInitialGeometry(request),boundingBox=$__0.boundingBox,faces=$__0.faces,vertices=$__0.vertices;
+	    var $__0=   request,thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution;
+	    var $__1=   buildInitialGeometry(request),faces=$__1.faces,vertices=$__1.vertices;
 
 	    // get necessary prototypes & functions all set up
-	    var hsls = [];
 	    var numFaces = faces.length;
-	    for (var i = 0; i < numFaces; i = i + 1) {
-	      hsls.push({h: 0.54, s: 0.8, l: 0.08});
-	    }
+	    var hues = new Uint8Array(numFaces);
 
 	    // do face 0.
-	    var firstFace = faces[0];
-	    colourFunction(request.pointGroups, boundingBox,
-	      vertices[firstFace.a], vertices[firstFace.b], vertices[firstFace.c], firstFace.color);
+	    colourFunction(request.pointGroups, vertices[faces[0].b], hues, 0);
+	    hues[1] = hues[0];
 
-	    var processStep = function(base        )                                      {
+	    var colourStep = function(squareSize)  {
+	      // we know all the top lefts have been done, need to do all the top rights,
+	      // bottom lefts, and bottom rights
+	      var prevSquareSize = 2 * squareSize;
 
-	      for (var i = 0; i < numFaces; i = i + 1) {
-	        var face = faces[i];
-	        var hsl = hsls[i];
-	        // we want to colour pixels that have not been coloured already!
-	        if (i % base === 0 && i % (2 * base) !== 0) {
-	          // compute this face
-	          colourFunction(request.pointGroups, boundingBox,
-	            vertices[face.a], vertices[face.b], vertices[face.c], hsl);
-	        } else {
-	          // otherwise, just use the last computed number
-	          var lastComputed = hsls[base * Math.floor(i / base)];
-	          hsl.h = lastComputed.h;
-	          hsl.s = lastComputed.s;
-	          hsl.l = lastComputed.l;
+	      for (var y = 0; y < thetaResolution; y = y + squareSize) {
+	        for (var x = 0; x < rResolution; x = x + squareSize) {
+	          // only colour the square if it wasn't done in the prev. step
+	          var faceIndex = 2 * ((y * rResolution) + x);
+	          var face = faces[faceIndex];
+
+	          if ((x % prevSquareSize !== 0) || (y % prevSquareSize != 0)) {
+	            colourFunction(request.pointGroups, vertices[face.b], hues, faceIndex);
+	            hues[faceIndex + 1] = hues[faceIndex];
+	          }
+	        }
+	      }
+
+	      // // now need to do some colour copying in the three new squares (don't touch top left)
+	      for (var y = 0; y < thetaResolution; y = y + 1) {
+	        var squareY = y % squareSize;
+	        var prevSquareY = y % prevSquareSize;
+
+	        for (var x = 0; x < rResolution; x = x + 1) {
+	          var squareX = x % squareSize;
+	          var prevSquareX = x % prevSquareSize;
+
+	          // pixels in the top left square were also in the top left square in the last iteration
+	          // we can safely ignore them
+	          if (!(squareX === prevSquareX && squareY === prevSquareY)) {
+	            var prevIndex = 2 * (((y - squareY) * rResolution) + (x - squareX));
+	            var index = 2 * ((y * rResolution) + x);
+	            hues[index] = hues[prevIndex];
+	            hues[index + 1] = hues[prevIndex];
+	          }
 	        }
 	      }
 
 	      return {
-	        result: {hsls:hsls},
-	        continuation: (Math.floor(base / 2) > 1) ? function()  {return processStep(Math.floor(base / 2));} : null
+	        result: {hues:hues},
+	        continuation: (Math.floor(squareSize / 2) > 0) ? function()  {return colourStep(Math.floor(squareSize / 2));} : null
 	      };
 	    };
 
 	    var nextBiggestPowerOf2 = Math.pow(2, Math.floor(Math.log2(faces.length)));
-	    return processStep(nextBiggestPowerOf2);
+	    return colourStep(nextBiggestPowerOf2);
 	  }
 	};
 
@@ -207,7 +214,7 @@
 
 	"use strict";
 
-	var $__0=    __webpack_require__(4),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
+	var $__0=    __webpack_require__(5),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
 
 	function sigmoid(wx)         {
 	  return 1 / (1 + Math.exp(-wx));
@@ -316,6 +323,43 @@
 
 /***/ },
 /* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var THREE = __webpack_require__(4);
+
+	var FasterGeometry = function(func, slices, stacks) {
+
+	  THREE.Geometry.call( this );
+
+	  for ( var i = 0; i <= stacks; i = i + 1 ) {
+	    var v = i / stacks;
+	    for ( var j = 0; j <= slices; j = j + 1 ) {
+	      this.vertices.push( func( j / slices, v ) );
+	    }
+	  }
+
+	  var sliceCount = slices + 1;
+
+	  for ( var p = 0; p < stacks; p = p + 1 ) {
+	    for ( var q = 0; q < slices; q = q + 1 ) {
+	      var a = p * sliceCount + q;
+	      var b = p * sliceCount + q + 1;
+	      var c = (p + 1) * sliceCount + q + 1;
+	      var d = (p + 1) * sliceCount + q;
+	      this.faces.push( new THREE.Face3( a, b, d ) );
+	      this.faces.push( new THREE.Face3( b, c, d ) );
+	    }
+	  }
+	};
+
+	FasterGeometry.prototype = Object.create( THREE.Geometry.prototype );
+	FasterGeometry.prototype.constructor = FasterGeometry;
+
+	module.exports = FasterGeometry;
+
+
+/***/ },
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var self = self || {};// File:src/Three.js
@@ -35467,7 +35511,7 @@
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
