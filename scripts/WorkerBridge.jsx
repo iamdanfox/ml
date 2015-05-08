@@ -10,7 +10,7 @@ type Request = {
   pointGroups: Array<PointGrp>;
 };
 type Callback = (r: Result) => void;
-type Result = {hsls: Array<any>};
+type Result = {hues: Array<any>};
 
 
 var worker = new Worker("./build/worker.bundle.js");

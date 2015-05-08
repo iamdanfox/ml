@@ -33,13 +33,16 @@ var LogisticRegressionVis = React.createClass({
   render: function(): ?ReactElement {
     var lrOptimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.props.pointGroups);
 
+    var {width, height} = this.props;
+    var dim = Math.max(width, height);
+
     return (
-      <div>
-        <Draggable3DScene dim={800} pointGroups={this.props.pointGroups}
+      <div style={{width: '100%'}}>
+        <Draggable3DScene dim={dim} pointGroups={this.props.pointGroups}
             objective={LogisticRegression.objective} highlightW={this.props.highlightW}>
 
-          <OptimiserLine vertices={lrOptimiserLine} />
-          <CursorSphere highlightedW={this.props.highlightedW} />
+          <OptimiserLine vertices={lrOptimiserLine} dim={dim} />
+          <CursorSphere highlightedW={this.props.highlightedW} dim={dim} />
 
           <WebWorkerGraph thetaResolution={252} rResolution={84} />
 
@@ -60,6 +63,8 @@ var Immersive = React.createClass({
     return {
       pointGroups: require("../data/awesomePointGroups.js"),
       highlightedW: {x: 0.2, y: 0.2},
+      innerHeight: window.innerHeight,
+      innerWidth: window.innerWidth,
     };
   },
 
@@ -71,18 +76,24 @@ var Immersive = React.createClass({
     this.setState({highlightedW});
   },
 
+  componentDidMount: function() {
+    window.addEventListener('resize', this.updateWindowSize);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('resize', this.updateWindowSize);
+  },
+
+  updateWindowSize: function() {
+    var {innerHeight, innerWidth} = window;
+    this.setState({innerHeight, innerWidth});
+  },
+
   render: function(): ?ReactElement {
-
-
     return (
-      <div style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          position: "relative",
-          background: "#111"}}>
+      <div style={{position: 'relative'}}>
         <div style={{
+            position: 'absolute',
             top: 0,
             left: 0,
             background: "rgba(255, 255, 255, 0.6)"}}>
@@ -90,8 +101,9 @@ var Immersive = React.createClass({
             updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
         </div>
 
-        <LogisticRegressionVis highlightW={this.highlightW}
-          highlightedW={this.state.highlightedW} pointGroups={this.state.pointGroups} />
+        <LogisticRegressionVis width={this.state.innerWidth} height={this.state.innerHeight}
+          highlightW={this.highlightW} highlightedW={this.state.highlightedW}
+          pointGroups={this.state.pointGroups} />
 
 
       </div>

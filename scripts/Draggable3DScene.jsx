@@ -24,6 +24,7 @@ type Props = {
   objective: (w: P2, pointGroups: Array<PointGrp>) => number;
 }
 
+var DISTANCE = 50;
 
 
 var Draggable3DScene = React.createClass({
@@ -37,11 +38,11 @@ var Draggable3DScene = React.createClass({
   getInitialState: function(): State {
     var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.01, 1000 ); // Field of view, aspect ratio, near clip, far clip
     initialCamera.up = new THREE.Vector3( 0, 0, 1 );
-    initialCamera.position.z = 300 / this.props.dim;
-
+    initialCamera.position.z = DISTANCE / (Math.sqrt(this.props.dim) * 2.3);
 
     var initialRenderer = new THREE.WebGLRenderer({antialias: true});
     initialRenderer.setClearColor( 0x111111, 1 );
+    initialRenderer.setSize(this.props.dim, this.props.dim);
 
     return {
       angle: 0,
@@ -56,7 +57,6 @@ var Draggable3DScene = React.createClass({
   },
 
   componentWillMount: function() {
-    this.state.renderer.setSize( this.props.dim, this.props.dim );
     this.updateCamera(this.state);
   },
 
@@ -69,12 +69,15 @@ var Draggable3DScene = React.createClass({
     if (typeof nextState !== "undefined" && nextState !== null) {
       this.updateCamera(nextState);
     }
+    if (nextProps.dim !== this.props.dim) {
+      this.state.renderer.setSize(nextProps.dim, nextProps.dim);
+    }
   },
 
   updateCamera: function(state: State): void {
-    this.state.camera.position.x = Math.cos(state.angle) * 600 / this.props.dim;
-    this.state.camera.position.y = Math.sin(state.angle) * 600 / this.props.dim;
-    this.state.camera.lookAt(new THREE.Vector3(0, 0, 0));
+    this.state.camera.position.x = Math.cos(state.angle) * DISTANCE / Math.sqrt(this.props.dim);
+    this.state.camera.position.y = Math.sin(state.angle) * DISTANCE / Math.sqrt(this.props.dim);
+    this.state.camera.lookAt(new THREE.Vector3(0, 0, -0.3));
   },
 
   mouseDown: function(e: React.SyntheticEvent): void {
@@ -168,7 +171,6 @@ var Draggable3DScene = React.createClass({
 
   render: function(): ?ReactElement {
     var mergeInProps = {
-      dim: this.props.dim,
       pointGroups: this.props.pointGroups,
       objective: this.props.objective,
       scene: this.state.scene,

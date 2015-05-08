@@ -8,37 +8,29 @@ type Request = {
   rResolution: number;
   pointGroups: Array<PointGrp>;
 };
-type Result = {hsls: Array<any>};
+type Result = {hues: Uint8Array};
 
 
 var {fastOptimise, objective} = require("./LogisticRegression.jsx");
 var THREE = require("three");
+var FasterGeometry = require("./FasterGeometry.js");
 
-
-var colourFunction = function(pointGroups, boundingBox, vertex1, vertex2, vertex3, mutableHSL) {
-  var zMin = boundingBox.min.z;
-  var zRange = boundingBox.max.z - zMin;
-  var totalZ = vertex1.z + vertex2.z + vertex3.z;
-  var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-  var stops = fastOptimise(vertex2, pointGroups) / 250;
-  mutableHSL.h = 0.54 + stops * 0.3;
-  mutableHSL.s = 0.8;
-  mutableHSL.l = 0.08 + 0.82 * Math.pow(normalizedZ, 2);
+var colourFunction = function(pointGroups, vertex, hues, index) {
+  var stops = fastOptimise(vertex, pointGroups) / 250;
+  hues[index] = 256 * (0.54 + stops * 0.3);
 };
 
-var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry {
-  var polarMeshFunction = function(i: number, j: number): THREE.Vector3 {
-    var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
+var buildInitialGeometry = function(request: Request): FasterGeometry {
+  var polarMeshFunction = function(r: number, j: number): THREE.Vector3 {
     var theta = j * 2 * Math.PI;
     var x = r * Math.cos(theta);
     var y = r * Math.sin(theta);
     var z = objective({x, y}, request.pointGroups);
     return new THREE.Vector3(x, y, z);
   };
-  var geometry = new THREE.ParametricGeometry(polarMeshFunction,
+  var geometry = new FasterGeometry(polarMeshFunction,
     request.rResolution, request.thetaResolution, true);
 
-  geometry.computeBoundingBox();
   return geometry;
 };
 
@@ -46,41 +38,34 @@ var buildInitialGeometry = function(request: Request): THREE.ParametricGeometry 
 module.exports = {
   startProcessing: function(request: Request): {result: Result; continuation: any} {
     // construct Worker-side clone of the entire graph.
-    var {boundingBox, faces, vertices} = buildInitialGeometry(request);
+    var {faces, vertices} = buildInitialGeometry(request);
 
     // get necessary prototypes & functions all set up
-    var hsls = [];
     var numFaces = faces.length;
+    var hues = new Uint8Array(numFaces);
     for (var i = 0; i < numFaces; i = i + 1) {
-      hsls.push({h: 0.54, s: 0.8, l: 0.08});
+      hues[i] = 20; // just compute hue! 256 * 0.08
     }
 
     // do face 0.
-    var firstFace = faces[0];
-    colourFunction(request.pointGroups, boundingBox,
-      vertices[firstFace.a], vertices[firstFace.b], vertices[firstFace.c], firstFace.color);
+    colourFunction(request.pointGroups, vertices[faces[0].b], hues, 0);
 
     var processStep = function(base: number): {result: Result; continuation: any} {
 
       for (var i = 0; i < numFaces; i = i + 1) {
         var face = faces[i];
-        var hsl = hsls[i];
         // we want to colour pixels that have not been coloured already!
         if (i % base === 0 && i % (2 * base) !== 0) {
           // compute this face
-          colourFunction(request.pointGroups, boundingBox,
-            vertices[face.a], vertices[face.b], vertices[face.c], hsl);
+          colourFunction(request.pointGroups, vertices[face.b], hues, i);
         } else {
           // otherwise, just use the last computed number
-          var lastComputed = hsls[base * Math.floor(i / base)];
-          hsl.h = lastComputed.h;
-          hsl.s = lastComputed.s;
-          hsl.l = lastComputed.l;
+          hues[i] = hues[base * Math.floor(i / base)];
         }
       }
 
       return {
-        result: {hsls},
+        result: {hues},
         continuation: (Math.floor(base / 2) > 1) ? () => processStep(Math.floor(base / 2)) : null
       };
     };

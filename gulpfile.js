@@ -95,7 +95,6 @@ gulp.task('jshint', function() {
       "loopfunc": true,
       "maxcomplexity": 4,
       "maxdepth": 3,
-      "maxparams": 6,
       "maxstatements": 10,
       "newcap": true,
       "noarg": true,

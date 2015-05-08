@@ -32,7 +32,7 @@ var MATERIAL = new THREE.MeshBasicMaterial({
 });
 
 
-var ProgressiveParametricGraph = React.createClass({
+var QuadSplitGraph = React.createClass({
   propTypes: {
     colourFunction: React.PropTypes.func.isRequired,
     pointGroups: React.PropTypes.array.isRequired,
@@ -76,48 +76,80 @@ var ProgressiveParametricGraph = React.createClass({
     if (this.state.timer !== null) {
       clearTimeout(this.state.timer);
     }
-
+    var {rResolution, thetaResolution} = this.props;
     var {geometry} = this.state.graph;
     geometry.computeBoundingBox();
-    var numFaces = geometry.faces.length;
 
     this.props.colourFunction(geometry.boundingBox,
       geometry.vertices[geometry.faces[0].a],
       geometry.vertices[geometry.faces[0].b],
       geometry.vertices[geometry.faces[0].c],
       geometry.faces[0].color);
+    geometry.faces[1].color.copy(geometry.faces[0].color);
 
-    var colourStep = (base) => {
-      for (var i = 0; i < numFaces; i = i + 1) {
-        var face = geometry.faces[i];
-        // we want to colour pixels that have not been coloured already!
-        if (i % base === 0 && i % (2 * base) !== 0) {
-          // compute this face
-          this.props.colourFunction(geometry.boundingBox,
-            geometry.vertices[face.a],
-            geometry.vertices[face.b],
-            geometry.vertices[face.c],
-            face.color);
-          face.hasBeenComputed = true;
-        } else {
-          // otherwise, just use the last computed number
-          var lastComputedColour = geometry.faces[base * Math.floor(i / base)].color;
-          face.color.copy(lastComputedColour);
+    var colourStep = (squareSize) => {
+      // we know all the top lefts have been done, need to do all the top rights,
+      // bottom lefts, and bottom rights
+      var prevSquareSize = 2 * squareSize;
+
+      for (var y = 0; y < thetaResolution; y = y + squareSize) {
+        for (var x = 0; x < rResolution; x = x + squareSize) {
+          // only colour the square if it wasn't done in the prev. step
+          var faceIndex = 2 * ((y * rResolution) + x);
+          var face = geometry.faces[faceIndex];
+
+          if ((x % prevSquareSize !== 0) || (y % prevSquareSize !== 0)) {
+            this.props.colourFunction(geometry.boundingBox,
+              geometry.vertices[face.a],
+              geometry.vertices[face.b],
+              geometry.vertices[face.c],
+              face.color);
+            geometry.faces[faceIndex + 1].color.copy(face.color);
+            geometry.faces[faceIndex + 1].computedColor = true;
+          }
         }
       }
-      return Math.floor(base / 2) > 0 ? () => colourStep(Math.floor(base / 2)) : null;
+
+      // // now need to do some colour copying in the three new squares (don't touch top left)
+      for (var y = 0; y < thetaResolution; y = y + 1) {
+        for (var x = 0; x < rResolution; x = x + 1) {
+          var squareX = x % squareSize;
+          var squareY = y % squareSize;
+          var prevSquareX = x % prevSquareSize;
+          var prevSquareY = y % prevSquareSize;
+
+          // pixels in the top left square were also in the top left square in the last iteration
+          // we can safely ignore them
+          if (!(squareX === prevSquareX && squareY === prevSquareY)) {
+            var prevIndex = 2 * (((y - squareY) * rResolution) + (x - squareX));
+            var index = 2 * ((y * rResolution) + x);
+            geometry.faces[index].color.copy(geometry.faces[prevIndex].color);
+            geometry.faces[index + 1].color.copy(geometry.faces[prevIndex].color);
+          }
+        }
+      }
+
+      if (squareSize > 1) {
+        return () => colourStep(squareSize / 2);
+      } else {
+        return null;
+      }
     };
 
     var timeoutRecurse: F<any, void> = (step) => {
-      geometry.colorsNeedUpdate = true;
-      this.props.forceParentUpdate();
       var continuation = step();
+      geometry.colorsNeedUpdate = true;
+      geometry.verticesNeedUpdate = true;
+      geometry.facesNeedUpdate = true;
+      this.props.forceParentUpdate();
       if (continuation !== null) {
-        this.setState({timer: setTimeout(() => timeoutRecurse(continuation), 100)});
+        this.setState({timer: setTimeout(() => timeoutRecurse(continuation), 10)});
       }
     };
 
-    var nextBiggestPowerOf2 = Math.pow(2, Math.floor(Math.log2(numFaces)));
+    var biggestDimension = Math.max(rResolution + 1, thetaResolution + 1);
+    var nextBiggestPowerOf2 = Math.pow(2, Math.floor(Math.log2(biggestDimension)));
+
     timeoutRecurse(() => colourStep(nextBiggestPowerOf2));
   },
 
@@ -170,4 +202,4 @@ var ProgressiveParametricGraph = React.createClass({
   }
 });
 
-module.exports = ProgressiveParametricGraph;
+module.exports = QuadSplitGraph;

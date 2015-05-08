@@ -21,6 +21,7 @@ var React = require("react/addons");
 var THREE = require("three");
 var WorkerBridge = require("./WorkerBridge.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
+var FasterGeometry = require("./FasterGeometry.js");
 
 
 
@@ -31,11 +32,12 @@ var MATERIAL = new THREE.MeshBasicMaterial({
   transparent: true,
 });
 
-var colourFunction = (pointGroups, boundingBox, vertex1, vertex2, vertex3, mutableFaceColor) => {
+var colourFunction = (pointGroups, boundingBox, vertex2, vertex3, mutableFaceColor) => {
   var zMin = boundingBox.min.z;
   var zRange = boundingBox.max.z - zMin;
-  var totalZ = vertex1.z + vertex2.z + vertex3.z;
-  var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
+  // only using two because the avg of these is the middle of two faces (ie one square).
+  var totalZ = vertex2.z + vertex3.z;
+  var normalizedZ = (totalZ - 2 * zMin) / (2 * zRange);
   var stops = LogisticRegression.fastOptimise(vertex2, pointGroups) / 250;
   mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
 };
@@ -60,9 +62,9 @@ var WebWorkerGraph = React.createClass({
   },
 
   polarMeshFunction: function(props: Props): any {
-    return function(i: number, j: number): THREE.Vector3 {
+    return function(r: number, j: number): THREE.Vector3 {
       // var r = (Math.pow(1.8, i * i) - 1); // this ensures there are lots of samples near the origin and gets close to 0!
-      var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
+      // var r = (i + i * i) / 2; // this ensures there are lots of samples near the origin and gets close to 0!
       var theta = j * 2 * Math.PI;
       var x = r * Math.cos(theta);
       var y = r * Math.sin(theta);
@@ -71,30 +73,30 @@ var WebWorkerGraph = React.createClass({
     };
   },
 
-  buildInitialGeometry: function(props: Props): THREE.ParametricGeometry {
-    var geometry = new THREE.ParametricGeometry(this.polarMeshFunction(props),
+  buildInitialGeometry: function(props: Props): FasterGeometry {
+    var geometry = new FasterGeometry(this.polarMeshFunction(props),
       this.props.rResolution, this.props.thetaResolution, true);
 
     geometry.computeBoundingBox();
     return geometry;
   },
 
-  buildCoarseGeometry: function(props: Props): THREE.ParametricGeometry {
-    var geometry = new THREE.ParametricGeometry(this.polarMeshFunction(props),
+  buildCoarseGeometry: function(props: Props): FasterGeometry {
+    var geometry = new FasterGeometry(this.polarMeshFunction(props),
       Math.floor(props.rResolution / 12), Math.floor(props.thetaResolution / 12), true);
     return this.colourGeometry(props, geometry);
   },
 
-  colourGeometry: function(props: Props, graphGeometry: THREE.ParametricGeometry): THREE.ParametricGeometry {
+  colourGeometry: function(props: Props, graphGeometry: FasterGeometry): FasterGeometry {
     graphGeometry.computeBoundingBox();
 
-    for (var i = 0; i < graphGeometry.faces.length; i = i + 1) {
+    for (var i = 0, len = graphGeometry.faces.length; i < len; i = i + 2) {
       var face = graphGeometry.faces[i];
       colourFunction(props.pointGroups, graphGeometry.boundingBox,
-        graphGeometry.vertices[face.a],
         graphGeometry.vertices[face.b],
         graphGeometry.vertices[face.c],
         face.color);
+      graphGeometry.faces[i + 1].color.copy(face.color);
     }
 
     graphGeometry.colorsNeedUpdate = true;
@@ -147,15 +149,18 @@ var WebWorkerGraph = React.createClass({
     }
   },
 
-  asyncRequestColouring: function(props: Props) {
-    var {thetaResolution, rResolution, pointGroups} = props;
+  asyncRequestColouring: function({thetaResolution, rResolution, pointGroups}: Props) {
     console.log('[React] sending request');
-    WorkerBridge.request({thetaResolution, rResolution, pointGroups}, (result) => {
-      var {hsls} = result;
-      var len = hsls.length;
-      for (var i = 0; i < len; i = i + 1) {
-        var {h, s, l} = hsls[i];
-        this.state.graph.geometry.faces[i].color.setHSL(h, s, l);
+
+    WorkerBridge.request({thetaResolution, rResolution, pointGroups}, ({hues}) => {
+      var {boundingBox, faces, vertices} = this.state.graph.geometry;
+      var zRange = boundingBox.max.z - boundingBox.min.z;
+
+      for (var i = 0, len = hues.length; i < len; i = i + 1) {
+        var face = faces[i];
+        var normalizedZ = (vertices[face.a].z + vertices[face.a].z + vertices[face.a].z -
+          3 * boundingBox.min.z) / (3 * zRange);
+        face.color.setHSL(hues[i] / 256, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
       }
 
       this.state.graph.geometry.colorsNeedUpdate = true;
