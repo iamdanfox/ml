@@ -40,7 +40,7 @@ var Draggable3DScene = React.createClass({
   getInitialState: function(): State {
     var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.01, 1000 ); // Field of view, aspect ratio, near clip, far clip
     initialCamera.up = new THREE.Vector3( 0, 0, 1 );
-    initialCamera.position.z = 0.4 * this.getDistance();
+    this.updateCamera(initialCamera, 0);
 
     var initialRenderer = new THREE.WebGLRenderer({antialias: true});
     initialRenderer.setClearColor( 0x111111, 1 );
@@ -58,28 +58,26 @@ var Draggable3DScene = React.createClass({
     };
   },
 
-  componentWillMount: function() {
-    this.updateCamera(this.state);
-  },
-
   componentDidMount: function() {
     this.refs.container.getDOMNode().appendChild(this.state.renderer.domElement);
     this.state.renderer.render(this.state.scene, this.state.camera);
   },
 
   componentWillUpdate: function(nextProps: Props, nextState?: State): void {
-    if (typeof nextState !== "undefined" && nextState !== null) {
-      this.updateCamera(nextState);
+    if (typeof nextState !== "undefined" && nextState !== null && nextState.angle !== this.state.angle) {
+      this.updateCamera(this.state.camera, nextState.angle);
+      this.props.updateAngle(nextState.angle);
     }
     if (nextProps.dim !== this.props.dim) {
       this.state.renderer.setSize(nextProps.dim, nextProps.dim);
     }
   },
 
-  updateCamera: function(state: State): void {
-    this.state.camera.position.x = Math.cos(state.angle) * this.getDistance();
-    this.state.camera.position.y = Math.sin(state.angle) * this.getDistance();
-    this.state.camera.lookAt(new THREE.Vector3(0, 0, -0.3));
+  updateCamera: function(camera: THREE.Camera, angle: number): void {
+    camera.position.x = Math.cos(angle) * this.getDistance();
+    camera.position.y = Math.sin(angle) * this.getDistance();
+    camera.position.z = 0.4 * this.getDistance();
+    camera.lookAt(new THREE.Vector3(0, 0, -0.3));
   },
 
   mouseDown: function(e: React.SyntheticEvent): void {
@@ -173,8 +171,6 @@ var Draggable3DScene = React.createClass({
 
   render: function(): ?ReactElement {
     var mergeInProps = {
-      pointGroups: this.props.pointGroups,
-      objective: this.props.objective,
       scene: this.state.scene,
       forceParentUpdate: () => this.forceUpdate()
     };

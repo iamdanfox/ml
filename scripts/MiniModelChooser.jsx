@@ -27,26 +27,32 @@ var MiniModelChooser = React.createClass({
   propTypes: {
     highlightedW: React.PropTypes.object.isRequired,
     pointGroups: React.PropTypes.array.isRequired,
+    angle: React.PropTypes.number.isRequired,
+    focusModel: React.PropTypes.func.isRequired,
+  },
+
+  shouldComponentUpdate: function(nextProps: any): boolean {
+    return (this.props.angle !== nextProps.angle ||
+      this.props.pointGroups !== nextProps.pointGroups ||
+      this.props.highlightedW !== nextProps.highlightedW);
   },
 
   render: function(): ?ReactElement {
     var dim = 120;
+
+    var models = [Perceptron, LogisticRegression, MaximumMargin];
+
     return (
       <div>
-        <ThreeScene dim={dim} pointGroups={this.props.pointGroups} angle={0}
-            objective={Perceptron.objective} highlightW={function(){}}>
-          <ParametricGraph thetaResolution={30} rResolution={6} colourFunction={ParametricGraph.COLOUR_FUNCTION} />
-        </ThreeScene>
-
-        <ThreeScene dim={dim} pointGroups={this.props.pointGroups} angle={0}
-            objective={LogisticRegression.objective} highlightW={function(){}}>
-          <ParametricGraph thetaResolution={30} rResolution={6} colourFunction={ParametricGraph.COLOUR_FUNCTION} />
-        </ThreeScene>
-
-        <ThreeScene dim={dim} pointGroups={this.props.pointGroups} angle={0}
-            objective={MaximumMargin.objective} highlightW={function(){}}>
-          <ParametricGraph thetaResolution={30} rResolution={6} colourFunction={ParametricGraph.COLOUR_FUNCTION} />
-        </ThreeScene>
+        { models.map((model) =>
+            <div style={{cursor: "pointer"}} onClick={() => this.props.focusModel(model)}>
+              <ThreeScene dim={dim} pointGroups={this.props.pointGroups} angle={this.props.angle}
+                  objective={model.objective} highlightW={function(){}}>
+                <ParametricGraph thetaResolution={30} rResolution={6}
+                  colourFunction={ParametricGraph.COLOUR_FUNCTION} />
+              </ThreeScene>
+            </div>
+          ) }
       </div>
     );
   }
