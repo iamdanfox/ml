@@ -98,7 +98,7 @@ var QuadSplitGraph = React.createClass({
           var faceIndex = 2 * ((y * rResolution) + x);
           var face = geometry.faces[faceIndex];
 
-          if ((x % prevSquareSize !== 0) || (y % prevSquareSize != 0)) {
+          if ((x % prevSquareSize !== 0) || (y % prevSquareSize !== 0)) {
             this.props.colourFunction(geometry.boundingBox,
               geometry.vertices[face.a],
               geometry.vertices[face.b],
@@ -120,7 +120,7 @@ var QuadSplitGraph = React.createClass({
 
           // pixels in the top left square were also in the top left square in the last iteration
           // we can safely ignore them
-          if (!(squareX === prevSquareX && squareY !== prevSquareY)) {
+          if (!(squareX === prevSquareX && squareY === prevSquareY)) {
             var prevIndex = 2 * (((y - squareY) * rResolution) + (x - squareX));
             var index = 2 * ((y * rResolution) + x);
             geometry.faces[index].color.copy(geometry.faces[prevIndex].color);
