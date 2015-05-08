@@ -47,7 +47,7 @@ var ParametricGraph = React.createClass({
       var zRange = boundingBox.max.z - zMin;
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-      mutableFaceColor.setHSL(0.31, 0.8, 0.20 + 0.82 * Math.pow(normalizedZ, 2));
+      mutableFaceColor.setHSL(0.54, 0.8, 0.20 + 0.82 * Math.pow(normalizedZ, 2));
     }
   },
 
