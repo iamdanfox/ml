@@ -17,7 +17,7 @@ var FasterGeometry = require("./FasterGeometry.js");
 
 var colourFunction = function(pointGroups, vertex, hues, index) {
   var stops = fastOptimise(vertex, pointGroups) / 250;
-  hues[index] = 256 * (0.54 + stops * 0.3);
+  hues[index] = 256 * (0.31 -  stops * 0.3);
 };
 
 var buildInitialGeometry = function(request: Request): FasterGeometry {
@@ -44,7 +44,7 @@ module.exports = {
     var numFaces = faces.length;
     var hues = new Uint8Array(numFaces);
     for (var i = 0; i < numFaces; i = i + 1) {
-      hues[i] = 20; // just compute hue! 256 * 0.08
+      hues[i] = 20; // just compute hue! 256 * 0.20
     }
 
     // do face 0.

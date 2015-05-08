@@ -39,7 +39,7 @@ var colourFunction = (pointGroups, boundingBox, vertex2, vertex3, mutableFaceCol
   var totalZ = vertex2.z + vertex3.z;
   var normalizedZ = (totalZ - 2 * zMin) / (2 * zRange);
   var stops = LogisticRegression.fastOptimise(vertex2, pointGroups) / 250;
-  mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
+  mutableFaceColor.setHSL(0.31 -  stops * 0.3, 0.8, 0.20 + 0.82 * Math.pow(normalizedZ, 2));
 };
 
 
@@ -160,7 +160,7 @@ var WebWorkerGraph = React.createClass({
         var face = faces[i];
         var normalizedZ = (vertices[face.a].z + vertices[face.a].z + vertices[face.a].z -
           3 * boundingBox.min.z) / (3 * zRange);
-        face.color.setHSL(hues[i] / 256, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
+        face.color.setHSL(hues[i] / 256, 0.8, 0.20 + 0.82 * Math.pow(normalizedZ, 2));
       }
 
       this.state.graph.geometry.colorsNeedUpdate = true;

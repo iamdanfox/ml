@@ -44,7 +44,7 @@ var LogisticRegressionVis = React.createClass({
 
       var stops = fastOptimise(vertex1, this.state.pointGroups) / 250; // should match MAX_STOPS
 
-      mutableFaceColor.setHSL(0.54 + stops * 0.3, 0.8,  0.08 + 0.82 * Math.pow(normalizedZ, 2));
+      mutableFaceColor.setHSL(0.31 -  stops * 0.3, 0.8,  0.20 + 0.82 * Math.pow(normalizedZ, 2));
     }).bind(this);
 
     return <div style={{width: "1000px"}}>
