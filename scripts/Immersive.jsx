@@ -22,7 +22,7 @@ var CursorSphere = require("./CursorSphere.jsx");
 var Draggable3DScene = require("./Draggable3DScene.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
 var WebWorkerGraph = require("./WebWorkerGraph.jsx");
-// var ProgressiveParametricGraph = require("./ProgressiveParametricGraph.jsx");
+var MiniModelChooser = require("./MiniModelChooser.jsx");
 var OptimiserLine = require("./OptimiserLine.jsx");
 var React = require("react/addons");
 
@@ -33,8 +33,7 @@ var LogisticRegressionVis = React.createClass({
   render: function(): ?ReactElement {
     var lrOptimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.props.pointGroups);
 
-    var {width, height} = this.props;
-    var dim = Math.max(width, height);
+    var dim = this.props.width;
 
     return (
       <div style={{width: '100%'}}>
@@ -105,7 +104,10 @@ var Immersive = React.createClass({
           highlightW={this.highlightW} highlightedW={this.state.highlightedW}
           pointGroups={this.state.pointGroups} />
 
-
+        <div style={{position: 'absolute', top: 0, right: 0}}>
+          <MiniModelChooser highlightedW={this.state.highlightedW}
+            pointGroups={this.state.pointGroups} />
+        </div>
       </div>
     );
   }

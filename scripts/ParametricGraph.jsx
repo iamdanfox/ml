@@ -11,7 +11,6 @@ type Props = {
   colourFunction: (boundingBox: any,
     v1: THREE.Vector3, v2: THREE.Vector3, v3: THREE.Vector3,
     mutableFaceColor: THREE.Color) => void;
-  dim: number;
   pointGroups: Array<PointGrp>;
   objective: (w: P2, pointGroups: Array<PointGrp>) => number;
   rResolution: number;
@@ -35,7 +34,6 @@ var MATERIAL = new THREE.MeshBasicMaterial({
 var ParametricGraph = React.createClass({
   propTypes: {
     colourFunction: React.PropTypes.func.isRequired,
-    dim: React.PropTypes.number.isRequired,
     pointGroups: React.PropTypes.array.isRequired,
     objective: React.PropTypes.func.isRequired,
     rResolution: React.PropTypes.number.isRequired,
