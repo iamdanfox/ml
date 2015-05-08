@@ -24,8 +24,6 @@ type Props = {
   objective: (w: P2, pointGroups: Array<PointGrp>) => number;
 }
 
-var DISTANCE = 50;
-
 
 var Draggable3DScene = React.createClass({
   propTypes: {
@@ -35,10 +33,14 @@ var Draggable3DScene = React.createClass({
     objective: React.PropTypes.func.isRequired
   },
 
+  getDistance: function(): number {
+    return 1.4;
+  },
+
   getInitialState: function(): State {
     var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.01, 1000 ); // Field of view, aspect ratio, near clip, far clip
     initialCamera.up = new THREE.Vector3( 0, 0, 1 );
-    initialCamera.position.z = DISTANCE / (Math.sqrt(this.props.dim) * 2.3);
+    initialCamera.position.z = 0.4 * this.getDistance();
 
     var initialRenderer = new THREE.WebGLRenderer({antialias: true});
     initialRenderer.setClearColor( 0x111111, 1 );
@@ -75,8 +77,8 @@ var Draggable3DScene = React.createClass({
   },
 
   updateCamera: function(state: State): void {
-    this.state.camera.position.x = Math.cos(state.angle) * DISTANCE / Math.sqrt(this.props.dim);
-    this.state.camera.position.y = Math.sin(state.angle) * DISTANCE / Math.sqrt(this.props.dim);
+    this.state.camera.position.x = Math.cos(state.angle) * this.getDistance();
+    this.state.camera.position.y = Math.sin(state.angle) * this.getDistance();
     this.state.camera.lookAt(new THREE.Vector3(0, 0, -0.3));
   },
 
@@ -187,7 +189,7 @@ var Draggable3DScene = React.createClass({
     this.state.renderer.render(this.state.scene, this.state.camera);
 
     return (
-      <div ref="container" style={{display: "inline-block"}}
+      <div ref="container"
           onMouseDown={this.mouseDown}
           onMouseUp={this.mouseUp}
           onMouseMove={this.mouseMove}>
