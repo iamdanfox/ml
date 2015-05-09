@@ -111,12 +111,17 @@ var AwesomeDataComponent = React.createClass({
         <g transform={`translate(${this.props.dim / 2} ${this.props.dim / 2})
           scale(${this.props.dim / 2} ${-this.props.dim / 2})`}>
 
-        { this.props.pointGroups.map(this.buildAwesomePointGroup) }
+          <g transform={`scale(${2 / this.props.dim})`}>
+            <line x1="0.5" y1="7.5" x2="0.5" y2="-6.5" style={{stroke: "#555", strokeWidth: 1}} />
+            <line x1="-6.5" y1="0.5" x2="7.5" y2="0.5" style={{stroke: "#555", strokeWidth: 1}} />
+          </g>
 
-        <rect x={-0.97} y={-0.97} height={0.12} width={0.12}
-          fill="red" onClick={this.newPointGroup(0)} style={{cursor: "pointer"}} />
-        <rect x={-0.82} y={-0.97} height={0.12} width={0.12}
-          fill="blue" onClick={this.newPointGroup(1)} style={{cursor: "pointer"}} />
+          { this.props.pointGroups.map(this.buildAwesomePointGroup) }
+
+          <rect x={-0.97} y={-0.97} height={0.12} width={0.12}
+            fill="red" onClick={this.newPointGroup(0)} style={{cursor: "pointer"}} />
+          <rect x={-0.82} y={-0.97} height={0.12} width={0.12}
+            fill="blue" onClick={this.newPointGroup(1)} style={{cursor: "pointer"}} />
 
         </g>
       </svg>;

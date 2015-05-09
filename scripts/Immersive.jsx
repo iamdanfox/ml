@@ -20,7 +20,7 @@ type State = {
 
 
 var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
-var MaximumMargin = require("./MaximumMargin.jsx");
+var LogisticRegression = require("./LogisticRegression.jsx");
 var MiniModelChooser = require("./MiniModelChooser.jsx");
 var ModelSwitcherVis = require("./ModelSwitcherVis.jsx");
 var React = require("react/addons");
@@ -35,7 +35,7 @@ var Immersive = React.createClass({
       highlightedW: {x: 0.2, y: 0.2},
       innerWidth: window.innerWidth,
       angle: 0,
-      focussedModel: MaximumMargin,
+      focussedModel: LogisticRegression,
     };
   },
 

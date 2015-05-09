@@ -61,7 +61,8 @@ var ModelSwitcherVis = React.createClass({
         <WebWorkerGraph thetaResolution={252} rResolution={84}
           objective={LogisticRegression.objective} pointGroups={this.props.pointGroups} />
       );
-    } else if (this.props.focussedModel === MaximumMargin) {
+    } else {
+      console.assert(this.props.focussedModel === MaximumMargin);
       return (
         <ParametricGraph thetaResolution={96} rResolution={50}
           colourFunction={ParametricGraph.COLOUR_FUNCTION}
