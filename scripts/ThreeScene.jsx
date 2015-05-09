@@ -33,7 +33,7 @@ var ThreeScene = React.createClass({
   },
 
   getInitialState: function(): State {
-    var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.01, 1000 ); // Field of view, aspect ratio, near clip, far clip
+    var initialCamera = new THREE.PerspectiveCamera( 75, 1, 0.01, 100 ); // Field of view, aspect ratio, near clip, far clip
     initialCamera.up = new THREE.Vector3( 0, 0, 1 );
     this.updateCamera(initialCamera, this.props.angle);
 
