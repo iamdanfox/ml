@@ -56,7 +56,7 @@ var PARAM_OPTIONS = {
   NU: [0.008, 0.012, 0.014, 0.016, 0.020, 0.03],
   ACCEPTING_GRAD: [3 / 200, 1 / 200, 1 / 400],
   MAX_STOPS: [150, 250, 450],
-}
+};
 
 function optimise(smallStartW: P2, pointGroups: Array<PointGrp>, {NU, ACCEPTING_GRAD, MAX_STOPS}: Params): Array<P2> {
   function gradient(w: P2): P2 {

@@ -3,6 +3,10 @@
 
 type P2 = {x: number; y: number};
 type PointGrp = {label: number; points: Array<P2>};
+type Params = {
+  PERCEPTRON_NU: number;
+  EPOCHS: number;
+};
 
 var {add, scale, classify, classTransform} = require("./VectorUtils.jsx");
 
@@ -23,26 +27,6 @@ the algorithm's progression.  First w is the start weight, last w is the result 
 
 Maximum list length = 300 (for non-terminating stuff)
 */
-var DEFAULT_PARAMS = {
-  PERCEPTRON_NU: 0.1,
-  EPOCHS: 2,
-}
-
-var PARAM_OPTIONS = {
-  PERCEPTRON_NU: [0.05, 0.1, 0.25, 0.5],
-  EPOCHS: [1, 2, 5, 10],
-}
-
-var PERCEPTRON_NU = 0.1;
-var EPOCHS = 2;
-/*
-The value of nu is interesting to observe.
-
-<0.05 - often doesn't reach optimal (runs out of data points)
-0.1 - almost always reaches the optimum. Occasionally stops just shy of optimal.
-0.5 - seems to work pretty fast.  Occasionally overshoots a bit.
->0.75 - seems to work, but ends up with a large w.
-*/
 
 module.exports = {
 
@@ -57,7 +41,7 @@ module.exports = {
     return 0.3;
   },
 
-  optimise: function(startWeight: P2, pointGroups: Array<PointGrp>): Array<P2> {
+  optimise: function(startWeight: P2, pointGroups: Array<PointGrp>, {PERCEPTRON_NU, EPOCHS}: Params): Array<P2> {
     var w = startWeight;
     var stops = [w];
 
@@ -73,10 +57,25 @@ module.exports = {
     }
     return stops;
   },
+  /*
+  The value of nu is interesting to observe.
 
-  DEFAULT_PARAMS,
+  <0.05 - often doesn't reach optimal (runs out of data points)
+  0.1 - almost always reaches the optimum. Occasionally stops just shy of optimal.
+  0.5 - seems to work pretty fast.  Occasionally overshoots a bit.
+  >0.75 - seems to work, but ends up with a large w.
+  */
+
+  DEFAULT_PARAMS: {
+    PERCEPTRON_NU: 0.1,
+    EPOCHS: 2,
+  },
 
   paramOptions: function(paramName: string): Array<number> {
+    var PARAM_OPTIONS = {
+      PERCEPTRON_NU: [0.05, 0.1, 0.25, 0.5],
+      EPOCHS: [1, 2, 5, 10],
+    };
     return PARAM_OPTIONS[paramName];
   },
 
