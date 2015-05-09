@@ -41,7 +41,17 @@ function objective(smallW: P2, pointGroups: Array<PointGrp>): number {
   return (7 - Math.log(1 - sum)) / 30;
 }
 
+var DEFAULT_PARAMS = {
+  NU: 0.02,
+  ACCEPTING_GRAD: 1 / 200,
+  MAX_STOPS: 250
+};
 
+var PARAM_OPTIONS = {
+  NU: [0.005, 0.01, 0.02, 0.03],
+  ACCEPTING_GRAD: [3 / 200, 1 / 200, 1 / 400],
+  MAX_STOPS: [150, 250, 450],
+}
 
 var NU = 0.02;
 var ACCEPTING_GRAD = 1 / 200; // we reach this in ~ 300 loops
@@ -105,8 +115,4 @@ function fastOptimise(smallStartW: P2, pointGroups: Array<PointGrp>): number {
 
 
 
-module.exports = {
-  objective: objective,
-  optimise: optimise,
-  fastOptimise: fastOptimise
-};
+module.exports = {objective, optimise, fastOptimise, DEFAULT_PARAMS, PARAM_OPTIONS};

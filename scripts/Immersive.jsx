@@ -16,6 +16,8 @@ type State = {
   highlightedW: P2;
   angle: number;
   innerWidth: number;
+  focussedModel: any;
+  focussedModelParams: any;
 }
 
 
@@ -36,6 +38,7 @@ var Immersive = React.createClass({
       innerWidth: window.innerWidth,
       angle: 0,
       focussedModel: LogisticRegression,
+      focussedModelParams: LogisticRegression.DEFAULT_PARAMS,
     };
   },
 
@@ -79,12 +82,15 @@ var Immersive = React.createClass({
             updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
         </div>
 
-        <ModelSwitcherVis width={this.state.innerWidth} focussedModel={this.state.focussedModel}
+        <ModelSwitcherVis width={this.state.innerWidth}
+          focussedModel={this.state.focussedModel}
           highlightW={this.highlightW} highlightedW={this.state.highlightedW}
           pointGroups={this.state.pointGroups} updateAngle={this.updateAngle} />
 
         <div style={{position: 'absolute', top: 0, right: 0}}>
-          <MiniModelChooser highlightedW={this.state.highlightedW} focusModel={this.focusModel}
+          <MiniModelChooser highlightedW={this.state.highlightedW}
+            focussedModel={this.state.focussedModel} focusModel={this.focusModel}
+            focussedModelParams={this.state.focussedModelParams}
             pointGroups={this.state.pointGroups} angle={this.state.angle} />
         </div>
       </div>
