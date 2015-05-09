@@ -115,4 +115,12 @@ function fastOptimise(smallStartW: P2, pointGroups: Array<PointGrp>): number {
 
 
 
-module.exports = {objective, optimise, fastOptimise, DEFAULT_PARAMS, PARAM_OPTIONS};
+module.exports = {
+  objective,
+  optimise,
+  fastOptimise,
+  DEFAULT_PARAMS,
+  paramOptions: function(paramName: string): Array<number> {
+    return PARAM_OPTIONS[paramName];
+  },
+};

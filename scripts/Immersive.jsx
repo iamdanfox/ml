@@ -78,6 +78,7 @@ var Immersive = React.createClass({
   },
 
   render: function(): ?ReactElement {
+    var {innerWidth, focussedModel, focussedModelParams, highlightedW, pointGroups, angle} = this.state;
     return (
       <div style={{position: 'relative'}}>
         <div style={{
@@ -85,20 +86,20 @@ var Immersive = React.createClass({
             top: 0,
             left: 0,
             background: "rgba(255, 255, 255, 0.6)"}}>
-          <AwesomeDataComponent dim={450} highlightedW={this.state.highlightedW}
-            updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
+          <AwesomeDataComponent dim={450} highlightedW={highlightedW}
+            updatePointGroups={this.updatePointGroups} pointGroups={pointGroups} />
         </div>
 
-        <ModelSwitcherVis width={this.state.innerWidth}
-          focussedModel={this.state.focussedModel}
-          highlightW={this.highlightW} highlightedW={this.state.highlightedW}
-          pointGroups={this.state.pointGroups} updateAngle={this.updateAngle} />
+        <ModelSwitcherVis width={innerWidth}
+          focussedModel={focussedModel} focussedModelParams={focussedModelParams}
+          highlightW={this.highlightW} highlightedW={highlightedW}
+          pointGroups={pointGroups} updateAngle={this.updateAngle} />
 
         <div style={{position: 'absolute', top: 0, right: 0}}>
-          <MiniModelChooser highlightedW={this.state.highlightedW}
-            focussedModel={this.state.focussedModel} focusModel={this.focusModel}
-            focussedModelParams={this.state.focussedModelParams} updateModelParams={this.updateModelParams}
-            pointGroups={this.state.pointGroups} angle={this.state.angle} />
+          <MiniModelChooser highlightedW={highlightedW}
+            focussedModel={focussedModel} focusModel={this.focusModel}
+            focussedModelParams={focussedModelParams} updateModelParams={this.updateModelParams}
+            pointGroups={pointGroups} angle={angle} />
         </div>
       </div>
     );

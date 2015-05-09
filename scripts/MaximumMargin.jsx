@@ -7,9 +7,6 @@ type PointGrp = {label: number; points: Array<P2>};
 var {modulus, classTransform} = require("./VectorUtils.jsx");
 
 
-var DEFAULT_PARAMS = {};
-var PARAM_OPTIONS = {};
-
 // the objective function is used to generate the surface
 function objective(w: P2, pointGroups: Array<PointGrp>): number {
   var minimumMargin = Infinity;
@@ -28,4 +25,10 @@ function objective(w: P2, pointGroups: Array<PointGrp>): number {
   return 0.2 + 0.5 * minimumMargin / modulus(w);
 }
 
-module.exports = {objective, DEFAULT_PARAMS, PARAM_OPTIONS};
+module.exports = {
+  objective,
+  DEFAULT_PARAMS: {},
+  paramOptions: function(): Array<number> {
+    return [];
+  }
+};

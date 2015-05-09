@@ -99,7 +99,7 @@ var LRParamChooser = React.createClass({
         { ["NU", "ACCEPTING_GRAD", "MAX_STOPS"].map((paramName) =>
             <div>
               <p>{paramName}</p>
-              <p>{ LogisticRegression.PARAM_OPTIONS[paramName].map((paramValue) =>
+              <p>{ LogisticRegression.paramOptions(paramName).map((paramValue) =>
                   <button disabled={this.props.params[paramName] === paramValue}
                     onClick={this.updateParam(paramName, paramValue)}>
                     {paramValue}

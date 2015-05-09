@@ -76,6 +76,8 @@ module.exports = {
 
   DEFAULT_PARAMS,
 
-  PARAM_OPTIONS,
+  paramOptions: function(paramName: string): Array<number> {
+    return PARAM_OPTIONS[paramName];
+  },
 
 };
