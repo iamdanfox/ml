@@ -19,7 +19,7 @@ type Props = {
 }
 var React = require("react/addons");
 var AwesomePointGroup = require("./AwesomePointGroup.jsx");
-var Hyperplane = require("./article/Hyperplane.jsx");
+var Line = require("./article/Line.jsx");
 var {add, subtract} = require("./VectorUtils.jsx");
 var {generatePoints} = require("./AwesomePointUtilities.jsx");
 var {PureRenderMixin} = require("react/addons").addons;
@@ -118,7 +118,7 @@ var AwesomeDataComponent = React.createClass({
             <line x1="0.5" y1="7.5" x2="0.5" y2="-6.5" style={{stroke: "#555", strokeWidth: 1}} />
             <line x1="-6.5" y1="0.5" x2="7.5" y2="0.5" style={{stroke: "#555", strokeWidth: 1}} />
 
-            <Hyperplane w={this.props.highlightedW} dim={this.props.dim} />
+            <Line w={this.props.highlightedW} dim={this.props.dim} />
           </g>
 
 
