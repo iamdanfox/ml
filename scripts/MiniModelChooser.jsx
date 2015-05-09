@@ -19,44 +19,9 @@ var Perceptron = require("./Perceptron.jsx");
 var React = require("react/addons");
 var ThreeScene = require("./ThreeScene.jsx");
 require("./MiniModelChooser.css");
+var LRParamChooser = require("./LRParamChooser.jsx");
 
 
-var LRParamChooser = React.createClass({
-  propTypes: {
-    params: React.PropTypes.object.isRequired,
-    updateParams: React.PropTypes.func.isRequired,
-  },
-
-  updateParam: function(paramName: string, newValue: number): () => void {
-    return () => {
-      var newParams = JSON.parse(JSON.stringify(this.props.params));
-      newParams[paramName] = newValue;
-      this.props.updateParams(newParams);
-    };
-  },
-
-  makeButtons: function(paramName): Array<ReactElement> {
-    return LogisticRegression.paramOptions(paramName).map((paramValue) =>
-              <button disabled={this.props.params[paramName] === paramValue}
-                onClick={this.updateParam(paramName, paramValue)}>
-                {paramValue}
-              </button>);
-  },
-
-  render: function(): ?ReactElement {
-    return (
-      <div>
-        <h2>Logistic Regression</h2>
-        { ["NU", "ACCEPTING_GRAD", "MAX_STOPS"].map((paramName) =>
-            <div>
-              <p>{paramName}</p>
-              <p>{ this.makeButtons(paramName) }</p>
-            </div>) }
-
-      </div>
-    );
-  }
-});
 
 
 var MiniModelChooser = React.createClass({
