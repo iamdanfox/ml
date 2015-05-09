@@ -14,10 +14,12 @@ type PointGrp = {
 type Props = {
   dim: number;
   pointGroups: Array<PointGrp>;
+  highlightedW: P2;
   updatePointGroups: (pgs: Array<PointGrp>) => void;
 }
 var React = require("react/addons");
 var AwesomePointGroup = require("./AwesomePointGroup.jsx");
+var Hyperplane = require("./article/Hyperplane.jsx");
 var {add, subtract} = require("./VectorUtils.jsx");
 var {generatePoints} = require("./AwesomePointUtilities.jsx");
 var {PureRenderMixin} = require("react/addons").addons;
@@ -31,6 +33,7 @@ var AwesomeDataComponent = React.createClass({
     dim: React.PropTypes.number.isRequired,
     updatePointGroups: React.PropTypes.func.isRequired,
     pointGroups: React.PropTypes.array.isRequired,
+    highlightedW: React.PropTypes.object.isRequired,
   },
 
   mouseMove: function(e: React.SyntheticEvent) {
@@ -114,7 +117,10 @@ var AwesomeDataComponent = React.createClass({
           <g transform={`scale(${2 / this.props.dim})`}>
             <line x1="0.5" y1="7.5" x2="0.5" y2="-6.5" style={{stroke: "#555", strokeWidth: 1}} />
             <line x1="-6.5" y1="0.5" x2="7.5" y2="0.5" style={{stroke: "#555", strokeWidth: 1}} />
+
+            <Hyperplane w={this.props.highlightedW} dim={this.props.dim} />
           </g>
+
 
           { this.props.pointGroups.map(this.buildAwesomePointGroup) }
 

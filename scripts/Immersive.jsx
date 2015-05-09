@@ -75,7 +75,7 @@ var Immersive = React.createClass({
             top: 0,
             left: 0,
             background: "rgba(255, 255, 255, 0.6)"}}>
-          <AwesomeDataComponent dim={450}
+          <AwesomeDataComponent dim={450} highlightedW={this.state.highlightedW}
             updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
         </div>
 
