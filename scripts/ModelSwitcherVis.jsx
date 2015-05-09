@@ -43,14 +43,6 @@ var ModelSwitcherVis = React.createClass({
     focussedModelParams: React.PropTypes.object.isRequired,
   },
 
-  shouldComponentUpdate: function(nextProps: any): bool {
-    return (this.props.highlightedW !== nextProps.highlightedW ||
-      this.props.pointGroups !== nextProps.pointGroups ||
-      this.props.width !== nextProps.width ||
-      this.props.focussedModelParams !== nextProps.focussedModelParams ||
-      this.props.focussedModel !== nextProps.focussedModel);
-  },
-
   makeGraph: function(): ReactElement {
     if (this.props.focussedModel === Perceptron) {
       return (

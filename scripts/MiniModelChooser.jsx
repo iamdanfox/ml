@@ -18,6 +18,9 @@ var ParametricGraph = require("./ParametricGraph.jsx");
 var Perceptron = require("./Perceptron.jsx");
 var React = require("react/addons");
 var ThreeScene = require("./ThreeScene.jsx");
+require("./MiniModelChooser.css");
+var LRParamChooser = require("./LRParamChooser.jsx");
+
 
 
 
@@ -33,24 +36,30 @@ var MiniModelChooser = React.createClass({
     updateModelParams: React.PropTypes.func.isRequired,
   },
 
-  shouldComponentUpdate: function(nextProps: any): boolean {
-    return (this.props.angle !== nextProps.angle ||
-      this.props.pointGroups !== nextProps.pointGroups ||
-      this.props.highlightedW !== nextProps.highlightedW ||
-      this.props.focussedModelParams !== nextProps.focussedModelParams ||
-      this.props.focussedModel !== nextProps.focussedModel);
+  getInitialState: function() {
+    return {hover: false};
+  },
+
+  onMouseEnter: function() {
+    this.setState({hover: true});
+  },
+
+  onMouseLeave: function() {
+    this.setState({hover: false});
   },
 
   render: function(): ?ReactElement {
     var dim = 120;
 
+    var {focussedModel} = this.props;
+
     var models = [Perceptron, LogisticRegression, MaximumMargin];
 
     return (
-      <div>
+      <div onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
         <div style={{display: "flex"}}>
         { models.map((model) =>
-            <div style={{cursor: "pointer", opacity: model === this.props.focussedModel ? 1 : 0.5}}
+            <div className={model === focussedModel ? "minimodel minimodel-focussed" : "minimodel"}
               onClick={() => this.props.focusModel(model)}>
               <ThreeScene dim={dim} pointGroups={this.props.pointGroups} angle={this.props.angle}
                   objective={model.objective} highlightW={function() {}}>
@@ -61,55 +70,23 @@ var MiniModelChooser = React.createClass({
           ) }
         </div>
 
-        { this.props.focussedModel === Perceptron &&
-            <div style={{background: "rgba(255, 255, 255, 0.4)", padding: "30px"}}>
-              <h2>Perceptron</h2>
-              <p>Epochs = 2</p>
-            </div> }
+        <div className={focussedModel === Perceptron && this.state.hover ?
+            "slide-down slide-down-show" : "slide-down"}>
+          <h2>Perceptron</h2>
+          <p>Epochs = 2</p>
+        </div>
 
-        { this.props.focussedModel === LogisticRegression &&
-            <div style={{background: "rgba(255, 255, 255, 0.4)", padding: "30px"}}>
-              <LRParamChooser params={this.props.focussedModelParams}
-                updateParams={this.props.updateModelParams} />
-            </div> }
+        <div className={focussedModel === LogisticRegression && this.state.hover ?
+            "slide-down slide-down-show" : "slide-down"}>
+          <LRParamChooser params={this.props.focussedModelParams}
+            updateParams={this.props.updateModelParams} />
+        </div>
 
       </div>
     );
   }
 });
 
-var LRParamChooser = React.createClass({
-  propTypes: {
-    params: React.PropTypes.object.isRequired,
-    updateParams: React.PropTypes.func.isRequired,
-  },
-
-  updateParam: function(paramName: string, newValue: number): () => void {
-    return () => {
-      var newParams = JSON.parse(JSON.stringify(this.props.params));
-      newParams[paramName] = newValue;
-      this.props.updateParams(newParams);
-    };
-  },
-
-  render: function(): ?ReactElement {
-    return (
-      <div>
-        <h2>Logistic Regression</h2>
-        { ["NU", "ACCEPTING_GRAD", "MAX_STOPS"].map((paramName) =>
-            <div>
-              <p>{paramName}</p>
-              <p>{ LogisticRegression.paramOptions(paramName).map((paramValue) =>
-                  <button disabled={this.props.params[paramName] === paramValue}
-                    onClick={this.updateParam(paramName, paramValue)}>
-                    {paramValue}
-                  </button>) }</p>
-            </div>) }
-
-      </div>
-    );
-  }
-})
 
 
 module.exports = MiniModelChooser;

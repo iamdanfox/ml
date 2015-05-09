@@ -12,7 +12,8 @@ var K = require("./Katex.jsx");
 var OptimiserLine = require("../OptimiserLine.jsx");
 var ParametricGraph = require("../ParametricGraph.jsx");
 var React = require("react/addons");
-var {objective, optimise} = require("../Perceptron.jsx");
+var Perceptron = require("../Perceptron.jsx");
+var {objective, optimise, DEFAULT_PARAMS} = require("../Perceptron.jsx");
 
 
 
@@ -34,7 +35,7 @@ var PerceptronVis = React.createClass({
     var optimiserLine;
     if (typeof this.state.highlightedW !== "undefined" &&
        this.state.highlightedW !== null) {
-      optimiserLine = optimise(this.state.highlightedW, this.state.pointGroups);
+      optimiserLine = optimise(this.state.highlightedW, this.state.pointGroups, DEFAULT_PARAMS);
     }
 
     return <div style={{width: "850px"}}>

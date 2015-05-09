@@ -109,7 +109,7 @@ var AwesomeDataComponent = React.createClass({
     return <svg
       ref="canvas"
       width={this.props.dim} height={this.props.dim}
-      style={this.props.style} onMouseMove={this.mouseMove}>
+      onMouseMove={this.mouseMove}>
 
         <g transform={`translate(${this.props.dim / 2} ${this.props.dim / 2})
           scale(${this.props.dim / 2} ${-this.props.dim / 2})`}>

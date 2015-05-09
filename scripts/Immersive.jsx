@@ -26,8 +26,7 @@ var LogisticRegression = require("./LogisticRegression.jsx");
 var MiniModelChooser = require("./MiniModelChooser.jsx");
 var ModelSwitcherVis = require("./ModelSwitcherVis.jsx");
 var React = require("react/addons");
-
-
+require("./Immersive.css");
 
 
 var Immersive = React.createClass({
@@ -42,16 +41,12 @@ var Immersive = React.createClass({
     };
   },
 
-  updatePointGroups: function(pointGroups: Array<PointGrp>): void {
-    this.setState({pointGroups});
-  },
-
-  highlightW: function(highlightedW: P2) {
-    this.setState({highlightedW});
-  },
-
-  updateModelParams: function(focussedModelParams: any) {
-    this.setState({focussedModelParams});
+  setStateCallback: function(name: string): (v: any) => void {
+    return (value) => {
+      var assignment = {};
+      assignment[name] = value;
+      this.setState(assignment);
+    };
   },
 
   componentDidMount: function() {
@@ -66,10 +61,6 @@ var Immersive = React.createClass({
     this.setState({innerWidth: window.innerWidth});
   },
 
-  updateAngle: function(angle: number) {
-    this.setState({angle});
-  },
-
   focusModel: function(focussedModel: any) {
     this.setState({
       focussedModel: focussedModel,
@@ -80,25 +71,21 @@ var Immersive = React.createClass({
   render: function(): ?ReactElement {
     var {innerWidth, focussedModel, focussedModelParams, highlightedW, pointGroups, angle} = this.state;
     return (
-      <div style={{position: 'relative'}}>
-        <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            background: "rgba(255, 255, 255, 0.6)"}}>
+      <div style={{position: "relative"}}>
+        <div className="awesome-data-container">
           <AwesomeDataComponent dim={450} highlightedW={highlightedW}
-            updatePointGroups={this.updatePointGroups} pointGroups={pointGroups} />
+            updatePointGroups={this.setStateCallback("pointGroups")} pointGroups={pointGroups} />
         </div>
 
         <ModelSwitcherVis width={innerWidth}
           focussedModel={focussedModel} focussedModelParams={focussedModelParams}
-          highlightW={this.highlightW} highlightedW={highlightedW}
-          pointGroups={pointGroups} updateAngle={this.updateAngle} />
+          highlightW={this.setStateCallback("highlightedW")} highlightedW={highlightedW}
+          pointGroups={pointGroups} updateAngle={this.setStateCallback("angle")} />
 
-        <div style={{position: 'absolute', top: 0, right: 0}}>
+        <div style={{position: "absolute", top: 0, right: 0}}>
           <MiniModelChooser highlightedW={highlightedW}
             focussedModel={focussedModel} focusModel={this.focusModel}
-            focussedModelParams={focussedModelParams} updateModelParams={this.updateModelParams}
+            focussedModelParams={focussedModelParams} updateModelParams={this.setStateCallback("focussedModelParams")}
             pointGroups={pointGroups} angle={angle} />
         </div>
       </div>
