@@ -106,10 +106,14 @@ var WebWorkerGraph = React.createClass({
   componentWillMount: function() {
     this.props.scene.add(this.state.coarseGraph);
     this.asyncRequestColouring(this.props);
+    this.props.forceParentUpdate();
   },
 
   componentWillUnmount: function() {
+    WorkerBridge.abort();
+    this.props.scene.remove(this.state.coarseGraph);
     this.props.scene.remove(this.state.graph);
+    this.props.forceParentUpdate();
   },
 
   shouldComponentUpdate: function(nextProps: Props): bool {

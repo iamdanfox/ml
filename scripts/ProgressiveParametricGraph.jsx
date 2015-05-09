@@ -123,6 +123,7 @@ var ProgressiveParametricGraph = React.createClass({
 
   componentWillUnmount: function() {
     this.props.scene.remove(this.state.graph);
+    this.props.forceParentUpdate();
   },
 
   shouldComponentUpdate: function(nextProps: Props): bool {

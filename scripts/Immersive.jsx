@@ -47,7 +47,8 @@ var ModelSwitcherVis = React.createClass({
   shouldComponentUpdate: function(nextProps) {
     return (this.props.highlightedW !== nextProps.highlightedW ||
       this.props.pointGroups !== nextProps.pointGroups ||
-      this.props.width !== nextProps.width);
+      this.props.width !== nextProps.width ||
+      this.props.focussedModel !== nextProps.focussedModel);
   },
 
   render: function(): ?ReactElement {
@@ -58,7 +59,7 @@ var ModelSwitcherVis = React.createClass({
     if (this.props.focussedModel === Perceptron) {
       var optimiserLine = Perceptron.optimise(this.props.highlightedW, this.props.pointGroups);
       graph = (
-        <ParametricGraph thetaResolution={252} rResolution={50}
+        <ParametricGraph thetaResolution={96} rResolution={50}
           colourFunction={ParametricGraph.COLOUR_FUNCTION}
           objective={Perceptron.objective} pointGroups={this.props.pointGroups} />
       );
@@ -70,7 +71,7 @@ var ModelSwitcherVis = React.createClass({
       );
     } else if (this.props.focussedModel === MaximumMargin) {
       graph = (
-        <ParametricGraph thetaResolution={252} rResolution={50}
+        <ParametricGraph thetaResolution={96} rResolution={50}
           colourFunction={ParametricGraph.COLOUR_FUNCTION}
           objective={MaximumMargin.objective} pointGroups={this.props.pointGroups} />
       );
@@ -143,7 +144,6 @@ var Immersive = React.createClass({
   },
 
   focusModel: function(focussedModel: any) {
-    console.log('focusModel', focussedModel);
     this.setState({focussedModel});
   },
 

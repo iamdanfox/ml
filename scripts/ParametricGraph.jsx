@@ -65,10 +65,12 @@ var ParametricGraph = React.createClass({
 
   componentWillMount: function() {
     this.props.scene.add(this.state.graph);
+    this.props.forceParentUpdate();
   },
 
   componentWillUnmount: function() {
     this.props.scene.remove(this.state.graph);
+    this.props.forceParentUpdate();
   },
 
   shouldComponentUpdate: function(nextProps: Props): bool {
@@ -87,6 +89,11 @@ var ParametricGraph = React.createClass({
 
       this.colourGeometry(geometry);
       this.state.graph.geometry.verticesNeedUpdate = true;
+
+      if (nextProps.objective !== this.props.objective &&
+        nextProps.pointGroups === this.props.pointGroups) {
+        this.props.forceParentUpdate();
+      }
     }
   },
 
