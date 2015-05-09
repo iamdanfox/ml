@@ -7,6 +7,7 @@ type Request = {
   thetaResolution: number;
   rResolution: number;
   pointGroups: Array<PointGrp>;
+  focussedModelParams: any;
 };
 type Result = {hues: Uint8Array};
 
@@ -15,8 +16,8 @@ var {fastOptimise, objective} = require("./LogisticRegression.jsx");
 var THREE = require("three");
 var FasterGeometry = require("./FasterGeometry.js");
 
-var colourFunction = function(pointGroups, vertex, hues, index) {
-  var stops = fastOptimise(vertex, pointGroups) / 250;
+var colourFunction = function(pointGroups, focussedModelParams, vertex, hues, index) {
+  var stops = fastOptimise(vertex, pointGroups, focussedModelParams) / focussedModelParams.MAX_STOPS;
   hues[index] = 256 * (0.31 -  stops * 0.3);
 };
 
@@ -48,7 +49,7 @@ module.exports = {
     }
 
     // do face 0.
-    colourFunction(request.pointGroups, vertices[faces[0].b], hues, 0);
+    colourFunction(request.pointGroups, request.focussedModelParams, vertices[faces[0].b], hues, 0);
 
     var processStep = function(base: number): {result: Result; continuation: any} {
 
@@ -57,7 +58,7 @@ module.exports = {
         // we want to colour pixels that have not been coloured already!
         if (i % base === 0 && i % (2 * base) !== 0) {
           // compute this face
-          colourFunction(request.pointGroups, vertices[face.b], hues, i);
+          colourFunction(request.pointGroups, request.focussedModelParams, vertices[face.b], hues, i);
         } else {
           // otherwise, just use the last computed number
           hues[i] = hues[base * Math.floor(i / base)];

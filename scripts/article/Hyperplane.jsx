@@ -3,7 +3,8 @@
 
 var Line = require("./Line.jsx");
 var React = require("react/addons");
-var {PureRenderMixin} = require("react/addons").addons;
+var {scale} = require("../VectorUtils.jsx");
+var {PureRenderMixin} = React.addons;
 
 
 var Hyperplane = React.createClass({
@@ -15,9 +16,9 @@ var Hyperplane = React.createClass({
   },
 
   render: function(): ?ReactElement {
-    var {x, y} = this.props.w;
+    var {x, y} = scale(this.props.dim)(this.props.w);
     return <g>
-      <path d={`M 0 0 L ${x} ${y}`} strokeWidth="1.5" stroke={"rgba(255, 0, 0, 0.4)"} />
+      <path d={`M 0 0 L ${x} ${y}`} strokeWidth="1.5" stroke={"rgba(100, 100, 100, 0.4)"} />
       <Line w={{x, y}} dim={this.props.dim} />
     </g>;
   }

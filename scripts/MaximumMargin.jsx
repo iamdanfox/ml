@@ -25,4 +25,10 @@ function objective(w: P2, pointGroups: Array<PointGrp>): number {
   return 0.2 + 0.5 * minimumMargin / modulus(w);
 }
 
-module.exports = {objective};
+module.exports = {
+  objective,
+  DEFAULT_PARAMS: {},
+  paramOptions: function(): Array<number> {
+    return [];
+  }
+};

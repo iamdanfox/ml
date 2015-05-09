@@ -40,12 +40,14 @@ var ModelSwitcherVis = React.createClass({
     pointGroups: React.PropTypes.array.isRequired,
     width: React.PropTypes.number.isRequired,
     focussedModel: React.PropTypes.object.isRequired,
+    focussedModelParams: React.PropTypes.object.isRequired,
   },
 
   shouldComponentUpdate: function(nextProps: any): bool {
     return (this.props.highlightedW !== nextProps.highlightedW ||
       this.props.pointGroups !== nextProps.pointGroups ||
       this.props.width !== nextProps.width ||
+      this.props.focussedModelParams !== nextProps.focussedModelParams ||
       this.props.focussedModel !== nextProps.focussedModel);
   },
 
@@ -59,7 +61,8 @@ var ModelSwitcherVis = React.createClass({
     } else if (this.props.focussedModel === LogisticRegression) {
       return (
         <WebWorkerGraph thetaResolution={252} rResolution={84}
-          objective={LogisticRegression.objective} pointGroups={this.props.pointGroups} />
+          objective={LogisticRegression.objective} pointGroups={this.props.pointGroups}
+          focussedModelParams={this.props.focussedModelParams} />
       );
     } else {
       console.assert(this.props.focussedModel === MaximumMargin);
@@ -72,26 +75,26 @@ var ModelSwitcherVis = React.createClass({
   },
 
   render: function(): ?ReactElement {
+    var {highlightedW, pointGroups, focussedModel, focussedModelParams} = this.props;
     var dim = this.props.width;
 
     var optimiserLine;
     if (typeof this.props.focussedModel.optimise !== "undefined" &&
         this.props.focussedModel.optimise !== null) {
-      optimiserLine = this.props.focussedModel.optimise(this.props.highlightedW, this.props.pointGroups);
+      optimiserLine = focussedModel.optimise(highlightedW, pointGroups, focussedModelParams);
     }
 
     return (
       <div style={{width: '100%'}}>
 
-        <Draggable3DScene dim={dim} pointGroups={this.props.pointGroups}
-            updateAngle={this.props.updateAngle}
-            objective={LogisticRegression.objective} highlightW={this.props.highlightW}>
+        <Draggable3DScene dim={dim} pointGroups={pointGroups}
+            updateAngle={this.props.updateAngle} highlightW={this.props.highlightW}>
 
           { optimiserLine && <OptimiserLine vertices={optimiserLine}
-            dim={dim} objective={this.props.focussedModel.objective} pointGroups={this.props.pointGroups} /> }
+            dim={dim} objective={focussedModel.objective} pointGroups={pointGroups} /> }
 
           <CursorSphere highlightedW={this.props.highlightedW} dim={dim}
-            objective={this.props.focussedModel.objective} pointGroups={this.props.pointGroups} />
+            objective={focussedModel.objective} pointGroups={this.props.pointGroups} />
 
           { this.makeGraph() }
 

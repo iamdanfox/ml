@@ -23,6 +23,16 @@ the algorithm's progression.  First w is the start weight, last w is the result 
 
 Maximum list length = 300 (for non-terminating stuff)
 */
+var DEFAULT_PARAMS = {
+  PERCEPTRON_NU: 0.1,
+  EPOCHS: 2,
+}
+
+var PARAM_OPTIONS = {
+  PERCEPTRON_NU: [0.05, 0.1, 0.25, 0.5],
+  EPOCHS: [1, 2, 5, 10],
+}
+
 var PERCEPTRON_NU = 0.1;
 var EPOCHS = 2;
 /*
@@ -62,6 +72,12 @@ module.exports = {
       }
     }
     return stops;
+  },
+
+  DEFAULT_PARAMS,
+
+  paramOptions: function(paramName: string): Array<number> {
+    return PARAM_OPTIONS[paramName];
   },
 
 };

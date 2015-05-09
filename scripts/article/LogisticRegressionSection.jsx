@@ -11,7 +11,7 @@ var K = require("./Katex.jsx");
 var OptimiserLine = require("../OptimiserLine.jsx");
 var WebWorkerGraph = require("../WebWorkerGraph.jsx");
 var React = require("react/addons");
-var {objective, optimise, fastOptimise} = require("../LogisticRegression.jsx");
+var {objective, optimise, fastOptimise, DEFAULT_PARAMS} = require("../LogisticRegression.jsx");
 
 
 
@@ -33,7 +33,7 @@ var LogisticRegressionVis = React.createClass({
     var optimiserLine;
     if (typeof this.state.highlightedW !== "undefined" &&
        this.state.highlightedW !== null) {
-      optimiserLine = optimise(this.state.highlightedW, this.state.pointGroups);
+      optimiserLine = optimise(this.state.highlightedW, this.state.pointGroups, DEFAULT_PARAMS);
     }
 
     var colourFunction = (function(boundingBox, vertex1, vertex2, vertex3, mutableFaceColor): void {
@@ -42,7 +42,7 @@ var LogisticRegressionVis = React.createClass({
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
 
-      var stops = fastOptimise(vertex1, this.state.pointGroups) / 250; // should match MAX_STOPS
+      var stops = fastOptimise(vertex1, this.state.pointGroups, DEFAULT_PARAMS) / DEFAULT_PARAMS.MAX_STOPS;
 
       mutableFaceColor.setHSL(0.31 -  stops * 0.3, 0.8,  0.20 + 0.82 * Math.pow(normalizedZ, 2));
     }).bind(this);

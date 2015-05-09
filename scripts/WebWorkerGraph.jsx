@@ -10,6 +10,7 @@ type Props = {
   scene: THREE.Scene;
   thetaResolution: number;
   objective: (w: P2, pointGroups: Array<PointGrp>) => number;
+  focussedModelParams: any;
   forceParentUpdate: () => void;
 }
 type State = {
@@ -32,13 +33,13 @@ var MATERIAL = new THREE.MeshBasicMaterial({
   transparent: true,
 });
 
-var colourFunction = (pointGroups, boundingBox, vertex2, vertex3, mutableFaceColor) => {
+var colourFunction = (pointGroups, focussedModelParams, boundingBox, vertex2, vertex3, mutableFaceColor) => {
   var zMin = boundingBox.min.z;
   var zRange = boundingBox.max.z - zMin;
   // only using two because the avg of these is the middle of two faces (ie one square).
   var totalZ = vertex2.z + vertex3.z;
   var normalizedZ = (totalZ - 2 * zMin) / (2 * zRange);
-  var stops = LogisticRegression.fastOptimise(vertex2, pointGroups) / 250;
+  var stops = LogisticRegression.fastOptimise(vertex2, pointGroups, focussedModelParams) / focussedModelParams.MAX_STOPS;
   mutableFaceColor.setHSL(0.31 -  stops * 0.3, 0.8, 0.20 + 0.82 * Math.pow(normalizedZ, 2));
 };
 
@@ -48,6 +49,7 @@ var WebWorkerGraph = React.createClass({
     pointGroups: React.PropTypes.array.isRequired,
     rResolution: React.PropTypes.number.isRequired, // 8
     scene: React.PropTypes.any.isRequired,
+    focussedModelParams: React.PropTypes.object.isRequired,
     objective: React.PropTypes.func.isRequired,
     thetaResolution: React.PropTypes.number.isRequired, // 24
     forceParentUpdate: React.PropTypes.func.isRequired,
@@ -92,7 +94,8 @@ var WebWorkerGraph = React.createClass({
 
     for (var i = 0, len = graphGeometry.faces.length; i < len; i = i + 2) {
       var face = graphGeometry.faces[i];
-      colourFunction(props.pointGroups, graphGeometry.boundingBox,
+      colourFunction(props.pointGroups, props.focussedModelParams,
+        graphGeometry.boundingBox,
         graphGeometry.vertices[face.b],
         graphGeometry.vertices[face.c],
         face.color);
@@ -118,7 +121,8 @@ var WebWorkerGraph = React.createClass({
 
   shouldComponentUpdate: function(nextProps: Props): bool {
     return (nextProps.pointGroups !== this.props.pointGroups ||
-      nextProps.objective !== this.props.objective);
+      nextProps.objective !== this.props.objective ||
+      nextProps.focussedModelParams !== this.props.focussedModelParams);
   },
 
   refreshGeometryZValues: function(props: Props, geometry: THREE.Geometry): void {
@@ -153,10 +157,15 @@ var WebWorkerGraph = React.createClass({
     }
   },
 
-  asyncRequestColouring: function({thetaResolution, rResolution, pointGroups}: Props) {
+  asyncRequestColouring: function({thetaResolution, rResolution, pointGroups, focussedModelParams}: Props) {
     console.log('[React] sending request');
 
-    WorkerBridge.request({thetaResolution, rResolution, pointGroups}, ({hues}) => {
+    WorkerBridge.request({
+      thetaResolution,
+      rResolution,
+      pointGroups,
+      focussedModelParams,
+    }, ({hues}) => {
       var {boundingBox, faces, vertices} = this.state.graph.geometry;
       var zRange = boundingBox.max.z - boundingBox.min.z;
 

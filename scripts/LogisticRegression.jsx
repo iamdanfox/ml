@@ -2,6 +2,11 @@
 type P2 = {x: number; y: number};
 type P2t = {x: number; y: number; t: number};
 type PointGrp = {label: number; points: Array<P2>};
+type Params = {
+  NU: number;
+  ACCEPTING_GRAD: number;
+  MAX_STOPS: number;
+}
 
 "use strict";
 
@@ -41,13 +46,19 @@ function objective(smallW: P2, pointGroups: Array<PointGrp>): number {
   return (7 - Math.log(1 - sum)) / 30;
 }
 
+var DEFAULT_PARAMS: Params = {
+  NU: 0.02,
+  ACCEPTING_GRAD: 1 / 200,
+  MAX_STOPS: 250
+};
 
+var PARAM_OPTIONS = {
+  NU: [0.008, 0.012, 0.014, 0.016, 0.020, 0.03],
+  ACCEPTING_GRAD: [3 / 200, 1 / 200, 1 / 400],
+  MAX_STOPS: [150, 250, 450],
+}
 
-var NU = 0.02;
-var ACCEPTING_GRAD = 1 / 200; // we reach this in ~ 300 loops
-var MAX_STOPS = 250;
-
-function optimise(smallStartW: P2, pointGroups: Array<PointGrp>): Array<P2> {
+function optimise(smallStartW: P2, pointGroups: Array<PointGrp>, {NU, ACCEPTING_GRAD, MAX_STOPS}: Params): Array<P2> {
   function gradient(w: P2): P2 {
     var grad = {x: 0, y: 0};
 
@@ -75,7 +86,7 @@ function optimise(smallStartW: P2, pointGroups: Array<PointGrp>): Array<P2> {
 }
 
 
-function fastOptimise(smallStartW: P2, pointGroups: Array<PointGrp>): number {
+function fastOptimise(smallStartW: P2, pointGroups: Array<PointGrp>, {NU, ACCEPTING_GRAD, MAX_STOPS}: Params): number {
   function gradient(w: P2): P2 {
     var grad = {x: 0, y: 0};
 
@@ -106,7 +117,11 @@ function fastOptimise(smallStartW: P2, pointGroups: Array<PointGrp>): number {
 
 
 module.exports = {
-  objective: objective,
-  optimise: optimise,
-  fastOptimise: fastOptimise
+  objective,
+  optimise,
+  fastOptimise,
+  DEFAULT_PARAMS,
+  paramOptions: function(paramName: string): Array<number> {
+    return PARAM_OPTIONS[paramName];
+  },
 };
