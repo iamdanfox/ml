@@ -20,16 +20,9 @@ type State = {
 
 
 var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
-var CursorSphere = require("./CursorSphere.jsx");
-var Draggable3DScene = require("./Draggable3DScene.jsx");
-var Perceptron = require("./Perceptron.jsx");
-var LogisticRegression = require("./LogisticRegression.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
-var WebWorkerGraph = require("./WebWorkerGraph.jsx");
-var ParametricGraph = require("./ParametricGraph.jsx");
 var MiniModelChooser = require("./MiniModelChooser.jsx");
-var ModelSwitcherVis =require("./ModelSwitcherVis.jsx");
-var OptimiserLine = require("./OptimiserLine.jsx");
+var ModelSwitcherVis = require("./ModelSwitcherVis.jsx");
 var React = require("react/addons");
 
 

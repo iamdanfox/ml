@@ -19,17 +19,15 @@ type State = {
 }
 
 
-var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
 var CursorSphere = require("./CursorSphere.jsx");
 var Draggable3DScene = require("./Draggable3DScene.jsx");
-var Perceptron = require("./Perceptron.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
-var WebWorkerGraph = require("./WebWorkerGraph.jsx");
-var ParametricGraph = require("./ParametricGraph.jsx");
-var MiniModelChooser = require("./MiniModelChooser.jsx");
 var OptimiserLine = require("./OptimiserLine.jsx");
+var ParametricGraph = require("./ParametricGraph.jsx");
+var Perceptron = require("./Perceptron.jsx");
 var React = require("react/addons");
+var WebWorkerGraph = require("./WebWorkerGraph.jsx");
 
 
 
@@ -51,29 +49,29 @@ var ModelSwitcherVis = React.createClass({
       this.props.focussedModel !== nextProps.focussedModel);
   },
 
-  render: function(): ?ReactElement {
-    var dim = this.props.width;
-
-    var graph;
+  makeGraph: function(): ReactElement {
     if (this.props.focussedModel === Perceptron) {
-      graph = (
+      return (
         <ParametricGraph thetaResolution={96} rResolution={50}
           colourFunction={ParametricGraph.COLOUR_FUNCTION}
           objective={Perceptron.objective} pointGroups={this.props.pointGroups} />
       );
     } else if (this.props.focussedModel === LogisticRegression) {
-      var lrOptimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.props.pointGroups);
-      graph = (
+      return (
         <WebWorkerGraph thetaResolution={252} rResolution={84}
           objective={LogisticRegression.objective} pointGroups={this.props.pointGroups} />
       );
     } else if (this.props.focussedModel === MaximumMargin) {
-      graph = (
+      return (
         <ParametricGraph thetaResolution={96} rResolution={50}
           colourFunction={ParametricGraph.COLOUR_FUNCTION}
           objective={MaximumMargin.objective} pointGroups={this.props.pointGroups} />
       );
     }
+  },
+
+  render: function(): ?ReactElement {
+    var dim = this.props.width;
 
     var optimiserLine;
     if (typeof this.props.focussedModel.optimise !== "undefined" &&
@@ -84,7 +82,8 @@ var ModelSwitcherVis = React.createClass({
     return (
       <div style={{width: '100%'}}>
 
-        <Draggable3DScene dim={dim} pointGroups={this.props.pointGroups} updateAngle={this.props.updateAngle}
+        <Draggable3DScene dim={dim} pointGroups={this.props.pointGroups}
+            updateAngle={this.props.updateAngle}
             objective={LogisticRegression.objective} highlightW={this.props.highlightW}>
 
           { optimiserLine && <OptimiserLine vertices={optimiserLine}
@@ -93,7 +92,7 @@ var ModelSwitcherVis = React.createClass({
           <CursorSphere highlightedW={this.props.highlightedW} dim={dim}
             objective={this.props.focussedModel.objective} pointGroups={this.props.pointGroups} />
 
-          { graph }
+          { this.makeGraph() }
 
         </Draggable3DScene>
 

@@ -17,11 +17,11 @@ type State = {
   timer: ?number;
 }
 
+var FasterGeometry = require("./FasterGeometry.js");
+var LogisticRegression = require("./LogisticRegression.jsx");
 var React = require("react/addons");
 var THREE = require("three");
 var WorkerBridge = require("./WorkerBridge.jsx");
-var LogisticRegression = require("./LogisticRegression.jsx");
-var FasterGeometry = require("./FasterGeometry.js");
 
 
 

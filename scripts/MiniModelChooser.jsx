@@ -12,13 +12,12 @@ type PointGrp = {
   mouseDownDiff: ?P2;
 };
 
-var CursorSphere = require("./CursorSphere.jsx");
-var ThreeScene = require("./ThreeScene.jsx");
-var Perceptron = require("./Perceptron.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 var ParametricGraph = require("./ParametricGraph.jsx");
+var Perceptron = require("./Perceptron.jsx");
 var React = require("react/addons");
+var ThreeScene = require("./ThreeScene.jsx");
 
 
 
@@ -47,7 +46,7 @@ var MiniModelChooser = React.createClass({
         { models.map((model) =>
             <div style={{cursor: "pointer"}} onClick={() => this.props.focusModel(model)}>
               <ThreeScene dim={dim} pointGroups={this.props.pointGroups} angle={this.props.angle}
-                  objective={model.objective} highlightW={function(){}}>
+                  objective={model.objective} highlightW={function() {}}>
                 <ParametricGraph thetaResolution={30} rResolution={6}
                   colourFunction={ParametricGraph.COLOUR_FUNCTION} />
               </ThreeScene>
