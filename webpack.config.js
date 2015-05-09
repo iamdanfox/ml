@@ -18,10 +18,8 @@ module.exports = [
     },
     module: {
       loaders: [
-        {
-          test: /\.jsx$/,
-          loaders: ['jsx-loader?harmony&stripTypes']
-        },
+        { test: /\.jsx$/, loaders: ['jsx-loader?harmony&stripTypes'] },
+        { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
       ]
     }
   },

@@ -1,0 +1,27 @@
+.minimodel {
+  cursor: pointer;
+  opacity: 0.2;
+  -webkit-transition: 200ms all;
+  transition: 200ms all;
+}
+
+.minimodel:hover {
+  opacity: 0.5;
+}
+
+.minimodel-focussed, .minimodel-focussed:hover {
+  opacity: 1;
+}
+
+.slide-down {
+  background: rgba(255, 255, 255, 0.4);
+  transition-property: all;
+  transition-duration: .5s;
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+  overflow-y: hidden;
+  max-height: 0;
+}
+
+.slide-down.slide-down-show {
+  max-height: 500px;
+}
