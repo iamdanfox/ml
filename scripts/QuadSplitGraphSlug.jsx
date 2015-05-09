@@ -7,6 +7,7 @@ type Request = {
   thetaResolution: number;
   rResolution: number;
   pointGroups: Array<PointGrp>;
+  focussedModelParams: any;
 };
 type Result = {hues: Uint8Array};
 
@@ -15,8 +16,8 @@ var {fastOptimise, objective} = require("./LogisticRegression.jsx");
 var THREE = require("three");
 var FasterGeometry = require("./FasterGeometry.js");
 
-var colourFunction = function(pointGroups, vertex, hues, index) {
-  var stops = fastOptimise(vertex, pointGroups) / 250;
+var colourFunction = function({pointGroups, focussedModelParams}: Request, vertex, hues, index) {
+  var stops = fastOptimise(vertex, pointGroups, focussedModelParams) / 250;
   hues[index] = 256 * (0.31 - stops * 0.3);
 };
 
@@ -45,7 +46,7 @@ module.exports = {
     var hues = new Uint8Array(numFaces);
 
     // do face 0.
-    colourFunction(request.pointGroups, vertices[faces[0].b], hues, 0);
+    colourFunction(request, vertices[faces[0].b], hues, 0);
     hues[1] = hues[0];
 
     var colourStep = (squareSize) => {
@@ -60,7 +61,7 @@ module.exports = {
           var face = faces[faceIndex];
 
           if ((x % prevSquareSize !== 0) || (y % prevSquareSize != 0)) {
-            colourFunction(request.pointGroups, vertices[face.b], hues, faceIndex);
+            colourFunction(request, vertices[face.b], hues, faceIndex);
             hues[faceIndex + 1] = hues[faceIndex];
           }
         }
