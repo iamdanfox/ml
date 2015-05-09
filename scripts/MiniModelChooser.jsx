@@ -86,7 +86,7 @@ var LRParamChooser = React.createClass({
 
   updateParam: function(paramName: string, newValue: number): () => void {
     return () => {
-      var newParams = Object.create(this.props.params);
+      var newParams = JSON.parse(JSON.stringify(this.props.params));
       newParams[paramName] = newValue;
       this.props.updateParams(newParams);
     };

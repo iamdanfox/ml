@@ -121,7 +121,8 @@ var WebWorkerGraph = React.createClass({
 
   shouldComponentUpdate: function(nextProps: Props): bool {
     return (nextProps.pointGroups !== this.props.pointGroups ||
-      nextProps.objective !== this.props.objective);
+      nextProps.objective !== this.props.objective ||
+      nextProps.focussedModelParams !== this.props.focussedModelParams);
   },
 
   refreshGeometryZValues: function(props: Props, geometry: THREE.Geometry): void {
@@ -159,7 +160,12 @@ var WebWorkerGraph = React.createClass({
   asyncRequestColouring: function({thetaResolution, rResolution, pointGroups, focussedModelParams}: Props) {
     console.log('[React] sending request');
 
-    WorkerBridge.request({thetaResolution, rResolution, pointGroups, focussedModelParams}, ({hues}) => {
+    WorkerBridge.request({
+      thetaResolution,
+      rResolution,
+      pointGroups,
+      focussedModelParams,
+    }, ({hues}) => {
       var {boundingBox, faces, vertices} = this.state.graph.geometry;
       var zRange = boundingBox.max.z - boundingBox.min.z;
 
