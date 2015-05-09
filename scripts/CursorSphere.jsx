@@ -37,7 +37,9 @@ var CursorSphere = React.createClass({
   },
 
   shouldComponentUpdate: function(nextProps: Props): bool {
-    return (nextProps.highlightedW !== this.props.highlightedW);
+    return (nextProps.highlightedW !== this.props.highlightedW ||
+      this.props.pointGroups !== nextProps.pointGroups ||
+      this.props.objective !== nextProps.objective);
   },
 
   componentWillReceiveProps: function(nextProps: Props) {

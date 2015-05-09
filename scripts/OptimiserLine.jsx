@@ -36,6 +36,10 @@ var OptimiserLine = React.createClass({
       nextProps.objective !== this.props.objective);
   },
 
+  componentWillUnmount: function() {
+    this.props.scene.remove(this.state.line);
+  },
+
   componentWillReceiveProps: function(nextProps: Props) {
     if (this.shouldComponentUpdate(nextProps)) {
       var vertices = nextProps.vertices;
