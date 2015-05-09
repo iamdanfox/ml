@@ -42,7 +42,7 @@ var LogisticRegressionVis = React.createClass({
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
 
-      var stops = fastOptimise(vertex1, this.state.pointGroups, DEFAULT_PARAMS) / 250; // should match MAX_STOPS
+      var stops = fastOptimise(vertex1, this.state.pointGroups, DEFAULT_PARAMS) / DEFAULT_PARAMS.MAX_STOPS;
 
       mutableFaceColor.setHSL(0.31 -  stops * 0.3, 0.8,  0.20 + 0.82 * Math.pow(normalizedZ, 2));
     }).bind(this);

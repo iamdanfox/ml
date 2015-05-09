@@ -39,7 +39,7 @@ var colourFunction = (pointGroups, focussedModelParams, boundingBox, vertex2, ve
   // only using two because the avg of these is the middle of two faces (ie one square).
   var totalZ = vertex2.z + vertex3.z;
   var normalizedZ = (totalZ - 2 * zMin) / (2 * zRange);
-  var stops = LogisticRegression.fastOptimise(vertex2, pointGroups, focussedModelParams) / 250;
+  var stops = LogisticRegression.fastOptimise(vertex2, pointGroups, focussedModelParams) / focussedModelParams.MAX_STOPS;
   mutableFaceColor.setHSL(0.31 -  stops * 0.3, 0.8, 0.20 + 0.82 * Math.pow(normalizedZ, 2));
 };
 

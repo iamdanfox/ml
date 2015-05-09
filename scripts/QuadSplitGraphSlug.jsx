@@ -17,7 +17,7 @@ var THREE = require("three");
 var FasterGeometry = require("./FasterGeometry.js");
 
 var colourFunction = function({pointGroups, focussedModelParams}: Request, vertex, hues, index) {
-  var stops = fastOptimise(vertex, pointGroups, focussedModelParams) / 250;
+  var stops = fastOptimise(vertex, pointGroups, focussedModelParams) / focussedModelParams.MAX_STOPS;
   hues[index] = 256 * (0.31 - stops * 0.3);
 };
 
