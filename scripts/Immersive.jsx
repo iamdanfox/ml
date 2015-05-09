@@ -42,16 +42,12 @@ var Immersive = React.createClass({
     };
   },
 
-  updatePointGroups: function(pointGroups: Array<PointGrp>): void {
-    this.setState({pointGroups});
-  },
-
-  highlightW: function(highlightedW: P2) {
-    this.setState({highlightedW});
-  },
-
-  updateModelParams: function(focussedModelParams: any) {
-    this.setState({focussedModelParams});
+  setStateCallback: function(name: string): (v: any) => void {
+    return (value) => {
+      var assignment = {};
+      assignment[name] = value;
+      this.setState(assignment);
+    };
   },
 
   componentDidMount: function() {
@@ -64,10 +60,6 @@ var Immersive = React.createClass({
 
   updateWindowSize: function() {
     this.setState({innerWidth: window.innerWidth});
-  },
-
-  updateAngle: function(angle: number) {
-    this.setState({angle});
   },
 
   focusModel: function(focussedModel: any) {
@@ -87,18 +79,18 @@ var Immersive = React.createClass({
             left: 0,
             background: "rgba(255, 255, 255, 0.6)"}}>
           <AwesomeDataComponent dim={450} highlightedW={highlightedW}
-            updatePointGroups={this.updatePointGroups} pointGroups={pointGroups} />
+            updatePointGroups={this.setStateCallback("pointGroups")} pointGroups={pointGroups} />
         </div>
 
         <ModelSwitcherVis width={innerWidth}
           focussedModel={focussedModel} focussedModelParams={focussedModelParams}
-          highlightW={this.highlightW} highlightedW={highlightedW}
-          pointGroups={pointGroups} updateAngle={this.updateAngle} />
+          highlightW={this.setStateCallback("highlightedW")} highlightedW={highlightedW}
+          pointGroups={pointGroups} updateAngle={this.setStateCallback("angle")} />
 
         <div style={{position: 'absolute', top: 0, right: 0}}>
           <MiniModelChooser highlightedW={highlightedW}
             focussedModel={focussedModel} focusModel={this.focusModel}
-            focussedModelParams={focussedModelParams} updateModelParams={this.updateModelParams}
+            focussedModelParams={focussedModelParams} updateModelParams={this.setStateCallback("focussedModelParams")}
             pointGroups={pointGroups} angle={angle} />
         </div>
       </div>
