@@ -26,8 +26,7 @@ var LogisticRegression = require("./LogisticRegression.jsx");
 var MiniModelChooser = require("./MiniModelChooser.jsx");
 var ModelSwitcherVis = require("./ModelSwitcherVis.jsx");
 var React = require("react/addons");
-
-
+require("./Immersive.css");
 
 
 var Immersive = React.createClass({
@@ -72,12 +71,8 @@ var Immersive = React.createClass({
   render: function(): ?ReactElement {
     var {innerWidth, focussedModel, focussedModelParams, highlightedW, pointGroups, angle} = this.state;
     return (
-      <div style={{position: 'relative'}}>
-        <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            background: "rgba(255, 255, 255, 0.6)"}}>
+      <div style={{position: "relative"}}>
+        <div className="awesome-data-container">
           <AwesomeDataComponent dim={450} highlightedW={highlightedW}
             updatePointGroups={this.setStateCallback("pointGroups")} pointGroups={pointGroups} />
         </div>
@@ -87,7 +82,7 @@ var Immersive = React.createClass({
           highlightW={this.setStateCallback("highlightedW")} highlightedW={highlightedW}
           pointGroups={pointGroups} updateAngle={this.setStateCallback("angle")} />
 
-        <div style={{position: 'absolute', top: 0, right: 0}}>
+        <div style={{position: "absolute", top: 0, right: 0}}>
           <MiniModelChooser highlightedW={highlightedW}
             focussedModel={focussedModel} focusModel={this.focusModel}
             focussedModelParams={focussedModelParams} updateModelParams={this.setStateCallback("focussedModelParams")}

@@ -1,0 +1,16 @@
+.awesome-data-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.6);
+  opacity: 0.5;
+  transform: translate3d(-50%, -50%, 0) scale3d(0.4, 0.4, 1) translate3d(50%, 50%, 0);
+  transition: 200ms all;
+  transition-delay: 3000ms;
+}
+
+.awesome-data-container:hover {
+  opacity: 1;
+  transform: scale3d(1, 1, 1);
+  transition-delay: 0ms;
+}
