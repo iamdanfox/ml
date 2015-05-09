@@ -49,7 +49,7 @@ var ProgressiveParametricGraph = React.createClass({
       var zRange = boundingBox.max.z - zMin;
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-      mutableFaceColor.setHSL(0.54, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
+      mutableFaceColor.setHSL(0.31, 0.8, 0.20 + 0.82 * Math.pow(normalizedZ, 2));
     }
   },
 
@@ -123,6 +123,7 @@ var ProgressiveParametricGraph = React.createClass({
 
   componentWillUnmount: function() {
     this.props.scene.remove(this.state.graph);
+    this.props.forceParentUpdate();
   },
 
   shouldComponentUpdate: function(nextProps: Props): bool {
@@ -157,7 +158,7 @@ var ProgressiveParametricGraph = React.createClass({
       this.props.rResolution, this.props.thetaResolution, true);
 
     var DEFAULT_COLOUR = new THREE.Color();
-    DEFAULT_COLOUR.setHSL(0.54, 0.8, 0.08);
+    DEFAULT_COLOUR.setHSL(0.31, 0.8, 0.20);
     for (var i = 0; i < geometry.faces.length; i = i + 1) {
       geometry.faces[i].color.copy(DEFAULT_COLOUR);
     }

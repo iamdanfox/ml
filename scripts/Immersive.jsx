@@ -14,46 +14,16 @@ type PointGrp = {
 type State = {
   pointGroups: Array<PointGrp>;
   highlightedW: P2;
+  angle: number;
+  innerWidth: number;
 }
 
 
 var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
-var CursorSphere = require("./CursorSphere.jsx");
-var Draggable3DScene = require("./Draggable3DScene.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
-var WebWorkerGraph = require("./WebWorkerGraph.jsx");
-// var ProgressiveParametricGraph = require("./ProgressiveParametricGraph.jsx");
-var OptimiserLine = require("./OptimiserLine.jsx");
+var MiniModelChooser = require("./MiniModelChooser.jsx");
+var ModelSwitcherVis = require("./ModelSwitcherVis.jsx");
 var React = require("react/addons");
-
-
-
-var LogisticRegressionVis = React.createClass({
-
-  render: function(): ?ReactElement {
-    var lrOptimiserLine = LogisticRegression.optimise(this.props.highlightedW, this.props.pointGroups);
-
-    var {width, height} = this.props;
-    var dim = Math.max(width, height);
-
-    return (
-      <div style={{width: '100%'}}>
-        <Draggable3DScene dim={dim} pointGroups={this.props.pointGroups}
-            objective={LogisticRegression.objective} highlightW={this.props.highlightW}>
-
-          <OptimiserLine vertices={lrOptimiserLine} dim={dim} />
-          <CursorSphere highlightedW={this.props.highlightedW} dim={dim} />
-
-          <WebWorkerGraph thetaResolution={252} rResolution={84} />
-
-        </Draggable3DScene>
-      </div>
-    );
-  }
-
-          // <ProgressiveParametricGraph thetaResolution={252} rResolution={84}
-          //  colourFunction={ProgressiveParametricGraph.COLOUR_FUNCTION} />
-});
 
 
 
@@ -63,8 +33,9 @@ var Immersive = React.createClass({
     return {
       pointGroups: require("../data/awesomePointGroups.js"),
       highlightedW: {x: 0.2, y: 0.2},
-      innerHeight: window.innerHeight,
       innerWidth: window.innerWidth,
+      angle: 0,
+      focussedModel: LogisticRegression,
     };
   },
 
@@ -85,8 +56,15 @@ var Immersive = React.createClass({
   },
 
   updateWindowSize: function() {
-    var {innerHeight, innerWidth} = window;
-    this.setState({innerHeight, innerWidth});
+    this.setState({innerWidth: window.innerWidth});
+  },
+
+  updateAngle: function(angle: number) {
+    this.setState({angle});
+  },
+
+  focusModel: function(focussedModel: any) {
+    this.setState({focussedModel});
   },
 
   render: function(): ?ReactElement {
@@ -101,11 +79,14 @@ var Immersive = React.createClass({
             updatePointGroups={this.updatePointGroups} pointGroups={this.state.pointGroups} />
         </div>
 
-        <LogisticRegressionVis width={this.state.innerWidth} height={this.state.innerHeight}
+        <ModelSwitcherVis width={this.state.innerWidth} focussedModel={this.state.focussedModel}
           highlightW={this.highlightW} highlightedW={this.state.highlightedW}
-          pointGroups={this.state.pointGroups} />
+          pointGroups={this.state.pointGroups} updateAngle={this.updateAngle} />
 
-
+        <div style={{position: 'absolute', top: 0, right: 0}}>
+          <MiniModelChooser highlightedW={this.state.highlightedW} focusModel={this.focusModel}
+            pointGroups={this.state.pointGroups} angle={this.state.angle} />
+        </div>
       </div>
     );
   }

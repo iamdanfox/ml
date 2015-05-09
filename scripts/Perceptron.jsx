@@ -44,7 +44,7 @@ module.exports = {
       }
     }
 
-    return 0.6;
+    return 0.3;
   },
 
   optimise: function(startWeight: P2, pointGroups: Array<PointGrp>): Array<P2> {

@@ -11,7 +11,6 @@ type Props = {
   colourFunction: (boundingBox: any,
     v1: THREE.Vector3, v2: THREE.Vector3, v3: THREE.Vector3,
     mutableFaceColor: THREE.Color) => void;
-  dim: number;
   pointGroups: Array<PointGrp>;
   objective: (w: P2, pointGroups: Array<PointGrp>) => number;
   rResolution: number;
@@ -35,7 +34,6 @@ var MATERIAL = new THREE.MeshBasicMaterial({
 var ParametricGraph = React.createClass({
   propTypes: {
     colourFunction: React.PropTypes.func.isRequired,
-    dim: React.PropTypes.number.isRequired,
     pointGroups: React.PropTypes.array.isRequired,
     objective: React.PropTypes.func.isRequired,
     rResolution: React.PropTypes.number.isRequired,
@@ -49,7 +47,7 @@ var ParametricGraph = React.createClass({
       var zRange = boundingBox.max.z - zMin;
       var totalZ = vertex1.z + vertex2.z + vertex3.z;
       var normalizedZ = (totalZ - 3 * zMin) / (3 * zRange);
-      mutableFaceColor.setHSL(0.54, 0.8, 0.08 + 0.82 * Math.pow(normalizedZ, 2));
+      mutableFaceColor.setHSL(0.54, 0.8, 0.20 + 0.82 * Math.pow(normalizedZ, 2));
     }
   },
 
@@ -67,10 +65,12 @@ var ParametricGraph = React.createClass({
 
   componentWillMount: function() {
     this.props.scene.add(this.state.graph);
+    this.props.forceParentUpdate();
   },
 
   componentWillUnmount: function() {
     this.props.scene.remove(this.state.graph);
+    this.props.forceParentUpdate();
   },
 
   shouldComponentUpdate: function(nextProps: Props): bool {
@@ -89,6 +89,11 @@ var ParametricGraph = React.createClass({
 
       this.colourGeometry(geometry);
       this.state.graph.geometry.verticesNeedUpdate = true;
+
+      if (nextProps.objective !== this.props.objective &&
+        nextProps.pointGroups === this.props.pointGroups) {
+        this.props.forceParentUpdate();
+      }
     }
   },
 
