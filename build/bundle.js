@@ -37,6 +37,8 @@ webpackJsonp([0],{
 	                   
 	                
 	                     
+	                     
+	                           
 	 
 
 
@@ -57,6 +59,7 @@ webpackJsonp([0],{
 	      innerWidth: window.innerWidth,
 	      angle: 0,
 	      focussedModel: LogisticRegression,
+	      focussedModelParams: LogisticRegression.DEFAULT_PARAMS,
 	    };
 	  },
 
@@ -66,6 +69,10 @@ webpackJsonp([0],{
 
 	  highlightW: function(highlightedW    ) {
 	    this.setState({highlightedW:highlightedW});
+	  },
+
+	  updateModelParams: function(focussedModelParams     ) {
+	    this.setState({focussedModelParams:focussedModelParams});
 	  },
 
 	  componentDidMount: function() {
@@ -85,10 +92,14 @@ webpackJsonp([0],{
 	  },
 
 	  focusModel: function(focussedModel     ) {
-	    this.setState({focussedModel:focussedModel});
+	    this.setState({
+	      focussedModel: focussedModel,
+	      focussedModelParams: focussedModel.DEFAULT_PARAMS,
+	    });
 	  },
 
 	  render: function()                {
+	    var $__0=       this.state,innerWidth=$__0.innerWidth,focussedModel=$__0.focussedModel,focussedModelParams=$__0.focussedModelParams,highlightedW=$__0.highlightedW,pointGroups=$__0.pointGroups,angle=$__0.angle;
 	    return (
 	      React.createElement("div", {style: {position: 'relative'}}, 
 	        React.createElement("div", {style: {
@@ -96,17 +107,20 @@ webpackJsonp([0],{
 	            top: 0,
 	            left: 0,
 	            background: "rgba(255, 255, 255, 0.6)"}}, 
-	          React.createElement(AwesomeDataComponent, {dim: 450, 
-	            updatePointGroups: this.updatePointGroups, pointGroups: this.state.pointGroups})
+	          React.createElement(AwesomeDataComponent, {dim: 450, highlightedW: highlightedW, 
+	            updatePointGroups: this.updatePointGroups, pointGroups: pointGroups})
 	        ), 
 
-	        React.createElement(ModelSwitcherVis, {width: this.state.innerWidth, focussedModel: this.state.focussedModel, 
-	          highlightW: this.highlightW, highlightedW: this.state.highlightedW, 
-	          pointGroups: this.state.pointGroups, updateAngle: this.updateAngle}), 
+	        React.createElement(ModelSwitcherVis, {width: innerWidth, 
+	          focussedModel: focussedModel, focussedModelParams: focussedModelParams, 
+	          highlightW: this.highlightW, highlightedW: highlightedW, 
+	          pointGroups: pointGroups, updateAngle: this.updateAngle}), 
 
 	        React.createElement("div", {style: {position: 'absolute', top: 0, right: 0}}, 
-	          React.createElement(MiniModelChooser, {highlightedW: this.state.highlightedW, focusModel: this.focusModel, 
-	            pointGroups: this.state.pointGroups, angle: this.state.angle})
+	          React.createElement(MiniModelChooser, {highlightedW: highlightedW, 
+	            focussedModel: focussedModel, focusModel: this.focusModel, 
+	            focussedModelParams: focussedModelParams, updateModelParams: this.updateModelParams, 
+	            pointGroups: pointGroups, angle: angle})
 	        )
 	      )
 	    );
@@ -138,12 +152,14 @@ webpackJsonp([0],{
 	              
 	              
 	                               
+	                   
 	                                                    
 	 
 	var React = __webpack_require__(1);
 	var AwesomePointGroup = __webpack_require__(23);
-	var $__0=   __webpack_require__(24),add=$__0.add,subtract=$__0.subtract;
-	var $__1=  __webpack_require__(25),generatePoints=$__1.generatePoints;
+	var Hyperplane = __webpack_require__(24);
+	var $__0=   __webpack_require__(25),add=$__0.add,subtract=$__0.subtract;
+	var $__1=  __webpack_require__(26),generatePoints=$__1.generatePoints;
 	var $__2=  __webpack_require__(1).addons,PureRenderMixin=$__2.PureRenderMixin;
 
 
@@ -155,6 +171,7 @@ webpackJsonp([0],{
 	    dim: React.PropTypes.number.isRequired,
 	    updatePointGroups: React.PropTypes.func.isRequired,
 	    pointGroups: React.PropTypes.array.isRequired,
+	    highlightedW: React.PropTypes.object.isRequired,
 	  },
 
 	  mouseMove: function(e                      ) {
@@ -237,8 +254,11 @@ webpackJsonp([0],{
 
 	          React.createElement("g", {transform: ("scale(" + (2 / this.props.dim) + ")")}, 
 	            React.createElement("line", {x1: "0.5", y1: "7.5", x2: "0.5", y2: "-6.5", style: {stroke: "#555", strokeWidth: 1}}), 
-	            React.createElement("line", {x1: "-6.5", y1: "0.5", x2: "7.5", y2: "0.5", style: {stroke: "#555", strokeWidth: 1}})
+	            React.createElement("line", {x1: "-6.5", y1: "0.5", x2: "7.5", y2: "0.5", style: {stroke: "#555", strokeWidth: 1}}), 
+
+	            React.createElement(Hyperplane, {w: this.props.highlightedW, dim: this.props.dim})
 	          ), 
+
 
 	           this.props.pointGroups.map(this.buildAwesomePointGroup), 
 
@@ -264,10 +284,15 @@ webpackJsonp([0],{
 	                                 
 	                                             
 	                                                   
+	               
+	             
+	                         
+	                    
+	 
 
 	"use strict";
 
-	var $__0=    __webpack_require__(24),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
+	var $__0=    __webpack_require__(25),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
 
 	function sigmoid(wx)         {
 	  return 1 / (1 + Math.exp(-wx));
@@ -303,13 +328,19 @@ webpackJsonp([0],{
 	  return (7 - Math.log(1 - sum)) / 30;
 	}
 
+	var DEFAULT_PARAMS         = {
+	  NU: 0.02,
+	  ACCEPTING_GRAD: 1 / 200,
+	  MAX_STOPS: 250
+	};
 
+	var PARAM_OPTIONS = {
+	  NU: [0.008, 0.012, 0.014, 0.016, 0.020, 0.03],
+	  ACCEPTING_GRAD: [3 / 200, 1 / 200, 1 / 400],
+	  MAX_STOPS: [150, 250, 450],
+	}
 
-	var NU = 0.02;
-	var ACCEPTING_GRAD = 1 / 200; // we reach this in ~ 300 loops
-	var MAX_STOPS = 250;
-
-	function optimise(smallStartW    , pointGroups                 )            {
+	function optimise(smallStartW    , pointGroups                 , $__0          )            {var NU=$__0.NU,ACCEPTING_GRAD=$__0.ACCEPTING_GRAD,MAX_STOPS=$__0.MAX_STOPS;
 	  function gradient(w    )     {
 	    var grad = {x: 0, y: 0};
 
@@ -337,7 +368,7 @@ webpackJsonp([0],{
 	}
 
 
-	function fastOptimise(smallStartW    , pointGroups                 )         {
+	function fastOptimise(smallStartW    , pointGroups                 , $__0          )         {var NU=$__0.NU,ACCEPTING_GRAD=$__0.ACCEPTING_GRAD,MAX_STOPS=$__0.MAX_STOPS;
 	  function gradient(w    )     {
 	    var grad = {x: 0, y: 0};
 
@@ -368,9 +399,13 @@ webpackJsonp([0],{
 
 
 	module.exports = {
-	  objective: objective,
-	  optimise: optimise,
-	  fastOptimise: fastOptimise
+	  objective:objective,
+	  optimise:optimise,
+	  fastOptimise:fastOptimise,
+	  DEFAULT_PARAMS:DEFAULT_PARAMS,
+	  paramOptions: function(paramName        )                {
+	    return PARAM_OPTIONS[paramName];
+	  },
 	};
 
 
@@ -394,11 +429,11 @@ webpackJsonp([0],{
 	  
 
 	var LogisticRegression = __webpack_require__(6);
-	var MaximumMargin = __webpack_require__(26);
-	var ParametricGraph = __webpack_require__(27);
-	var Perceptron = __webpack_require__(28);
+	var MaximumMargin = __webpack_require__(27);
+	var ParametricGraph = __webpack_require__(28);
+	var Perceptron = __webpack_require__(29);
 	var React = __webpack_require__(1);
-	var ThreeScene = __webpack_require__(29);
+	var ThreeScene = __webpack_require__(30);
 
 
 
@@ -409,12 +444,17 @@ webpackJsonp([0],{
 	    pointGroups: React.PropTypes.array.isRequired,
 	    angle: React.PropTypes.number.isRequired,
 	    focusModel: React.PropTypes.func.isRequired,
+	    focussedModel: React.PropTypes.object.isRequired,
+	    focussedModelParams: React.PropTypes.object.isRequired,
+	    updateModelParams: React.PropTypes.func.isRequired,
 	  },
 
 	  shouldComponentUpdate: function(nextProps     )          {
 	    return (this.props.angle !== nextProps.angle ||
 	      this.props.pointGroups !== nextProps.pointGroups ||
-	      this.props.highlightedW !== nextProps.highlightedW);
+	      this.props.highlightedW !== nextProps.highlightedW ||
+	      this.props.focussedModelParams !== nextProps.focussedModelParams ||
+	      this.props.focussedModel !== nextProps.focussedModel);
 	  },
 
 	  render: function()                {
@@ -424,8 +464,10 @@ webpackJsonp([0],{
 
 	    return (
 	      React.createElement("div", null, 
+	        React.createElement("div", {style: {display: "flex"}}, 
 	         models.map(function(model) 
-	            {return React.createElement("div", {style: {cursor: "pointer"}, onClick: function()  {return this.props.focusModel(model);}.bind(this)}, 
+	            {return React.createElement("div", {style: {cursor: "pointer", opacity: model === this.props.focussedModel ? 1 : 0.5}, 
+	              onClick: function()  {return this.props.focusModel(model);}.bind(this)}, 
 	              React.createElement(ThreeScene, {dim: dim, pointGroups: this.props.pointGroups, angle: this.props.angle, 
 	                  objective: model.objective, highlightW: function() {}}, 
 	                React.createElement(ParametricGraph, {thetaResolution: 30, rResolution: 6, 
@@ -433,10 +475,57 @@ webpackJsonp([0],{
 	              )
 	            );}.bind(this)
 	          )
+	        ), 
+
+	         this.props.focussedModel === Perceptron &&
+	            React.createElement("div", {style: {background: "rgba(255, 255, 255, 0.4)", padding: "30px"}}, 
+	              React.createElement("h2", null, "Perceptron"), 
+	              React.createElement("p", null, "Epochs = 2")
+	            ), 
+
+	         this.props.focussedModel === LogisticRegression &&
+	            React.createElement("div", {style: {background: "rgba(255, 255, 255, 0.4)", padding: "30px"}}, 
+	              React.createElement(LRParamChooser, {params: this.props.focussedModelParams, 
+	                updateParams: this.props.updateModelParams})
+	            )
+
 	      )
 	    );
 	  }
 	});
+
+	var LRParamChooser = React.createClass({displayName: "LRParamChooser",
+	  propTypes: {
+	    params: React.PropTypes.object.isRequired,
+	    updateParams: React.PropTypes.func.isRequired,
+	  },
+
+	  updateParam: function(paramName        , newValue        )             {
+	    return function()  {
+	      var newParams = JSON.parse(JSON.stringify(this.props.params));
+	      newParams[paramName] = newValue;
+	      this.props.updateParams(newParams);
+	    }.bind(this);
+	  },
+
+	  render: function()                {
+	    return (
+	      React.createElement("div", null, 
+	        React.createElement("h2", null, "Logistic Regression"), 
+	         ["NU", "ACCEPTING_GRAD", "MAX_STOPS"].map(function(paramName) 
+	            {return React.createElement("div", null, 
+	              React.createElement("p", null, paramName), 
+	              React.createElement("p", null,  LogisticRegression.paramOptions(paramName).map(function(paramValue) 
+	                  {return React.createElement("button", {disabled: this.props.params[paramName] === paramValue, 
+	                    onClick: this.updateParam(paramName, paramValue)}, 
+	                    paramValue
+	                  );}.bind(this)))
+	            );}.bind(this))
+
+	      )
+	    );
+	  }
+	})
 
 
 	module.exports = MiniModelChooser;
@@ -468,15 +557,15 @@ webpackJsonp([0],{
 	 
 
 
-	var CursorSphere = __webpack_require__(30);
-	var Draggable3DScene = __webpack_require__(31);
+	var CursorSphere = __webpack_require__(31);
+	var Draggable3DScene = __webpack_require__(32);
 	var LogisticRegression = __webpack_require__(6);
-	var MaximumMargin = __webpack_require__(26);
-	var OptimiserLine = __webpack_require__(32);
-	var ParametricGraph = __webpack_require__(27);
-	var Perceptron = __webpack_require__(28);
+	var MaximumMargin = __webpack_require__(27);
+	var OptimiserLine = __webpack_require__(33);
+	var ParametricGraph = __webpack_require__(28);
+	var Perceptron = __webpack_require__(29);
 	var React = __webpack_require__(1);
-	var WebWorkerGraph = __webpack_require__(33);
+	var WebWorkerGraph = __webpack_require__(34);
 
 
 
@@ -489,12 +578,14 @@ webpackJsonp([0],{
 	    pointGroups: React.PropTypes.array.isRequired,
 	    width: React.PropTypes.number.isRequired,
 	    focussedModel: React.PropTypes.object.isRequired,
+	    focussedModelParams: React.PropTypes.object.isRequired,
 	  },
 
 	  shouldComponentUpdate: function(nextProps     )       {
 	    return (this.props.highlightedW !== nextProps.highlightedW ||
 	      this.props.pointGroups !== nextProps.pointGroups ||
 	      this.props.width !== nextProps.width ||
+	      this.props.focussedModelParams !== nextProps.focussedModelParams ||
 	      this.props.focussedModel !== nextProps.focussedModel);
 	  },
 
@@ -508,7 +599,8 @@ webpackJsonp([0],{
 	    } else if (this.props.focussedModel === LogisticRegression) {
 	      return (
 	        React.createElement(WebWorkerGraph, {thetaResolution: 252, rResolution: 84, 
-	          objective: LogisticRegression.objective, pointGroups: this.props.pointGroups})
+	          objective: LogisticRegression.objective, pointGroups: this.props.pointGroups, 
+	          focussedModelParams: this.props.focussedModelParams})
 	      );
 	    } else {
 	      console.assert(this.props.focussedModel === MaximumMargin);
@@ -521,26 +613,26 @@ webpackJsonp([0],{
 	  },
 
 	  render: function()                {
+	    var $__0=     this.props,highlightedW=$__0.highlightedW,pointGroups=$__0.pointGroups,focussedModel=$__0.focussedModel,focussedModelParams=$__0.focussedModelParams;
 	    var dim = this.props.width;
 
 	    var optimiserLine;
 	    if (typeof this.props.focussedModel.optimise !== "undefined" &&
 	        this.props.focussedModel.optimise !== null) {
-	      optimiserLine = this.props.focussedModel.optimise(this.props.highlightedW, this.props.pointGroups);
+	      optimiserLine = focussedModel.optimise(highlightedW, pointGroups, focussedModelParams);
 	    }
 
 	    return (
 	      React.createElement("div", {style: {width: '100%'}}, 
 
-	        React.createElement(Draggable3DScene, {dim: dim, pointGroups: this.props.pointGroups, 
-	            updateAngle: this.props.updateAngle, 
-	            objective: LogisticRegression.objective, highlightW: this.props.highlightW}, 
+	        React.createElement(Draggable3DScene, {dim: dim, pointGroups: pointGroups, 
+	            updateAngle: this.props.updateAngle, highlightW: this.props.highlightW}, 
 
 	           optimiserLine && React.createElement(OptimiserLine, {vertices: optimiserLine, 
-	            dim: dim, objective: this.props.focussedModel.objective, pointGroups: this.props.pointGroups}), 
+	            dim: dim, objective: focussedModel.objective, pointGroups: pointGroups}), 
 
 	          React.createElement(CursorSphere, {highlightedW: this.props.highlightedW, dim: dim, 
-	            objective: this.props.focussedModel.objective, pointGroups: this.props.pointGroups}), 
+	            objective: focussedModel.objective, pointGroups: this.props.pointGroups}), 
 
 	           this.makeGraph() 
 
@@ -578,8 +670,8 @@ webpackJsonp([0],{
 	  
 
 	var React = __webpack_require__(1);
-	var $__0=       __webpack_require__(24),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
-	var $__1=    __webpack_require__(25),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
+	var $__0=       __webpack_require__(25),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
+	var $__1=    __webpack_require__(26),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
 	var $__2=  __webpack_require__(1).addons,PureRenderMixin=$__2.PureRenderMixin;
 
 
@@ -726,6 +818,40 @@ webpackJsonp([0],{
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
+	"use strict";
+
+	var Line = __webpack_require__(80);
+	var React = __webpack_require__(1);
+	var $__0=  __webpack_require__(25),scale=$__0.scale;
+	var $__1=  React.addons,PureRenderMixin=$__1.PureRenderMixin;
+
+
+	var Hyperplane = React.createClass({displayName: "Hyperplane",
+	  mixins: [PureRenderMixin],
+
+	  propTypes: {
+	    w: React.PropTypes.object.isRequired,
+	    dim: React.PropTypes.number.isRequired
+	  },
+
+	  render: function()                {
+	    var $__0=   scale(this.props.dim)(this.props.w),x=$__0.x,y=$__0.y;
+	    return React.createElement("g", null, 
+	      React.createElement("path", {d: ("M 0 0 L " + x + " " + y), strokeWidth: "1.5", stroke: "rgba(100, 100, 100, 0.4)"}), 
+	      React.createElement(Line, {w: {x:x, y:y}, dim: this.props.dim})
+	    );
+	  }
+	});
+
+	module.exports = Hyperplane;
+
+
+/***/ },
+
+/***/ 25:
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
 	                           
 	                                 
 	                                             
@@ -828,7 +954,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 25:
+/***/ 26:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -841,7 +967,7 @@ webpackJsonp([0],{
 	                                     
 	  
 
-	var $__0=   __webpack_require__(24),add=$__0.add,rotate=$__0.rotate;
+	var $__0=   __webpack_require__(25),add=$__0.add,rotate=$__0.rotate;
 
 
 
@@ -875,7 +1001,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 26:
+/***/ 27:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -884,7 +1010,7 @@ webpackJsonp([0],{
 
 	"use strict";
 
-	var $__0=   __webpack_require__(24),modulus=$__0.modulus,classTransform=$__0.classTransform;
+	var $__0=   __webpack_require__(25),modulus=$__0.modulus,classTransform=$__0.classTransform;
 
 
 	// the objective function is used to generate the surface
@@ -905,12 +1031,18 @@ webpackJsonp([0],{
 	  return 0.2 + 0.5 * minimumMargin / modulus(w);
 	}
 
-	module.exports = {objective:objective};
+	module.exports = {
+	  objective:objective,
+	  DEFAULT_PARAMS: {},
+	  paramOptions: function()                {
+	    return [];
+	  }
+	};
 
 
 /***/ },
 
-/***/ 27:
+/***/ 28:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -918,7 +1050,7 @@ webpackJsonp([0],{
 
 	var React = __webpack_require__(1);
 	var THREE = __webpack_require__(2);
-	var FasterGeometry = __webpack_require__(79);
+	var FasterGeometry = __webpack_require__(81);
 
 	                                 
 	                                                   
@@ -1052,7 +1184,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 28:
+/***/ 29:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1061,7 +1193,7 @@ webpackJsonp([0],{
 	                                 
 	                                                   
 
-	var $__0=     __webpack_require__(24),add=$__0.add,scale=$__0.scale,classify=$__0.classify,classTransform=$__0.classTransform;
+	var $__0=     __webpack_require__(25),add=$__0.add,scale=$__0.scale,classify=$__0.classify,classTransform=$__0.classTransform;
 
 	/*
 	The Perceptron training algorithm cycles through each training
@@ -1080,6 +1212,16 @@ webpackJsonp([0],{
 
 	Maximum list length = 300 (for non-terminating stuff)
 	*/
+	var DEFAULT_PARAMS = {
+	  PERCEPTRON_NU: 0.1,
+	  EPOCHS: 2,
+	}
+
+	var PARAM_OPTIONS = {
+	  PERCEPTRON_NU: [0.05, 0.1, 0.25, 0.5],
+	  EPOCHS: [1, 2, 5, 10],
+	}
+
 	var PERCEPTRON_NU = 0.1;
 	var EPOCHS = 2;
 	/*
@@ -1121,12 +1263,18 @@ webpackJsonp([0],{
 	    return stops;
 	  },
 
+	  DEFAULT_PARAMS:DEFAULT_PARAMS,
+
+	  paramOptions: function(paramName        )                {
+	    return PARAM_OPTIONS[paramName];
+	  },
+
 	};
 
 
 /***/ },
 
-/***/ 29:
+/***/ 30:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1230,7 +1378,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 30:
+/***/ 31:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1299,7 +1447,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 31:
+/***/ 32:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1325,7 +1473,6 @@ webpackJsonp([0],{
 	              
 	                          
 	                               
-	                                                             
 	 
 
 
@@ -1334,7 +1481,6 @@ webpackJsonp([0],{
 	    dim: React.PropTypes.number.isRequired,
 	    highlightW: React.PropTypes.func.isRequired,
 	    pointGroups: React.PropTypes.array.isRequired,
-	    objective: React.PropTypes.func.isRequired
 	  },
 
 	  getDistance: function()         {
@@ -1504,7 +1650,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 32:
+/***/ 33:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1583,7 +1729,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 33:
+/***/ 34:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1598,6 +1744,7 @@ webpackJsonp([0],{
 	                     
 	                          
 	                                                             
+	                           
 	                                
 	 
 	              
@@ -1605,11 +1752,11 @@ webpackJsonp([0],{
 	                 
 	 
 
-	var FasterGeometry = __webpack_require__(79);
+	var FasterGeometry = __webpack_require__(81);
 	var LogisticRegression = __webpack_require__(6);
 	var React = __webpack_require__(1);
 	var THREE = __webpack_require__(2);
-	var WorkerBridge = __webpack_require__(80);
+	var WorkerBridge = __webpack_require__(82);
 
 
 
@@ -1620,13 +1767,13 @@ webpackJsonp([0],{
 	  transparent: true,
 	});
 
-	var colourFunction = function(pointGroups, boundingBox, vertex2, vertex3, mutableFaceColor)  {
+	var colourFunction = function(pointGroups, focussedModelParams, boundingBox, vertex2, vertex3, mutableFaceColor)  {
 	  var zMin = boundingBox.min.z;
 	  var zRange = boundingBox.max.z - zMin;
 	  // only using two because the avg of these is the middle of two faces (ie one square).
 	  var totalZ = vertex2.z + vertex3.z;
 	  var normalizedZ = (totalZ - 2 * zMin) / (2 * zRange);
-	  var stops = LogisticRegression.fastOptimise(vertex2, pointGroups) / 250;
+	  var stops = LogisticRegression.fastOptimise(vertex2, pointGroups, focussedModelParams) / focussedModelParams.MAX_STOPS;
 	  mutableFaceColor.setHSL(0.31 -  stops * 0.3, 0.8, 0.20 + 0.82 * Math.pow(normalizedZ, 2));
 	};
 
@@ -1636,6 +1783,7 @@ webpackJsonp([0],{
 	    pointGroups: React.PropTypes.array.isRequired,
 	    rResolution: React.PropTypes.number.isRequired, // 8
 	    scene: React.PropTypes.any.isRequired,
+	    focussedModelParams: React.PropTypes.object.isRequired,
 	    objective: React.PropTypes.func.isRequired,
 	    thetaResolution: React.PropTypes.number.isRequired, // 24
 	    forceParentUpdate: React.PropTypes.func.isRequired,
@@ -1680,7 +1828,8 @@ webpackJsonp([0],{
 
 	    for (var i = 0, len = graphGeometry.faces.length; i < len; i = i + 2) {
 	      var face = graphGeometry.faces[i];
-	      colourFunction(props.pointGroups, graphGeometry.boundingBox,
+	      colourFunction(props.pointGroups, props.focussedModelParams,
+	        graphGeometry.boundingBox,
 	        graphGeometry.vertices[face.b],
 	        graphGeometry.vertices[face.c],
 	        face.color);
@@ -1706,7 +1855,8 @@ webpackJsonp([0],{
 
 	  shouldComponentUpdate: function(nextProps       )       {
 	    return (nextProps.pointGroups !== this.props.pointGroups ||
-	      nextProps.objective !== this.props.objective);
+	      nextProps.objective !== this.props.objective ||
+	      nextProps.focussedModelParams !== this.props.focussedModelParams);
 	  },
 
 	  refreshGeometryZValues: function(props       , geometry                )       {
@@ -1741,10 +1891,15 @@ webpackJsonp([0],{
 	    }
 	  },
 
-	  asyncRequestColouring: function($__0         ) {var thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,pointGroups=$__0.pointGroups;
+	  asyncRequestColouring: function($__0          ) {var thetaResolution=$__0.thetaResolution,rResolution=$__0.rResolution,pointGroups=$__0.pointGroups,focussedModelParams=$__0.focussedModelParams;
 	    console.log('[React] sending request');
 
-	    WorkerBridge.request({thetaResolution:thetaResolution, rResolution:rResolution, pointGroups:pointGroups}, function($__0)  {var hues=$__0.hues;
+	    WorkerBridge.request({
+	      thetaResolution:thetaResolution,
+	      rResolution:rResolution,
+	      pointGroups:pointGroups,
+	      focussedModelParams:focussedModelParams,
+	    }, function($__0)  {var hues=$__0.hues;
 	      var $__1=    this.state.graph.geometry,boundingBox=$__1.boundingBox,faces=$__1.faces,vertices=$__1.vertices;
 	      var zRange = boundingBox.max.z - boundingBox.min.z;
 
@@ -1772,7 +1927,99 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 79:
+/***/ 80:
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+
+	var React = __webpack_require__(1);
+	var $__0=  __webpack_require__(1).addons,PureRenderMixin=$__0.PureRenderMixin;
+	var $__1=       __webpack_require__(25),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
+
+
+	// my stackoverflow explanation: http: //stackoverflow.com/a/24392281/1941552
+	function lambdaGamma (arg1, arg2, arg3, arg4) {
+	  var $__0=   arg1,a=$__0[0],b=$__0[1];
+	  var $__1=   arg2,c=$__1[0],d=$__1[1];
+	  var $__2=   arg3,p=$__2[0],q=$__2[1];
+	  var $__3=   arg4,r=$__3[0],s=$__3[1];
+
+	  var det = (c - a) * (s - q) - (r - p) * (d - b);
+	  if (det === 0) {
+	    return null; // colinear
+	  } else {
+	    var lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+	    var gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+	    return [lambda, gamma];
+	  }
+	}
+
+
+	var Line = React.createClass({displayName: "Line",
+	  propTypes: {
+	    w: React.PropTypes.shape({
+	      x: React.PropTypes.number.isRequired,
+	      y: React.PropTypes.number.isRequired
+	    }).isRequired,
+	    dim: React.PropTypes.number.isRequired
+	  },
+
+	  mixins: [PureRenderMixin],
+
+	  findBorderIntersection: function(v                       )                    {
+	    var dim = this.props.dim;
+	    var top = [[-dim / 2, dim / 2], [dim / 2, dim / 2]];
+	    var right = [[dim / 2, dim / 2], [dim / 2, -dim / 2]];
+	    var bottom = [[dim / 2, -dim / 2], [-dim / 2, -dim / 2]];
+	    var left = [[-dim / 2, -dim / 2], [-dim / 2, dim / 2]];
+
+	    // we construct vectors for the edge of the viewport, then intersection test them.
+	    // this yields the lambda that we need to multiply v by to reach the edge.
+	    var intersections = [top, right, bottom, left]
+	      .map(function(arg)  {return lambdaGamma([0, 0], [v.x, v.y], arg[0], arg[1]);})
+	      .filter( function(lg) {
+	        if (typeof lg !== "undefined" && lg !== null) {
+	          var $__0=   lg,lambda=$__0[0],gamma=$__0[1];
+	          return 0 < lambda && 0 < gamma && gamma <= 1; // not conventional intersection
+	        } else {
+	          return false;
+	        }
+	      });
+	    return intersections[0];
+	  },
+
+	  render: function()                {
+	    var boundaryPoint = {
+	      x: 0,
+	      y: 0
+	    };
+	    if (!lineEq({x: 0, y: 0}, this.props.w)) {
+	      var v = rot90(this.props.w); // v is now the direction of the line
+	      var first = this.findBorderIntersection(v);
+	      if (typeof first !== "undefined" && first !== null) {
+	        var lambda = first[0];
+	        boundaryPoint = scale(lambda)(v);
+	      } else {
+	        throw new Error();
+	      }
+	    }
+
+	    return (
+	      React.createElement("path", {d: ("M " + (-boundaryPoint.x) + " " + (-boundaryPoint.y) + " L " + boundaryPoint.x + " " + boundaryPoint.y), 
+	        strokeWidth: "1.5", 
+	        stroke: "rgba(30, 30, 30, 0.3)", 
+	        style: this.props.style})
+	    );
+	  }
+	});
+
+	module.exports = Line;
+
+
+/***/ },
+
+/***/ 81:
 /***/ function(module, exports, __webpack_require__) {
 
 	var THREE = __webpack_require__(2);
@@ -1810,7 +2057,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 80:
+/***/ 82:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */

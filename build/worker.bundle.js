@@ -112,6 +112,7 @@
 	                          
 	                      
 	                               
+	                           
 	  
 	                                 
 
@@ -120,8 +121,8 @@
 	var THREE = __webpack_require__(4);
 	var FasterGeometry = __webpack_require__(3);
 
-	var colourFunction = function(pointGroups, vertex, hues, index) {
-	  var stops = fastOptimise(vertex, pointGroups) / 250;
+	var colourFunction = function($__0          , vertex, hues, index) {var pointGroups=$__0.pointGroups,focussedModelParams=$__0.focussedModelParams;
+	  var stops = fastOptimise(vertex, pointGroups, focussedModelParams) / focussedModelParams.MAX_STOPS;
 	  hues[index] = 256 * (0.31 - stops * 0.3);
 	};
 
@@ -150,7 +151,7 @@
 	    var hues = new Uint8Array(numFaces);
 
 	    // do face 0.
-	    colourFunction(request.pointGroups, vertices[faces[0].b], hues, 0);
+	    colourFunction(request, vertices[faces[0].b], hues, 0);
 	    hues[1] = hues[0];
 
 	    var colourStep = function(squareSize)  {
@@ -165,7 +166,7 @@
 	          var face = faces[faceIndex];
 
 	          if ((x % prevSquareSize !== 0) || (y % prevSquareSize != 0)) {
-	            colourFunction(request.pointGroups, vertices[face.b], hues, faceIndex);
+	            colourFunction(request, vertices[face.b], hues, faceIndex);
 	            hues[faceIndex + 1] = hues[faceIndex];
 	          }
 	        }
@@ -211,6 +212,11 @@
 	                                 
 	                                             
 	                                                   
+	               
+	             
+	                         
+	                    
+	 
 
 	"use strict";
 
@@ -250,13 +256,19 @@
 	  return (7 - Math.log(1 - sum)) / 30;
 	}
 
+	var DEFAULT_PARAMS         = {
+	  NU: 0.02,
+	  ACCEPTING_GRAD: 1 / 200,
+	  MAX_STOPS: 250
+	};
 
+	var PARAM_OPTIONS = {
+	  NU: [0.008, 0.012, 0.014, 0.016, 0.020, 0.03],
+	  ACCEPTING_GRAD: [3 / 200, 1 / 200, 1 / 400],
+	  MAX_STOPS: [150, 250, 450],
+	}
 
-	var NU = 0.02;
-	var ACCEPTING_GRAD = 1 / 200; // we reach this in ~ 300 loops
-	var MAX_STOPS = 250;
-
-	function optimise(smallStartW    , pointGroups                 )            {
+	function optimise(smallStartW    , pointGroups                 , $__0          )            {var NU=$__0.NU,ACCEPTING_GRAD=$__0.ACCEPTING_GRAD,MAX_STOPS=$__0.MAX_STOPS;
 	  function gradient(w    )     {
 	    var grad = {x: 0, y: 0};
 
@@ -284,7 +296,7 @@
 	}
 
 
-	function fastOptimise(smallStartW    , pointGroups                 )         {
+	function fastOptimise(smallStartW    , pointGroups                 , $__0          )         {var NU=$__0.NU,ACCEPTING_GRAD=$__0.ACCEPTING_GRAD,MAX_STOPS=$__0.MAX_STOPS;
 	  function gradient(w    )     {
 	    var grad = {x: 0, y: 0};
 
@@ -315,9 +327,13 @@
 
 
 	module.exports = {
-	  objective: objective,
-	  optimise: optimise,
-	  fastOptimise: fastOptimise
+	  objective:objective,
+	  optimise:optimise,
+	  fastOptimise:fastOptimise,
+	  DEFAULT_PARAMS:DEFAULT_PARAMS,
+	  paramOptions: function(paramName        )                {
+	    return PARAM_OPTIONS[paramName];
+	  },
 	};
 
 
