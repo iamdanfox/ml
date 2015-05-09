@@ -50,6 +50,10 @@ var Immersive = React.createClass({
     this.setState({highlightedW});
   },
 
+  updateModelParams: function(focussedModelParams: any) {
+    this.setState({focussedModelParams});
+  },
+
   componentDidMount: function() {
     window.addEventListener('resize', this.updateWindowSize);
   },
@@ -67,7 +71,10 @@ var Immersive = React.createClass({
   },
 
   focusModel: function(focussedModel: any) {
-    this.setState({focussedModel});
+    this.setState({
+      focussedModel: focussedModel,
+      focussedModelParams: focussedModel.DEFAULT_PARAMS,
+    });
   },
 
   render: function(): ?ReactElement {
@@ -90,7 +97,7 @@ var Immersive = React.createClass({
         <div style={{position: 'absolute', top: 0, right: 0}}>
           <MiniModelChooser highlightedW={this.state.highlightedW}
             focussedModel={this.state.focussedModel} focusModel={this.focusModel}
-            focussedModelParams={this.state.focussedModelParams}
+            focussedModelParams={this.state.focussedModelParams} updateModelParams={this.updateModelParams}
             pointGroups={this.state.pointGroups} angle={this.state.angle} />
         </div>
       </div>

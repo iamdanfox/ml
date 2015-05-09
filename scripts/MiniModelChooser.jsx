@@ -30,6 +30,7 @@ var MiniModelChooser = React.createClass({
     focusModel: React.PropTypes.func.isRequired,
     focussedModel: React.PropTypes.object.isRequired,
     focussedModelParams: React.PropTypes.object.isRequired,
+    updateModelParams: React.PropTypes.func.isRequired,
   },
 
   shouldComponentUpdate: function(nextProps: any): boolean {
@@ -68,8 +69,8 @@ var MiniModelChooser = React.createClass({
 
         { this.props.focussedModel === LogisticRegression &&
             <div style={{background: "rgba(255, 255, 255, 0.4)", padding: "30px"}}>
-              <LRParamChooser params={LogisticRegression.DEFAULT_PARAMS}
-                updateParams={function(newParams) {console.log('djasjda', newParams);}} />
+              <LRParamChooser params={this.props.focussedModelParams}
+                updateParams={this.props.updateModelParams} />
             </div> }
 
       </div>
