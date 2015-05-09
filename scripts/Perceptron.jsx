@@ -73,8 +73,8 @@ module.exports = {
 
   paramOptions: function(paramName: string): Array<number> {
     var PARAM_OPTIONS = {
-      PERCEPTRON_NU: [0.05, 0.1, 0.25, 0.5],
-      EPOCHS: [1, 2, 5, 10],
+      PERCEPTRON_NU: [0.01, 0.1, 0.25, 0.5, 1],
+      EPOCHS: [1, 2, 5],
     };
     return PARAM_OPTIONS[paramName];
   },

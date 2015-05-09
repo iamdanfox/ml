@@ -72,14 +72,18 @@ var MiniModelChooser = React.createClass({
 
         <div className={focussedModel === Perceptron && this.state.hover ?
             "slide-down slide-down-show" : "slide-down"}>
-          <h2>Perceptron</h2>
-          <p>Epochs = 2</p>
+          <LRParamChooser params={this.props.focussedModelParams} model={Perceptron}
+            updateParams={this.props.updateModelParams} paramKeys={["PERCEPTRON_NU", "EPOCHS"]}>
+            <h2>Perceptron</h2>
+          </LRParamChooser>
         </div>
 
         <div className={focussedModel === LogisticRegression && this.state.hover ?
             "slide-down slide-down-show" : "slide-down"}>
-          <LRParamChooser params={this.props.focussedModelParams}
-            updateParams={this.props.updateModelParams} />
+          <LRParamChooser params={this.props.focussedModelParams} model={LogisticRegression}
+            updateParams={this.props.updateModelParams} paramKeys={["NU", "ACCEPTING_GRAD", "MAX_STOPS"]}>
+            <h2>Logistic Regression</h2>
+          </LRParamChooser>
         </div>
 
       </div>

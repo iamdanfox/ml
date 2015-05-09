@@ -8,6 +8,8 @@ var LRParamChooser = React.createClass({
   propTypes: {
     params: React.PropTypes.object.isRequired,
     updateParams: React.PropTypes.func.isRequired,
+    model: React.PropTypes.object.isRequired,
+    paramKeys: React.PropTypes.array.isRequired,
   },
 
   updateParam: function(paramName: string, newValue: number): () => void {
@@ -19,7 +21,7 @@ var LRParamChooser = React.createClass({
   },
 
   makeButtons: function(paramName: string): Array<ReactElement> {
-    return LogisticRegression.paramOptions(paramName).map((paramValue) =>
+    return this.props.model.paramOptions(paramName).map((paramValue) =>
               <button disabled={this.props.params[paramName] === paramValue}
                 onClick={this.updateParam(paramName, paramValue)}>
                 {paramValue}
@@ -29,8 +31,8 @@ var LRParamChooser = React.createClass({
   render: function(): ?ReactElement {
     return (
       <div style={{padding: "30px"}}>
-        <h2>Logistic Regression</h2>
-        { ["NU", "ACCEPTING_GRAD", "MAX_STOPS"].map((paramName) =>
+        { this.props.children }
+        { this.props.paramKeys.map((paramName) =>
             <div>
               <p>{paramName}</p>
               <p>{ this.makeButtons(paramName) }</p>
