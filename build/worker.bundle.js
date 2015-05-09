@@ -165,14 +165,14 @@
 	          var faceIndex = 2 * ((y * rResolution) + x);
 	          var face = faces[faceIndex];
 
-	          if ((x % prevSquareSize !== 0) || (y % prevSquareSize != 0)) {
+	          if ((x % prevSquareSize !== 0) || (y % prevSquareSize !== 0)) {
 	            colourFunction(request, vertices[face.b], hues, faceIndex);
 	            hues[faceIndex + 1] = hues[faceIndex];
 	          }
 	        }
 	      }
 
-	      // // now need to do some colour copying in the three new squares (don't touch top left)
+	      // now need to do some colour copying in the three new squares (don't touch top left)
 	      for (var y = 0; y < thetaResolution; y = y + 1) {
 	        var squareY = y % squareSize;
 	        var prevSquareY = y % prevSquareSize;
@@ -266,7 +266,7 @@
 	  NU: [0.008, 0.012, 0.014, 0.016, 0.020, 0.03],
 	  ACCEPTING_GRAD: [3 / 200, 1 / 200, 1 / 400],
 	  MAX_STOPS: [150, 250, 450],
-	}
+	};
 
 	function optimise(smallStartW    , pointGroups                 , $__0          )            {var NU=$__0.NU,ACCEPTING_GRAD=$__0.ACCEPTING_GRAD,MAX_STOPS=$__0.MAX_STOPS;
 	  function gradient(w    )     {

@@ -1,6 +1,5 @@
-webpackJsonp([0],{
-
-/***/ 0:
+webpackJsonp([0],[
+/* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -15,8 +14,10 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 4:
+/* 1 */,
+/* 2 */,
+/* 3 */,
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -47,8 +48,7 @@ webpackJsonp([0],{
 	var MiniModelChooser = __webpack_require__(7);
 	var ModelSwitcherVis = __webpack_require__(8);
 	var React = __webpack_require__(1);
-
-
+	__webpack_require__(23);
 
 
 	var Immersive = React.createClass({displayName: "Immersive",
@@ -63,16 +63,12 @@ webpackJsonp([0],{
 	    };
 	  },
 
-	  updatePointGroups: function(pointGroups                 )       {
-	    this.setState({pointGroups:pointGroups});
-	  },
-
-	  highlightW: function(highlightedW    ) {
-	    this.setState({highlightedW:highlightedW});
-	  },
-
-	  updateModelParams: function(focussedModelParams     ) {
-	    this.setState({focussedModelParams:focussedModelParams});
+	  setStateCallback: function(name        )                   {
+	    return function(value)  {
+	      var assignment = {};
+	      assignment[name] = value;
+	      this.setState(assignment);
+	    }.bind(this);
 	  },
 
 	  componentDidMount: function() {
@@ -87,10 +83,6 @@ webpackJsonp([0],{
 	    this.setState({innerWidth: window.innerWidth});
 	  },
 
-	  updateAngle: function(angle        ) {
-	    this.setState({angle:angle});
-	  },
-
 	  focusModel: function(focussedModel     ) {
 	    this.setState({
 	      focussedModel: focussedModel,
@@ -101,25 +93,21 @@ webpackJsonp([0],{
 	  render: function()                {
 	    var $__0=       this.state,innerWidth=$__0.innerWidth,focussedModel=$__0.focussedModel,focussedModelParams=$__0.focussedModelParams,highlightedW=$__0.highlightedW,pointGroups=$__0.pointGroups,angle=$__0.angle;
 	    return (
-	      React.createElement("div", {style: {position: 'relative'}}, 
-	        React.createElement("div", {style: {
-	            position: 'absolute',
-	            top: 0,
-	            left: 0,
-	            background: "rgba(255, 255, 255, 0.6)"}}, 
+	      React.createElement("div", {style: {position: "relative"}}, 
+	        React.createElement("div", {className: "awesome-data-container"}, 
 	          React.createElement(AwesomeDataComponent, {dim: 450, highlightedW: highlightedW, 
-	            updatePointGroups: this.updatePointGroups, pointGroups: pointGroups})
+	            updatePointGroups: this.setStateCallback("pointGroups"), pointGroups: pointGroups})
 	        ), 
 
 	        React.createElement(ModelSwitcherVis, {width: innerWidth, 
 	          focussedModel: focussedModel, focussedModelParams: focussedModelParams, 
-	          highlightW: this.highlightW, highlightedW: highlightedW, 
-	          pointGroups: pointGroups, updateAngle: this.updateAngle}), 
+	          highlightW: this.setStateCallback("highlightedW"), highlightedW: highlightedW, 
+	          pointGroups: pointGroups, updateAngle: this.setStateCallback("angle")}), 
 
-	        React.createElement("div", {style: {position: 'absolute', top: 0, right: 0}}, 
+	        React.createElement("div", {style: {position: "absolute", top: 0, right: 0}}, 
 	          React.createElement(MiniModelChooser, {highlightedW: highlightedW, 
 	            focussedModel: focussedModel, focusModel: this.focusModel, 
-	            focussedModelParams: focussedModelParams, updateModelParams: this.updateModelParams, 
+	            focussedModelParams: focussedModelParams, updateModelParams: this.setStateCallback("focussedModelParams"), 
 	            pointGroups: pointGroups, angle: angle})
 	        )
 	      )
@@ -132,8 +120,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 5:
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -156,10 +143,10 @@ webpackJsonp([0],{
 	                                                    
 	 
 	var React = __webpack_require__(1);
-	var AwesomePointGroup = __webpack_require__(23);
-	var Hyperplane = __webpack_require__(24);
-	var $__0=   __webpack_require__(25),add=$__0.add,subtract=$__0.subtract;
-	var $__1=  __webpack_require__(26),generatePoints=$__1.generatePoints;
+	var AwesomePointGroup = __webpack_require__(25);
+	var Hyperplane = __webpack_require__(26);
+	var $__0=   __webpack_require__(27),add=$__0.add,subtract=$__0.subtract;
+	var $__1=  __webpack_require__(28),generatePoints=$__1.generatePoints;
 	var $__2=  __webpack_require__(1).addons,PureRenderMixin=$__2.PureRenderMixin;
 
 
@@ -247,7 +234,7 @@ webpackJsonp([0],{
 	    return React.createElement("svg", {
 	      ref: "canvas", 
 	      width: this.props.dim, height: this.props.dim, 
-	      style: this.props.style, onMouseMove: this.mouseMove}, 
+	      onMouseMove: this.mouseMove}, 
 
 	        React.createElement("g", {transform: ("translate(" + (this.props.dim / 2) + " " + (this.props.dim / 2) + ")\n          scale(" + 
 	(this.props.dim / 2) + " " + (-this.props.dim / 2) + ")")}, 
@@ -276,8 +263,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 6:
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -292,7 +278,7 @@ webpackJsonp([0],{
 
 	"use strict";
 
-	var $__0=    __webpack_require__(25),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
+	var $__0=    __webpack_require__(27),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
 
 	function sigmoid(wx)         {
 	  return 1 / (1 + Math.exp(-wx));
@@ -338,7 +324,7 @@ webpackJsonp([0],{
 	  NU: [0.008, 0.012, 0.014, 0.016, 0.020, 0.03],
 	  ACCEPTING_GRAD: [3 / 200, 1 / 200, 1 / 400],
 	  MAX_STOPS: [150, 250, 450],
-	}
+	};
 
 	function optimise(smallStartW    , pointGroups                 , $__0          )            {var NU=$__0.NU,ACCEPTING_GRAD=$__0.ACCEPTING_GRAD,MAX_STOPS=$__0.MAX_STOPS;
 	  function gradient(w    )     {
@@ -410,8 +396,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 7:
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -429,11 +414,14 @@ webpackJsonp([0],{
 	  
 
 	var LogisticRegression = __webpack_require__(6);
-	var MaximumMargin = __webpack_require__(27);
-	var ParametricGraph = __webpack_require__(28);
-	var Perceptron = __webpack_require__(29);
+	var MaximumMargin = __webpack_require__(29);
+	var ParametricGraph = __webpack_require__(30);
+	var Perceptron = __webpack_require__(31);
 	var React = __webpack_require__(1);
-	var ThreeScene = __webpack_require__(30);
+	var ThreeScene = __webpack_require__(32);
+	__webpack_require__(33);
+	var LRParamChooser = __webpack_require__(35);
+
 
 
 
@@ -449,24 +437,30 @@ webpackJsonp([0],{
 	    updateModelParams: React.PropTypes.func.isRequired,
 	  },
 
-	  shouldComponentUpdate: function(nextProps     )          {
-	    return (this.props.angle !== nextProps.angle ||
-	      this.props.pointGroups !== nextProps.pointGroups ||
-	      this.props.highlightedW !== nextProps.highlightedW ||
-	      this.props.focussedModelParams !== nextProps.focussedModelParams ||
-	      this.props.focussedModel !== nextProps.focussedModel);
+	  getInitialState: function() {
+	    return {hover: false};
+	  },
+
+	  onMouseEnter: function() {
+	    this.setState({hover: true});
+	  },
+
+	  onMouseLeave: function() {
+	    this.setState({hover: false});
 	  },
 
 	  render: function()                {
 	    var dim = 120;
 
+	    var $__0=  this.props,focussedModel=$__0.focussedModel;
+
 	    var models = [Perceptron, LogisticRegression, MaximumMargin];
 
 	    return (
-	      React.createElement("div", null, 
+	      React.createElement("div", {onMouseEnter: this.onMouseEnter, onMouseLeave: this.onMouseLeave}, 
 	        React.createElement("div", {style: {display: "flex"}}, 
 	         models.map(function(model) 
-	            {return React.createElement("div", {style: {cursor: "pointer", opacity: model === this.props.focussedModel ? 1 : 0.5}, 
+	            {return React.createElement("div", {className: model === focussedModel ? "minimodel minimodel-focussed" : "minimodel", 
 	              onClick: function()  {return this.props.focusModel(model);}.bind(this)}, 
 	              React.createElement(ThreeScene, {dim: dim, pointGroups: this.props.pointGroups, angle: this.props.angle, 
 	                  objective: model.objective, highlightW: function() {}}, 
@@ -477,63 +471,30 @@ webpackJsonp([0],{
 	          )
 	        ), 
 
-	         this.props.focussedModel === Perceptron &&
-	            React.createElement("div", {style: {background: "rgba(255, 255, 255, 0.4)", padding: "30px"}}, 
-	              React.createElement("h2", null, "Perceptron"), 
-	              React.createElement("p", null, "Epochs = 2")
-	            ), 
+	        React.createElement("div", {className: focussedModel === Perceptron && this.state.hover ?
+	            "slide-down slide-down-show" : "slide-down"}, 
+	          React.createElement("h2", null, "Perceptron"), 
+	          React.createElement("p", null, "Epochs = 2")
+	        ), 
 
-	         this.props.focussedModel === LogisticRegression &&
-	            React.createElement("div", {style: {background: "rgba(255, 255, 255, 0.4)", padding: "30px"}}, 
-	              React.createElement(LRParamChooser, {params: this.props.focussedModelParams, 
-	                updateParams: this.props.updateModelParams})
-	            )
+	        React.createElement("div", {className: focussedModel === LogisticRegression && this.state.hover ?
+	            "slide-down slide-down-show" : "slide-down"}, 
+	          React.createElement(LRParamChooser, {params: this.props.focussedModelParams, 
+	            updateParams: this.props.updateModelParams})
+	        )
 
 	      )
 	    );
 	  }
 	});
 
-	var LRParamChooser = React.createClass({displayName: "LRParamChooser",
-	  propTypes: {
-	    params: React.PropTypes.object.isRequired,
-	    updateParams: React.PropTypes.func.isRequired,
-	  },
-
-	  updateParam: function(paramName        , newValue        )             {
-	    return function()  {
-	      var newParams = JSON.parse(JSON.stringify(this.props.params));
-	      newParams[paramName] = newValue;
-	      this.props.updateParams(newParams);
-	    }.bind(this);
-	  },
-
-	  render: function()                {
-	    return (
-	      React.createElement("div", null, 
-	        React.createElement("h2", null, "Logistic Regression"), 
-	         ["NU", "ACCEPTING_GRAD", "MAX_STOPS"].map(function(paramName) 
-	            {return React.createElement("div", null, 
-	              React.createElement("p", null, paramName), 
-	              React.createElement("p", null,  LogisticRegression.paramOptions(paramName).map(function(paramValue) 
-	                  {return React.createElement("button", {disabled: this.props.params[paramName] === paramValue, 
-	                    onClick: this.updateParam(paramName, paramValue)}, 
-	                    paramValue
-	                  );}.bind(this)))
-	            );}.bind(this))
-
-	      )
-	    );
-	  }
-	})
 
 
 	module.exports = MiniModelChooser;
 
 
 /***/ },
-
-/***/ 8:
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -557,15 +518,15 @@ webpackJsonp([0],{
 	 
 
 
-	var CursorSphere = __webpack_require__(31);
-	var Draggable3DScene = __webpack_require__(32);
+	var CursorSphere = __webpack_require__(36);
+	var Draggable3DScene = __webpack_require__(37);
 	var LogisticRegression = __webpack_require__(6);
-	var MaximumMargin = __webpack_require__(27);
-	var OptimiserLine = __webpack_require__(33);
-	var ParametricGraph = __webpack_require__(28);
-	var Perceptron = __webpack_require__(29);
+	var MaximumMargin = __webpack_require__(29);
+	var OptimiserLine = __webpack_require__(38);
+	var ParametricGraph = __webpack_require__(30);
+	var Perceptron = __webpack_require__(31);
 	var React = __webpack_require__(1);
-	var WebWorkerGraph = __webpack_require__(34);
+	var WebWorkerGraph = __webpack_require__(39);
 
 
 
@@ -579,14 +540,6 @@ webpackJsonp([0],{
 	    width: React.PropTypes.number.isRequired,
 	    focussedModel: React.PropTypes.object.isRequired,
 	    focussedModelParams: React.PropTypes.object.isRequired,
-	  },
-
-	  shouldComponentUpdate: function(nextProps     )       {
-	    return (this.props.highlightedW !== nextProps.highlightedW ||
-	      this.props.pointGroups !== nextProps.pointGroups ||
-	      this.props.width !== nextProps.width ||
-	      this.props.focussedModelParams !== nextProps.focussedModelParams ||
-	      this.props.focussedModel !== nextProps.focussedModel);
 	  },
 
 	  makeGraph: function()               {
@@ -647,16 +600,60 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 9:
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = [{"label":0,"points":[{"x":-0.5997479449727805,"y":0.3266696424458529},{"x":-0.40911978879586314,"y":0.8414896852756555},{"x":-0.6003797969565033,"y":0.38752330824897496},{"x":-0.5974989282403006,"y":0.16793046373201084},{"x":-0.3731116894435043,"y":0.25446221414788783},{"x":-0.4611574437563745,"y":0.7513580834354632},{"x":-0.5666119173059607,"y":0.1786999017955041},{"x":-0.2660309178401766,"y":0.7466422175867058},{"x":-0.45781364583698203,"y":-0.02543721371721755},{"x":-0.7637313902662306,"y":0.8401606006403106},{"x":-0.6719389189432546,"y":-0.3705455189155673},{"x":-0.7724832708046918,"y":-0.20005680566395434},{"x":-0.6921484832633631,"y":0.027283867565444403},{"x":-0.530968122206404,"y":0.795008094328021},{"x":-0.8273452458511434,"y":-0.002424446162095889},{"x":-0.5185588104892703,"y":0.4620006701485645},{"x":-0.7023706476095739,"y":-0.15958155170093186},{"x":-0.8186378396018115,"y":0.23211487091509184},{"x":-0.5665597344525202,"y":0.524761380696566}],"generatedBy":{"center":{"x":-0.5966666666666667,"y":0.19666666666666655},"params":{"l":0.8658457650695586,"theta":-0.17021192528547435}},"mouseDownDiff":null},{"points":[{"x":0.4163818674864531,"y":-0.23528659967706647},{"x":0.44437265613239896,"y":-0.32627143782971557},{"x":0.23942084809958375,"y":-0.6063253418870334},{"x":0.20789742517139406,"y":-0.4091351995003449},{"x":0.2859242354507277,"y":-0.628035096817553},{"x":0.4479649125412124,"y":-0.32415304169593623},{"x":0.45280865076218857,"y":-0.28336832097127984},{"x":0.4075665078010422,"y":-0.39443831290755565},{"x":0.41222269797067723,"y":-0.5769874083755533},{"x":0.3604938339252303,"y":-0.6174488199442758},{"x":0.32403805174279,"y":-0.4848541835691167},{"x":0.34868895341495887,"y":-0.5032884333079499},{"x":0.5243233489148638,"y":-0.20416220785332426},{"x":0.2691046775763215,"y":-0.5310206893985944}],"label":1,"generatedBy":{"center":{"x":0.36999999999999966,"y":-0.3666666666666666},"params":{"l":0.16719914938645886,"theta":1.1606689862534059}},"mouseDownDiff":null},{"label":1,"points":[{"x":0.6660524477396749,"y":0.08876441212498268},{"x":0.6803536514830696,"y":0.16701383499073325},{"x":0.5737262476146427,"y":0.09345571376890369},{"x":0.740243418325372,"y":0.21788967786543098},{"x":0.5723510298190286,"y":-0.048872997526596906},{"x":0.7230819188867843,"y":0.021448199402366697},{"x":0.801222820812387,"y":0.16978847488949483},{"x":0.703671157000718,"y":-0.09675544323096463},{"x":0.5828143995173792,"y":-0.021816106911635158},{"x":0.610639172868958,"y":-0.020054843756927843},{"x":0.43240212272182954,"y":-0.10731745449670954},{"x":0.4766009580339221,"y":-0.04283729687880106},{"x":0.8295860086096446,"y":0.17175194897798224},{"x":0.6763934813675491,"y":0.20435599390510958},{"x":0.6764534988724937,"y":0.1631264448161256}],"generatedBy":{"center":{"x":0.6364731932586679,"y":0.05456092271332935},"params":{"l":0.2054371382466992,"theta":1.000694039631934}},"mouseDownDiff":null}];
 
 
 /***/ },
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
 
-/***/ 23:
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(24);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(85)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./Immersive.css", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./Immersive.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(86)();
+	exports.push([module.id, ".awesome-data-container {\n  position: absolute;\n  top: 0;\n  left: 0;\n  background: rgba(255, 255, 255, 0.6);\n  opacity: 0.5;\n  transform: translate3d(-50%, -50%, 0) scale3d(0.4, 0.4, 1) translate3d(50%, 50%, 0);\n  transition: 200ms all;\n  transition-delay: 3000ms;\n}\n\n.awesome-data-container:hover {\n  opacity: 1;\n  transform: scale3d(1, 1, 1);\n  transition-delay: 0ms;\n}\n", ""]);
+
+/***/ },
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -670,8 +667,8 @@ webpackJsonp([0],{
 	  
 
 	var React = __webpack_require__(1);
-	var $__0=       __webpack_require__(25),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
-	var $__1=    __webpack_require__(26),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
+	var $__0=       __webpack_require__(27),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
+	var $__1=    __webpack_require__(28),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
 	var $__2=  __webpack_require__(1).addons,PureRenderMixin=$__2.PureRenderMixin;
 
 
@@ -813,16 +810,15 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 24:
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
 	"use strict";
 
-	var Line = __webpack_require__(80);
+	var Line = __webpack_require__(89);
 	var React = __webpack_require__(1);
-	var $__0=  __webpack_require__(25),scale=$__0.scale;
+	var $__0=  __webpack_require__(27),scale=$__0.scale;
 	var $__1=  React.addons,PureRenderMixin=$__1.PureRenderMixin;
 
 
@@ -847,8 +843,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 25:
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -953,8 +948,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 26:
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -967,7 +961,7 @@ webpackJsonp([0],{
 	                                     
 	  
 
-	var $__0=   __webpack_require__(25),add=$__0.add,rotate=$__0.rotate;
+	var $__0=   __webpack_require__(27),add=$__0.add,rotate=$__0.rotate;
 
 
 
@@ -1000,8 +994,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 27:
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1010,7 +1003,7 @@ webpackJsonp([0],{
 
 	"use strict";
 
-	var $__0=   __webpack_require__(25),modulus=$__0.modulus,classTransform=$__0.classTransform;
+	var $__0=   __webpack_require__(27),modulus=$__0.modulus,classTransform=$__0.classTransform;
 
 
 	// the objective function is used to generate the surface
@@ -1041,8 +1034,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 28:
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1050,7 +1042,7 @@ webpackJsonp([0],{
 
 	var React = __webpack_require__(1);
 	var THREE = __webpack_require__(2);
-	var FasterGeometry = __webpack_require__(81);
+	var FasterGeometry = __webpack_require__(87);
 
 	                                 
 	                                                   
@@ -1183,8 +1175,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 29:
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1192,8 +1183,12 @@ webpackJsonp([0],{
 
 	                                 
 	                                                   
+	               
+	                        
+	                 
+	  
 
-	var $__0=     __webpack_require__(25),add=$__0.add,scale=$__0.scale,classify=$__0.classify,classTransform=$__0.classTransform;
+	var $__0=     __webpack_require__(27),add=$__0.add,scale=$__0.scale,classify=$__0.classify,classTransform=$__0.classTransform;
 
 	/*
 	The Perceptron training algorithm cycles through each training
@@ -1212,26 +1207,6 @@ webpackJsonp([0],{
 
 	Maximum list length = 300 (for non-terminating stuff)
 	*/
-	var DEFAULT_PARAMS = {
-	  PERCEPTRON_NU: 0.1,
-	  EPOCHS: 2,
-	}
-
-	var PARAM_OPTIONS = {
-	  PERCEPTRON_NU: [0.05, 0.1, 0.25, 0.5],
-	  EPOCHS: [1, 2, 5, 10],
-	}
-
-	var PERCEPTRON_NU = 0.1;
-	var EPOCHS = 2;
-	/*
-	The value of nu is interesting to observe.
-
-	<0.05 - often doesn't reach optimal (runs out of data points)
-	0.1 - almost always reaches the optimum. Occasionally stops just shy of optimal.
-	0.5 - seems to work pretty fast.  Occasionally overshoots a bit.
-	>0.75 - seems to work, but ends up with a large w.
-	*/
 
 	module.exports = {
 
@@ -1246,12 +1221,12 @@ webpackJsonp([0],{
 	    return 0.3;
 	  },
 
-	  optimise: function(startWeight    , pointGroups                 )            {
+	  optimise: function(startWeight    , pointGroups                 , $__0         )            {var PERCEPTRON_NU=$__0.PERCEPTRON_NU,EPOCHS=$__0.EPOCHS;
 	    var w = startWeight;
 	    var stops = [w];
 
 	    for (var k = 0; k < pointGroups.length * EPOCHS; k = k + 1) {
-	      var $__0=   pointGroups[k % pointGroups.length],points=$__0.points,label=$__0.label;
+	      var $__1=   pointGroups[k % pointGroups.length],points=$__1.points,label=$__1.label;
 	      for (var i = 0, maxi = points.length; i < maxi; i = i + 1) {
 	        if (classify(w, points[i]) !== label) {
 	          // there was a classification error, so we should add or subtract the points[i].
@@ -1262,10 +1237,25 @@ webpackJsonp([0],{
 	    }
 	    return stops;
 	  },
+	  /*
+	  The value of nu is interesting to observe.
 
-	  DEFAULT_PARAMS:DEFAULT_PARAMS,
+	  <0.05 - often doesn't reach optimal (runs out of data points)
+	  0.1 - almost always reaches the optimum. Occasionally stops just shy of optimal.
+	  0.5 - seems to work pretty fast.  Occasionally overshoots a bit.
+	  >0.75 - seems to work, but ends up with a large w.
+	  */
+
+	  DEFAULT_PARAMS: {
+	    PERCEPTRON_NU: 0.1,
+	    EPOCHS: 2,
+	  },
 
 	  paramOptions: function(paramName        )                {
+	    var PARAM_OPTIONS = {
+	      PERCEPTRON_NU: [0.05, 0.1, 0.25, 0.5],
+	      EPOCHS: [1, 2, 5, 10],
+	    };
 	    return PARAM_OPTIONS[paramName];
 	  },
 
@@ -1273,8 +1263,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 30:
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1377,8 +1366,90 @@ webpackJsonp([0],{
 
 
 /***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
 
-/***/ 31:
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(34);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(85)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./MiniModelChooser.css", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./MiniModelChooser.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(86)();
+	exports.push([module.id, ".minimodel {\n  cursor: pointer;\n  opacity: 0.2;\n  -webkit-transition: 200ms all;\n  transition: 200ms all;\n}\n\n.minimodel:hover {\n  opacity: 0.5;\n}\n\n.minimodel-focussed, .minimodel-focussed:hover {\n  opacity: 1;\n}\n\n.slide-down {\n  background: rgba(255, 255, 255, 0.4);\n  transition-property: all;\n  transition-duration: .5s;\n  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);\n  overflow-y: hidden;\n  max-height: 0;\n}\n\n.slide-down.slide-down-show {\n  max-height: 500px;\n}", ""]);
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+
+	var LogisticRegression = __webpack_require__(6);
+	var React = __webpack_require__(1);
+
+	var LRParamChooser = React.createClass({displayName: "LRParamChooser",
+	  propTypes: {
+	    params: React.PropTypes.object.isRequired,
+	    updateParams: React.PropTypes.func.isRequired,
+	  },
+
+	  updateParam: function(paramName        , newValue        )             {
+	    return function()  {
+	      var newParams = JSON.parse(JSON.stringify(this.props.params));
+	      newParams[paramName] = newValue;
+	      this.props.updateParams(newParams);
+	    }.bind(this);
+	  },
+
+	  makeButtons: function(paramName        )                      {
+	    return LogisticRegression.paramOptions(paramName).map(function(paramValue) 
+	              {return React.createElement("button", {disabled: this.props.params[paramName] === paramValue, 
+	                onClick: this.updateParam(paramName, paramValue)}, 
+	                paramValue
+	              );}.bind(this));
+	  },
+
+	  render: function()                {
+	    return (
+	      React.createElement("div", {style: {padding: "30px"}}, 
+	        React.createElement("h2", null, "Logistic Regression"), 
+	         ["NU", "ACCEPTING_GRAD", "MAX_STOPS"].map(function(paramName) 
+	            {return React.createElement("div", null, 
+	              React.createElement("p", null, paramName), 
+	              React.createElement("p", null,  this.makeButtons(paramName))
+	            );}.bind(this))
+
+	      )
+	    );
+	  }
+	});
+
+	module.exports = LRParamChooser;
+
+
+/***/ },
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1446,8 +1517,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 32:
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1649,8 +1719,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 33:
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1728,8 +1797,7 @@ webpackJsonp([0],{
 
 
 /***/ },
-
-/***/ 34:
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1752,11 +1820,11 @@ webpackJsonp([0],{
 	                 
 	 
 
-	var FasterGeometry = __webpack_require__(81);
+	var FasterGeometry = __webpack_require__(87);
 	var LogisticRegression = __webpack_require__(6);
 	var React = __webpack_require__(1);
 	var THREE = __webpack_require__(2);
-	var WorkerBridge = __webpack_require__(82);
+	var WorkerBridge = __webpack_require__(88);
 
 
 
@@ -1926,8 +1994,407 @@ webpackJsonp([0],{
 
 
 /***/ },
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */,
+/* 66 */,
+/* 67 */,
+/* 68 */,
+/* 69 */,
+/* 70 */,
+/* 71 */,
+/* 72 */,
+/* 73 */,
+/* 74 */,
+/* 75 */,
+/* 76 */,
+/* 77 */,
+/* 78 */,
+/* 79 */,
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */
+/***/ function(module, exports, __webpack_require__) {
 
-/***/ 80:
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0;
+
+	module.exports = function(list, options) {
+		if(false) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+
+	function createStyleElement() {
+		var styleElement = document.createElement("style");
+		var head = getHeadElement();
+		styleElement.type = "text/css";
+		head.appendChild(styleElement);
+		return styleElement;
+	}
+
+	function createLinkElement() {
+		var linkElement = document.createElement("link");
+		var head = getHeadElement();
+		linkElement.rel = "stylesheet";
+		head.appendChild(linkElement);
+		return linkElement;
+	}
+
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement());
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else if(obj.sourceMap &&
+			typeof URL === "function" &&
+			typeof URL.createObjectURL === "function" &&
+			typeof URL.revokeObjectURL === "function" &&
+			typeof Blob === "function" &&
+			typeof btoa === "function") {
+			styleElement = createLinkElement();
+			update = updateLink.bind(null, styleElement);
+			remove = function() {
+				styleElement.parentNode.removeChild(styleElement);
+				if(styleElement.href)
+					URL.revokeObjectURL(styleElement.href);
+			};
+		} else {
+			styleElement = createStyleElement();
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				styleElement.parentNode.removeChild(styleElement);
+			};
+		}
+
+		update(obj);
+
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+
+	var replaceText = (function () {
+		var textStore = [];
+
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+		var sourceMap = obj.sourceMap;
+
+		if(media) {
+			styleElement.setAttribute("media", media)
+		}
+
+		if(styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+
+	function updateLink(linkElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+		var sourceMap = obj.sourceMap;
+
+		if(sourceMap) {
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+
+		var blob = new Blob([css], { type: "text/css" });
+
+		var oldSrc = linkElement.href;
+
+		linkElement.href = URL.createObjectURL(blob);
+
+		if(oldSrc)
+			URL.revokeObjectURL(oldSrc);
+	}
+
+
+/***/ },
+/* 86 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ },
+/* 87 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var THREE = __webpack_require__(2);
+
+	var FasterGeometry = function(func, slices, stacks) {
+
+	  THREE.Geometry.call( this );
+
+	  for ( var i = 0; i <= stacks; i = i + 1 ) {
+	    var v = i / stacks;
+	    for ( var j = 0; j <= slices; j = j + 1 ) {
+	      this.vertices.push( func( j / slices, v ) );
+	    }
+	  }
+
+	  var sliceCount = slices + 1;
+
+	  for ( var p = 0; p < stacks; p = p + 1 ) {
+	    for ( var q = 0; q < slices; q = q + 1 ) {
+	      var a = p * sliceCount + q;
+	      var b = p * sliceCount + q + 1;
+	      var c = (p + 1) * sliceCount + q + 1;
+	      var d = (p + 1) * sliceCount + q;
+	      this.faces.push( new THREE.Face3( a, b, d ) );
+	      this.faces.push( new THREE.Face3( b, c, d ) );
+	    }
+	  }
+	};
+
+	FasterGeometry.prototype = Object.create( THREE.Geometry.prototype );
+	FasterGeometry.prototype.constructor = FasterGeometry;
+
+	module.exports = FasterGeometry;
+
+
+/***/ },
+/* 88 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+	                           
+	                                 
+
+	                                                   
+	                
+	                          
+	                      
+	                               
+	  
+	                                    
+	                                 
+
+
+	var worker = new Worker("./build/worker.bundle.js");
+
+	module.exports = {
+	  request: function(request         , callback          )       {
+	    // set up return path.  I think this should overwrite old listeners.
+	    worker.onmessage = function(event     ) {
+	      callback(event.data.result);
+	    };
+	    worker.postMessage({request:request});
+	  },
+
+	  abort: function()       {
+	    console.log("[Bridge] abort");
+	    worker.postMessage({});
+	  }
+	};
+
+
+/***/ },
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1935,7 +2402,7 @@ webpackJsonp([0],{
 
 	var React = __webpack_require__(1);
 	var $__0=  __webpack_require__(1).addons,PureRenderMixin=$__0.PureRenderMixin;
-	var $__1=       __webpack_require__(25),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
+	var $__1=       __webpack_require__(27),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
 
 
 	// my stackoverflow explanation: http: //stackoverflow.com/a/24392281/1941552
@@ -2017,82 +2484,5 @@ webpackJsonp([0],{
 	module.exports = Line;
 
 
-/***/ },
-
-/***/ 81:
-/***/ function(module, exports, __webpack_require__) {
-
-	var THREE = __webpack_require__(2);
-
-	var FasterGeometry = function(func, slices, stacks) {
-
-	  THREE.Geometry.call( this );
-
-	  for ( var i = 0; i <= stacks; i = i + 1 ) {
-	    var v = i / stacks;
-	    for ( var j = 0; j <= slices; j = j + 1 ) {
-	      this.vertices.push( func( j / slices, v ) );
-	    }
-	  }
-
-	  var sliceCount = slices + 1;
-
-	  for ( var p = 0; p < stacks; p = p + 1 ) {
-	    for ( var q = 0; q < slices; q = q + 1 ) {
-	      var a = p * sliceCount + q;
-	      var b = p * sliceCount + q + 1;
-	      var c = (p + 1) * sliceCount + q + 1;
-	      var d = (p + 1) * sliceCount + q;
-	      this.faces.push( new THREE.Face3( a, b, d ) );
-	      this.faces.push( new THREE.Face3( b, c, d ) );
-	    }
-	  }
-	};
-
-	FasterGeometry.prototype = Object.create( THREE.Geometry.prototype );
-	FasterGeometry.prototype.constructor = FasterGeometry;
-
-	module.exports = FasterGeometry;
-
-
-/***/ },
-
-/***/ 82:
-/***/ function(module, exports, __webpack_require__) {
-
-	/* @flow */
-	"use strict";
-	                           
-	                                 
-
-	                                                   
-	                
-	                          
-	                      
-	                               
-	  
-	                                    
-	                                 
-
-
-	var worker = new Worker("./build/worker.bundle.js");
-
-	module.exports = {
-	  request: function(request         , callback          )       {
-	    // set up return path.  I think this should overwrite old listeners.
-	    worker.onmessage = function(event     ) {
-	      callback(event.data.result);
-	    };
-	    worker.postMessage({request:request});
-	  },
-
-	  abort: function()       {
-	    console.log("[Bridge] abort");
-	    worker.postMessage({});
-	  }
-	};
-
-
 /***/ }
-
-});
+]);
