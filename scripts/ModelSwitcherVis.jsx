@@ -83,9 +83,8 @@ var ModelSwitcherVis = React.createClass({
     return (
       <div style={{width: '100%'}}>
 
-        <Draggable3DScene dim={dim} pointGroups={this.props.pointGroups}
-            updateAngle={this.props.updateAngle}
-            objective={LogisticRegression.objective} highlightW={this.props.highlightW}>
+        <Draggable3DScene dim={dim} pointGroups={pointGroups}
+            updateAngle={this.props.updateAngle} highlightW={this.props.highlightW}>
 
           { optimiserLine && <OptimiserLine vertices={optimiserLine}
             dim={dim} objective={this.props.focussedModel.objective} pointGroups={this.props.pointGroups} /> }

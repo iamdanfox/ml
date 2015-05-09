@@ -21,7 +21,6 @@ type Props = {
   dim: number;
   highlightW: F<P2, void>;
   pointGroups: Array<PointGrp>;
-  objective: (w: P2, pointGroups: Array<PointGrp>) => number;
 }
 
 
@@ -30,7 +29,6 @@ var Draggable3DScene = React.createClass({
     dim: React.PropTypes.number.isRequired,
     highlightW: React.PropTypes.func.isRequired,
     pointGroups: React.PropTypes.array.isRequired,
-    objective: React.PropTypes.func.isRequired
   },
 
   getDistance: function(): number {
