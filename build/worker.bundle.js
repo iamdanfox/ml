@@ -122,7 +122,7 @@
 
 	var colourFunction = function(pointGroups, vertex, hues, index) {
 	  var stops = fastOptimise(vertex, pointGroups) / 250;
-	  hues[index] = 256 * (0.54 + stops * 0.3);
+	  hues[index] = 256 * (0.31 - stops * 0.3);
 	};
 
 	var buildInitialGeometry = function(request         )                 {
