@@ -48,7 +48,7 @@
 	"use strict";
 
 	                                 
-	                                                   
+	                                                                            
 	                
 	                          
 	                      
@@ -107,7 +107,7 @@
 	"use strict";
 
 	                                 
-	                                                   
+	                                                                            
 	                
 	                          
 	                      
@@ -211,7 +211,7 @@
 	/* @flow */
 	                                 
 	                                             
-	                                                   
+	                                                                            
 	               
 	             
 	                         
@@ -327,6 +327,7 @@
 
 
 	module.exports = {
+	  name: "Logistic Regression",
 	  objective:objective,
 	  optimise:optimise,
 	  fastOptimise:fastOptimise,

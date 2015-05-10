@@ -1,5 +1,6 @@
-webpackJsonp([0],[
-/* 0 */
+webpackJsonp([0],{
+
+/***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -10,14 +11,13 @@ webpackJsonp([0],[
 
 	window.React = React;
 
+	React.initializeTouchEvents(true);
 	React.render(React.createElement(Immersive, null), document.body);
 
 
 /***/ },
-/* 1 */,
-/* 2 */,
-/* 3 */,
-/* 4 */
+
+/***/ 4:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -32,6 +32,7 @@ webpackJsonp([0],[
 	                                       
 	    
 	                     
+	                          
 	  
 	              
 	                               
@@ -43,36 +44,59 @@ webpackJsonp([0],[
 	 
 
 
-	var AwesomeDataComponent = __webpack_require__(5);
-	var LogisticRegression = __webpack_require__(6);
-	var MiniModelChooser = __webpack_require__(7);
-	var ModelSwitcherVis = __webpack_require__(8);
+	var AwesomeDataComponent = __webpack_require__(17);
+	var LogisticRegression = __webpack_require__(18);
+	var Perceptron = __webpack_require__(19);
+	var MaximumMargin = __webpack_require__(20);
+	var MiniModelChooser = __webpack_require__(21);
+	var ModelSwitcherVis = __webpack_require__(22);
 	var React = __webpack_require__(1);
-	__webpack_require__(23);
+	__webpack_require__(70);
 
 
 	var Immersive = React.createClass({displayName: "Immersive",
 	  getInitialState: function()        {
 	    return {
-	      pointGroups: __webpack_require__(9),
+	      pointGroups: __webpack_require__(23),
 	      highlightedW: {x: 0.2, y: 0.2},
 	      innerWidth: window.innerWidth,
 	      angle: 0,
 	      focussedModel: LogisticRegression,
 	      focussedModelParams: LogisticRegression.DEFAULT_PARAMS,
+	      serializationTimer: null,
 	    };
+	  },
+
+	  serializeState: function() {
+	    var $__0=     this.state,pointGroups=$__0.pointGroups,angle=$__0.angle,focussedModel=$__0.focussedModel,focussedModelParams=$__0.focussedModelParams;
+	    var serializable = {pointGroups:pointGroups, angle:angle, focussedModelParams:focussedModelParams, focussedModel: focussedModel.name};
+	    window.location.hash = "#" + btoa(JSON.stringify(serializable));
+	  },
+
+	  deserializeState: function(stateString        ) {
+	    var state = JSON.parse(stateString);
+	    state.focussedModel = [LogisticRegression, MaximumMargin, Perceptron]
+	      .filter(function(m)  {return m.name === state.focussedModel;})[0];
+	    this.setState(state);
 	  },
 
 	  setStateCallback: function(name        )                   {
 	    return function(value)  {
 	      var assignment = {};
+	      clearTimeout(this.state.serializationTimer);
 	      assignment[name] = value;
+	      assignment.serializationTimer = setTimeout(this.serializeState.bind(this), 200);
 	      this.setState(assignment);
 	    }.bind(this);
 	  },
 
 	  componentDidMount: function() {
 	    window.addEventListener('resize', this.updateWindowSize);
+	    window.shareLink = this.serializeState.bind(this);
+	    try {
+	      var stateString = atob(window.location.hash.slice(1));
+	      this.deserializeState(stateString);
+	    } catch (e) {}
 	  },
 
 	  componentWillUnmount: function() {
@@ -96,6 +120,7 @@ webpackJsonp([0],[
 	      React.createElement("div", {style: {position: "relative"}}, 
 	        React.createElement("div", {className: "awesome-data-container"}, 
 	          React.createElement(AwesomeDataComponent, {dim: 450, highlightedW: highlightedW, 
+	            highlightW: this.setStateCallback("highlightedW"), 
 	            updatePointGroups: this.setStateCallback("pointGroups"), pointGroups: pointGroups})
 	        ), 
 
@@ -120,7 +145,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 5 */
+
+/***/ 17:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -134,7 +160,8 @@ webpackJsonp([0],[
 	               
 	                                       
 	    
-	                    
+	                     
+	                          
 	  
 	              
 	              
@@ -143,10 +170,10 @@ webpackJsonp([0],[
 	                                                    
 	 
 	var React = __webpack_require__(1);
-	var AwesomePointGroup = __webpack_require__(25);
-	var Hyperplane = __webpack_require__(26);
-	var $__0=   __webpack_require__(27),add=$__0.add,subtract=$__0.subtract;
-	var $__1=  __webpack_require__(28),generatePoints=$__1.generatePoints;
+	var AwesomePointGroup = __webpack_require__(72);
+	var Line = __webpack_require__(73);
+	var $__0=   __webpack_require__(74),add=$__0.add,subtract=$__0.subtract;
+	var $__1=  __webpack_require__(75),generatePoints=$__1.generatePoints;
 	var $__2=  __webpack_require__(1).addons,PureRenderMixin=$__2.PureRenderMixin;
 
 
@@ -174,6 +201,8 @@ webpackJsonp([0],[
 	        return pg;
 	      }.bind(this));
 	      this.props.updatePointGroups(pointGroups);
+	    } else {
+	      this.props.highlightW(this.getMouseXY(e));
 	    }
 	  },
 
@@ -197,37 +226,45 @@ webpackJsonp([0],[
 	  },
 
 	  buildAwesomePointGroup: function(pg          )                    {
-	    var onMouseDown = function(e)  {
-	      pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
-	      this.props.updatePointGroups(this.props.pointGroups.map(function(v)  {return v;}));
-	    }.bind(this);
+	    var extras = {
+	      onMouseDown: function(e)  {
+	        pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
+	        pg.editingInProgress = true;
+	        this.props.updatePointGroups(this.props.pointGroups.map(function(v)  {return v;}));
+	      }.bind(this),
 
-	    var onMouseUp = function()  {
-	      pg.mouseDownDiff = null;
-	      this.props.updatePointGroups(this.props.pointGroups.map(function(v)  {return v;}));
-	    }.bind(this);
+	      onMouseUp: function()  {
+	        pg.mouseDownDiff = null;
+	        pg.editingInProgress = false;
+	        this.props.updatePointGroups(this.props.pointGroups.map(function(v)  {return v;}));
+	      }.bind(this),
 
-	    var isMouseDown = typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null;
+	      isMouseDown: typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null,
 
-	    var updatePoints = function(newPoints)  {
-	      pg.points = newPoints;
-	      this.props.updatePointGroups(this.props.pointGroups.map(function(v)  {return v;}));
-	    }.bind(this);
+	      updatePoints: function(newPoints)  {
+	        pg.points = newPoints;
+	        this.props.updatePointGroups(this.props.pointGroups.map(function(v)  {return v;}));
+	      }.bind(this),
 
-	    var updateParams = function(params)  {
-	      var center = pg.generatedBy.center;
-	      pg.generatedBy = {center:center, params:params};
-	      this.props.updatePointGroups(this.props.pointGroups.map(function(v)  {return v;}));
-	    }.bind(this);
+	      setEditingInProgress: function(editingInProgress)  {
+	        pg.editingInProgress = editingInProgress;
+	        this.props.updatePointGroups(this.props.pointGroups.map(function(v)  {return v;}));
+	      }.bind(this),
 
-	    var destroy = function()  {
-	      this.props.updatePointGroups(this.props.pointGroups.filter(function(v)  {return v !== pg;}));
-	    }.bind(this);
+	      updateParams: function(params)  {
+	        var center = pg.generatedBy.center;
+	        pg.generatedBy = {center:center, params:params};
+	        this.props.updatePointGroups(this.props.pointGroups.map(function(v)  {return v;}));
+	      }.bind(this),
 
-	    return React.createElement(AwesomePointGroup, React.__spread({},  pg, {dim: this.props.dim, 
-	      updatePoints: updatePoints, updateParams: updateParams, destroy: destroy, 
-	      onMouseDown: onMouseDown, isMouseDown: isMouseDown, onMouseUp: onMouseUp, 
-	      getMouseXY: this.getMouseXY}));
+	      destroy: function()  {
+	        this.props.updatePointGroups(this.props.pointGroups.filter(function(v)  {return v !== pg;}));
+	      }.bind(this),
+	    }
+
+	    return React.createElement(AwesomePointGroup, React.__spread({
+	      dim: this.props.dim, getMouseXY: this.getMouseXY}, 
+	      pg,  extras));
 	  },
 
 	  render: function()                {
@@ -243,7 +280,7 @@ webpackJsonp([0],[
 	            React.createElement("line", {x1: "0.5", y1: "7.5", x2: "0.5", y2: "-6.5", style: {stroke: "#555", strokeWidth: 1}}), 
 	            React.createElement("line", {x1: "-6.5", y1: "0.5", x2: "7.5", y2: "0.5", style: {stroke: "#555", strokeWidth: 1}}), 
 
-	            React.createElement(Hyperplane, {w: this.props.highlightedW, dim: this.props.dim})
+	            React.createElement(Line, {w: this.props.highlightedW, dim: this.props.dim})
 	          ), 
 
 
@@ -263,13 +300,14 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 6 */
+
+/***/ 18:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
 	                                 
 	                                             
-	                                                   
+	                                                                            
 	               
 	             
 	                         
@@ -278,7 +316,7 @@ webpackJsonp([0],[
 
 	"use strict";
 
-	var $__0=    __webpack_require__(27),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
+	var $__0=    __webpack_require__(74),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
 
 	function sigmoid(wx)         {
 	  return 1 / (1 + Math.exp(-wx));
@@ -385,6 +423,7 @@ webpackJsonp([0],[
 
 
 	module.exports = {
+	  name: "Logistic Regression",
 	  objective:objective,
 	  optimise:optimise,
 	  fastOptimise:fastOptimise,
@@ -396,7 +435,141 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 7 */
+
+/***/ 19:
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	"use strict";
+
+	                                 
+	                                                                            
+	               
+	                        
+	                 
+	  
+
+	var $__0=     __webpack_require__(74),add=$__0.add,scale=$__0.scale,classify=$__0.classify,classTransform=$__0.classTransform;
+
+	/*
+	The Perceptron training algorithm cycles through each training
+	example (xn) in turn and,
+
+	if the example is correctly classified no change is made,
+
+	otherwise the example’s vector is added or subtracted
+	(depending on its class label) from the current weight
+	vector.
+	*/
+
+	/**
+	Given some data and a start weight, return a list of vectors w such that describes
+	the algorithm's progression.  First w is the start weight, last w is the result of the algorithm
+
+	Maximum list length = 300 (for non-terminating stuff)
+	*/
+
+	module.exports = {
+
+	  name: "Perceptron",
+
+	  objective: function(w    , pointGroups                 )         {
+	    for (var k = 0; k < pointGroups.length; k = k + 1) {
+	      var $__0=   pointGroups[k],points=$__0.points,label=$__0.label;
+	      if (points.some(function(p)  {return classify(p, w) !== label;})) {
+	        return 0; // there was a misclassification
+	      }
+	    }
+
+	    return 0.3;
+	  },
+
+	  optimise: function(startWeight    , pointGroups                 , $__0         )            {var PERCEPTRON_NU=$__0.PERCEPTRON_NU,EPOCHS=$__0.EPOCHS;
+	    var w = startWeight;
+	    var stops = [w];
+
+	    for (var k = 0; k < pointGroups.length * EPOCHS; k = k + 1) {
+	      var $__1=   pointGroups[k % pointGroups.length],points=$__1.points,label=$__1.label;
+	      for (var i = 0, maxi = points.length; i < maxi; i = i + 1) {
+	        if (classify(w, points[i]) !== label) {
+	          // there was a classification error, so we should add or subtract the points[i].
+	          w = add(w)(scale(-1 * PERCEPTRON_NU * classTransform(label))( points[i] ));
+	          stops.push(w);
+	        }
+	      }
+	    }
+	    return stops;
+	  },
+	  /*
+	  The value of nu is interesting to observe.
+
+	  <0.05 - often doesn't reach optimal (runs out of data points)
+	  0.1 - almost always reaches the optimum. Occasionally stops just shy of optimal.
+	  0.5 - seems to work pretty fast.  Occasionally overshoots a bit.
+	  >0.75 - seems to work, but ends up with a large w.
+	  */
+
+	  DEFAULT_PARAMS: {
+	    PERCEPTRON_NU: 0.1,
+	    EPOCHS: 2,
+	  },
+
+	  paramOptions: function(paramName        )                {
+	    var PARAM_OPTIONS = {
+	      PERCEPTRON_NU: [0.01, 0.1, 0.25, 0.5, 1],
+	      EPOCHS: [1, 2, 5],
+	    };
+	    return PARAM_OPTIONS[paramName];
+	  },
+
+	};
+
+
+/***/ },
+
+/***/ 20:
+/***/ function(module, exports, __webpack_require__) {
+
+	/* @flow */
+	                                 
+	                                                                            
+
+	"use strict";
+
+	var $__0=   __webpack_require__(74),modulus=$__0.modulus,classTransform=$__0.classTransform;
+
+
+	// the objective function is used to generate the surface
+	function objective(w    , pointGroups                 )         {
+	  var minimumMargin = Infinity;
+
+	  for (var k = 0, maxk = pointGroups.length; k < maxk; k = k + 1) {
+	    var $__0=   pointGroups[k],points=$__0.points,label=$__0.label;
+
+	    for (var i = 0, l = points.length; i < l; i = i + 1) {
+	      var p = points[i];
+	      var addOrSubtract = -1 * classTransform(label);
+	      minimumMargin = Math.min(minimumMargin, addOrSubtract * (w.x * p.x + w.y * p.y));
+	    }
+	  }
+
+	  // normalise by w.
+	  return 0.2 + 0.5 * minimumMargin / modulus(w);
+	}
+
+	module.exports = {
+	  name: "Support Vector Machine",
+	  objective:objective,
+	  DEFAULT_PARAMS: {},
+	  paramOptions: function()                {
+	    return [];
+	  }
+	};
+
+
+/***/ },
+
+/***/ 21:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -411,16 +584,17 @@ webpackJsonp([0],[
 	                                       
 	    
 	                     
+	                          
 	  
 
-	var LogisticRegression = __webpack_require__(6);
-	var MaximumMargin = __webpack_require__(29);
-	var ParametricGraph = __webpack_require__(30);
-	var Perceptron = __webpack_require__(31);
+	var LogisticRegression = __webpack_require__(18);
+	var MaximumMargin = __webpack_require__(20);
+	var ParametricGraph = __webpack_require__(76);
+	var Perceptron = __webpack_require__(19);
 	var React = __webpack_require__(1);
-	var ThreeScene = __webpack_require__(32);
-	__webpack_require__(33);
-	var LRParamChooser = __webpack_require__(35);
+	var ThreeScene = __webpack_require__(77);
+	__webpack_require__(78);
+	var LRParamChooser = __webpack_require__(80);
 
 
 
@@ -461,7 +635,7 @@ webpackJsonp([0],[
 	        React.createElement("div", {style: {display: "flex"}}, 
 	         models.map(function(model) 
 	            {return React.createElement("div", {className: model === focussedModel ? "minimodel minimodel-focussed" : "minimodel", 
-	              onClick: function()  {return this.props.focusModel(model);}.bind(this)}, 
+	              onClick: function()  {return this.props.focusModel(model);}.bind(this), key: model.name}, 
 	              React.createElement(ThreeScene, {dim: dim, pointGroups: this.props.pointGroups, angle: this.props.angle, 
 	                  objective: model.objective, highlightW: function() {}}, 
 	                React.createElement(ParametricGraph, {thetaResolution: 30, rResolution: 6, 
@@ -473,14 +647,18 @@ webpackJsonp([0],[
 
 	        React.createElement("div", {className: focussedModel === Perceptron && this.state.hover ?
 	            "slide-down slide-down-show" : "slide-down"}, 
-	          React.createElement("h2", null, "Perceptron"), 
-	          React.createElement("p", null, "Epochs = 2")
+	          React.createElement(LRParamChooser, {params: this.props.focussedModelParams, model: Perceptron, 
+	            updateParams: this.props.updateModelParams, paramKeys: ["PERCEPTRON_NU", "EPOCHS"]}, 
+	            React.createElement("h2", null, "Perceptron")
+	          )
 	        ), 
 
 	        React.createElement("div", {className: focussedModel === LogisticRegression && this.state.hover ?
 	            "slide-down slide-down-show" : "slide-down"}, 
-	          React.createElement(LRParamChooser, {params: this.props.focussedModelParams, 
-	            updateParams: this.props.updateModelParams})
+	          React.createElement(LRParamChooser, {params: this.props.focussedModelParams, model: LogisticRegression, 
+	            updateParams: this.props.updateModelParams, paramKeys: ["NU", "ACCEPTING_GRAD", "MAX_STOPS"]}, 
+	            React.createElement("h2", null, "Logistic Regression")
+	          )
 	        )
 
 	      )
@@ -494,7 +672,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 8 */
+
+/***/ 22:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -518,15 +697,15 @@ webpackJsonp([0],[
 	 
 
 
-	var CursorSphere = __webpack_require__(36);
-	var Draggable3DScene = __webpack_require__(37);
-	var LogisticRegression = __webpack_require__(6);
-	var MaximumMargin = __webpack_require__(29);
-	var OptimiserLine = __webpack_require__(38);
-	var ParametricGraph = __webpack_require__(30);
-	var Perceptron = __webpack_require__(31);
+	var CursorSphere = __webpack_require__(81);
+	var Draggable3DScene = __webpack_require__(82);
+	var LogisticRegression = __webpack_require__(18);
+	var MaximumMargin = __webpack_require__(20);
+	var OptimiserLine = __webpack_require__(83);
+	var ParametricGraph = __webpack_require__(76);
+	var Perceptron = __webpack_require__(19);
 	var React = __webpack_require__(1);
-	var WebWorkerGraph = __webpack_require__(39);
+	var WebWorkerGraph = __webpack_require__(84);
 
 
 
@@ -600,33 +779,33 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 9 */
+
+/***/ 23:
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = [{"label":0,"points":[{"x":-0.5997479449727805,"y":0.3266696424458529},{"x":-0.40911978879586314,"y":0.8414896852756555},{"x":-0.6003797969565033,"y":0.38752330824897496},{"x":-0.5974989282403006,"y":0.16793046373201084},{"x":-0.3731116894435043,"y":0.25446221414788783},{"x":-0.4611574437563745,"y":0.7513580834354632},{"x":-0.5666119173059607,"y":0.1786999017955041},{"x":-0.2660309178401766,"y":0.7466422175867058},{"x":-0.45781364583698203,"y":-0.02543721371721755},{"x":-0.7637313902662306,"y":0.8401606006403106},{"x":-0.6719389189432546,"y":-0.3705455189155673},{"x":-0.7724832708046918,"y":-0.20005680566395434},{"x":-0.6921484832633631,"y":0.027283867565444403},{"x":-0.530968122206404,"y":0.795008094328021},{"x":-0.8273452458511434,"y":-0.002424446162095889},{"x":-0.5185588104892703,"y":0.4620006701485645},{"x":-0.7023706476095739,"y":-0.15958155170093186},{"x":-0.8186378396018115,"y":0.23211487091509184},{"x":-0.5665597344525202,"y":0.524761380696566}],"generatedBy":{"center":{"x":-0.5966666666666667,"y":0.19666666666666655},"params":{"l":0.8658457650695586,"theta":-0.17021192528547435}},"mouseDownDiff":null},{"points":[{"x":0.4163818674864531,"y":-0.23528659967706647},{"x":0.44437265613239896,"y":-0.32627143782971557},{"x":0.23942084809958375,"y":-0.6063253418870334},{"x":0.20789742517139406,"y":-0.4091351995003449},{"x":0.2859242354507277,"y":-0.628035096817553},{"x":0.4479649125412124,"y":-0.32415304169593623},{"x":0.45280865076218857,"y":-0.28336832097127984},{"x":0.4075665078010422,"y":-0.39443831290755565},{"x":0.41222269797067723,"y":-0.5769874083755533},{"x":0.3604938339252303,"y":-0.6174488199442758},{"x":0.32403805174279,"y":-0.4848541835691167},{"x":0.34868895341495887,"y":-0.5032884333079499},{"x":0.5243233489148638,"y":-0.20416220785332426},{"x":0.2691046775763215,"y":-0.5310206893985944}],"label":1,"generatedBy":{"center":{"x":0.36999999999999966,"y":-0.3666666666666666},"params":{"l":0.16719914938645886,"theta":1.1606689862534059}},"mouseDownDiff":null},{"label":1,"points":[{"x":0.6660524477396749,"y":0.08876441212498268},{"x":0.6803536514830696,"y":0.16701383499073325},{"x":0.5737262476146427,"y":0.09345571376890369},{"x":0.740243418325372,"y":0.21788967786543098},{"x":0.5723510298190286,"y":-0.048872997526596906},{"x":0.7230819188867843,"y":0.021448199402366697},{"x":0.801222820812387,"y":0.16978847488949483},{"x":0.703671157000718,"y":-0.09675544323096463},{"x":0.5828143995173792,"y":-0.021816106911635158},{"x":0.610639172868958,"y":-0.020054843756927843},{"x":0.43240212272182954,"y":-0.10731745449670954},{"x":0.4766009580339221,"y":-0.04283729687880106},{"x":0.8295860086096446,"y":0.17175194897798224},{"x":0.6763934813675491,"y":0.20435599390510958},{"x":0.6764534988724937,"y":0.1631264448161256}],"generatedBy":{"center":{"x":0.6364731932586679,"y":0.05456092271332935},"params":{"l":0.2054371382466992,"theta":1.000694039631934}},"mouseDownDiff":null}];
+	module.exports = [
+
+	{"editingInProgress":false,"label":0,"points":[{"x":-0.5997479449727805,"y":0.3266696424458529},{"x":-0.40911978879586314,"y":0.8414896852756555},{"x":-0.6003797969565033,"y":0.38752330824897496},{"x":-0.5974989282403006,"y":0.16793046373201084},{"x":-0.3731116894435043,"y":0.25446221414788783},{"x":-0.4611574437563745,"y":0.7513580834354632},{"x":-0.5666119173059607,"y":0.1786999017955041},{"x":-0.2660309178401766,"y":0.7466422175867058},{"x":-0.45781364583698203,"y":-0.02543721371721755},{"x":-0.7637313902662306,"y":0.8401606006403106},{"x":-0.6719389189432546,"y":-0.3705455189155673},{"x":-0.7724832708046918,"y":-0.20005680566395434},{"x":-0.6921484832633631,"y":0.027283867565444403},{"x":-0.530968122206404,"y":0.795008094328021},{"x":-0.8273452458511434,"y":-0.002424446162095889},{"x":-0.5185588104892703,"y":0.4620006701485645},{"x":-0.7023706476095739,"y":-0.15958155170093186},{"x":-0.8186378396018115,"y":0.23211487091509184},{"x":-0.5665597344525202,"y":0.524761380696566}],
+	"generatedBy":{"center":{"x":-0.5966666666666667,"y":0.19666666666666655},"params":{"l":0.8658457650695586,"theta":-0.17021192528547435}},"mouseDownDiff":null},
+
+	{"editingInProgress":false, "points":[{"x":0.4163818674864531,"y":-0.23528659967706647},{"x":0.44437265613239896,"y":-0.32627143782971557},{"x":0.23942084809958375,"y":-0.6063253418870334},{"x":0.20789742517139406,"y":-0.4091351995003449},{"x":0.2859242354507277,"y":-0.628035096817553},{"x":0.4479649125412124,"y":-0.32415304169593623},{"x":0.45280865076218857,"y":-0.28336832097127984},{"x":0.4075665078010422,"y":-0.39443831290755565},{"x":0.41222269797067723,"y":-0.5769874083755533},{"x":0.3604938339252303,"y":-0.6174488199442758},{"x":0.32403805174279,"y":-0.4848541835691167},{"x":0.34868895341495887,"y":-0.5032884333079499},{"x":0.5243233489148638,"y":-0.20416220785332426},{"x":0.2691046775763215,"y":-0.5310206893985944}],
+	"label":1,"generatedBy":{"center":{"x":0.36999999999999966,"y":-0.3666666666666666},"params":{"l":0.16719914938645886,"theta":1.1606689862534059}},"mouseDownDiff":null},
+
+	{"editingInProgress":false, "label":1,"points":[{"x":0.6660524477396749,"y":0.08876441212498268},{"x":0.6803536514830696,"y":0.16701383499073325},{"x":0.5737262476146427,"y":0.09345571376890369},{"x":0.740243418325372,"y":0.21788967786543098},{"x":0.5723510298190286,"y":-0.048872997526596906},{"x":0.7230819188867843,"y":0.021448199402366697},{"x":0.801222820812387,"y":0.16978847488949483},{"x":0.703671157000718,"y":-0.09675544323096463},{"x":0.5828143995173792,"y":-0.021816106911635158},{"x":0.610639172868958,"y":-0.020054843756927843},{"x":0.43240212272182954,"y":-0.10731745449670954},{"x":0.4766009580339221,"y":-0.04283729687880106},{"x":0.8295860086096446,"y":0.17175194897798224},{"x":0.6763934813675491,"y":0.20435599390510958},{"x":0.6764534988724937,"y":0.1631264448161256}],
+	"generatedBy":{"center":{"x":0.6364731932586679,"y":0.05456092271332935},"params":{"l":0.2054371382466992,"theta":1.000694039631934}},"mouseDownDiff":null}
+
+	];
 
 
 /***/ },
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */,
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */,
-/* 23 */
+
+/***/ 70:
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(24);
+	var content = __webpack_require__(71);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(85)(content, {});
@@ -646,14 +825,16 @@ webpackJsonp([0],[
 	}
 
 /***/ },
-/* 24 */
+
+/***/ 71:
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(86)();
+	exports = module.exports = __webpack_require__(149)();
 	exports.push([module.id, ".awesome-data-container {\n  position: absolute;\n  top: 0;\n  left: 0;\n  background: rgba(255, 255, 255, 0.6);\n  opacity: 0.5;\n  transform: translate3d(-50%, -50%, 0) scale3d(0.4, 0.4, 1) translate3d(50%, 50%, 0);\n  transition: 200ms all;\n  transition-delay: 3000ms;\n}\n\n.awesome-data-container:hover {\n  opacity: 1;\n  transform: scale3d(1, 1, 1);\n  transition-delay: 0ms;\n}\n", ""]);
 
 /***/ },
-/* 25 */
+
+/***/ 72:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -667,8 +848,8 @@ webpackJsonp([0],[
 	  
 
 	var React = __webpack_require__(1);
-	var $__0=       __webpack_require__(27),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
-	var $__1=    __webpack_require__(28),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
+	var $__0=       __webpack_require__(74),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
+	var $__1=    __webpack_require__(75),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
 	var $__2=  __webpack_require__(1).addons,PureRenderMixin=$__2.PureRenderMixin;
 
 
@@ -683,6 +864,7 @@ webpackJsonp([0],[
 	    getMouseXY: React.PropTypes.func.isRequired,
 	    updateParams: React.PropTypes.func.isRequired,
 	    dim: React.PropTypes.number.isRequired,
+	    setEditingInProgress: React.PropTypes.func.isRequired,
 	  },
 
 	  mixins: [PureRenderMixin],
@@ -757,6 +939,12 @@ webpackJsonp([0],[
 	    e.preventDefault();
 	    var $__0=   this.props.generatedBy.params,l=$__0.l,theta=$__0.theta;
 	    this.setState({paramsAtHandleMouseDown: {l:l, theta:theta}});
+	    this.props.setEditingInProgress(true);
+	  },
+
+	  onHandleMouseUp: function() {
+	    this.props.setEditingInProgress(false);
+	    this.setState({paramsAtHandleMouseDown: null});
 	  },
 
 	  render: function()                {
@@ -791,7 +979,7 @@ webpackJsonp([0],[
 	        this.state.mouseOver &&
 	          React.createElement("circle", {cx: paramHandle.x, cy: paramHandle.y, r: 0.07, fill: "white", 
 	            onMouseDown: this.onHandleMouseDown, 
-	            onMouseUp: function()  {return this.setState({paramsAtHandleMouseDown: null});}.bind(this), 
+	            onMouseUp: this.onHandleMouseUp, 
 	            style: {cursor: "ew-resize"}}), 
 
 	        this.state.mouseOver &&
@@ -810,40 +998,100 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 26 */
+
+/***/ 73:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
 	"use strict";
 
-	var Line = __webpack_require__(89);
 	var React = __webpack_require__(1);
-	var $__0=  __webpack_require__(27),scale=$__0.scale;
-	var $__1=  React.addons,PureRenderMixin=$__1.PureRenderMixin;
+	var $__0=  __webpack_require__(1).addons,PureRenderMixin=$__0.PureRenderMixin;
+	var $__1=       __webpack_require__(74),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
 
 
-	var Hyperplane = React.createClass({displayName: "Hyperplane",
-	  mixins: [PureRenderMixin],
+	// my stackoverflow explanation: http: //stackoverflow.com/a/24392281/1941552
+	function lambdaGamma (arg1, arg2, arg3, arg4) {
+	  var $__0=   arg1,a=$__0[0],b=$__0[1];
+	  var $__1=   arg2,c=$__1[0],d=$__1[1];
+	  var $__2=   arg3,p=$__2[0],q=$__2[1];
+	  var $__3=   arg4,r=$__3[0],s=$__3[1];
 
+	  var det = (c - a) * (s - q) - (r - p) * (d - b);
+	  if (det === 0) {
+	    return null; // colinear
+	  } else {
+	    var lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+	    var gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+	    return [lambda, gamma];
+	  }
+	}
+
+
+	var Line = React.createClass({displayName: "Line",
 	  propTypes: {
-	    w: React.PropTypes.object.isRequired,
+	    w: React.PropTypes.shape({
+	      x: React.PropTypes.number.isRequired,
+	      y: React.PropTypes.number.isRequired
+	    }).isRequired,
 	    dim: React.PropTypes.number.isRequired
 	  },
 
+	  mixins: [PureRenderMixin],
+
+	  findBorderIntersection: function(v                       )                    {
+	    var dim = this.props.dim;
+	    var top = [[-dim / 2, dim / 2], [dim / 2, dim / 2]];
+	    var right = [[dim / 2, dim / 2], [dim / 2, -dim / 2]];
+	    var bottom = [[dim / 2, -dim / 2], [-dim / 2, -dim / 2]];
+	    var left = [[-dim / 2, -dim / 2], [-dim / 2, dim / 2]];
+
+	    // we construct vectors for the edge of the viewport, then intersection test them.
+	    // this yields the lambda that we need to multiply v by to reach the edge.
+	    var intersections = [top, right, bottom, left]
+	      .map(function(arg)  {return lambdaGamma([0, 0], [v.x, v.y], arg[0], arg[1]);})
+	      .filter( function(lg) {
+	        if (typeof lg !== "undefined" && lg !== null) {
+	          var $__0=   lg,lambda=$__0[0],gamma=$__0[1];
+	          return 0 < lambda && 0 < gamma && gamma <= 1; // not conventional intersection
+	        } else {
+	          return false;
+	        }
+	      });
+	    return intersections[0];
+	  },
+
 	  render: function()                {
-	    var $__0=   scale(this.props.dim)(this.props.w),x=$__0.x,y=$__0.y;
-	    return React.createElement("g", null, 
-	      React.createElement("path", {d: ("M 0 0 L " + x + " " + y), strokeWidth: "1.5", stroke: "rgba(100, 100, 100, 0.4)"}), 
-	      React.createElement(Line, {w: {x:x, y:y}, dim: this.props.dim})
+	    var boundaryPoint = {
+	      x: 0,
+	      y: 0
+	    };
+	    if (!lineEq({x: 0, y: 0}, this.props.w)) {
+	      var v = rot90(this.props.w); // v is now the direction of the line
+	      var first = this.findBorderIntersection(v);
+	      if (typeof first !== "undefined" && first !== null) {
+	        var lambda = first[0];
+	        boundaryPoint = scale(lambda)(v);
+	      } else {
+	        throw new Error();
+	      }
+	    }
+
+	    return (
+	      React.createElement("path", {d: ("M " + (-boundaryPoint.x) + " " + (-boundaryPoint.y) + " L " + boundaryPoint.x + " " + boundaryPoint.y), 
+	        strokeWidth: "1.5", 
+	        stroke: "rgba(30, 30, 30, 0.3)", 
+	        style: this.props.style})
 	    );
 	  }
 	});
 
-	module.exports = Hyperplane;
+	module.exports = Line;
 
 
 /***/ },
-/* 27 */
+
+/***/ 74:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -948,7 +1196,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 28 */
+
+/***/ 75:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -961,7 +1210,7 @@ webpackJsonp([0],[
 	                                     
 	  
 
-	var $__0=   __webpack_require__(27),add=$__0.add,rotate=$__0.rotate;
+	var $__0=   __webpack_require__(74),add=$__0.add,rotate=$__0.rotate;
 
 
 
@@ -994,47 +1243,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
 
-	/* @flow */
-	                                 
-	                                                   
-
-	"use strict";
-
-	var $__0=   __webpack_require__(27),modulus=$__0.modulus,classTransform=$__0.classTransform;
-
-
-	// the objective function is used to generate the surface
-	function objective(w    , pointGroups                 )         {
-	  var minimumMargin = Infinity;
-
-	  for (var k = 0, maxk = pointGroups.length; k < maxk; k = k + 1) {
-	    var $__0=   pointGroups[k],points=$__0.points,label=$__0.label;
-
-	    for (var i = 0, l = points.length; i < l; i = i + 1) {
-	      var p = points[i];
-	      var addOrSubtract = -1 * classTransform(label);
-	      minimumMargin = Math.min(minimumMargin, addOrSubtract * (w.x * p.x + w.y * p.y));
-	    }
-	  }
-
-	  // normalise by w.
-	  return 0.2 + 0.5 * minimumMargin / modulus(w);
-	}
-
-	module.exports = {
-	  objective:objective,
-	  DEFAULT_PARAMS: {},
-	  paramOptions: function()                {
-	    return [];
-	  }
-	};
-
-
-/***/ },
-/* 30 */
+/***/ 76:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1042,10 +1252,10 @@ webpackJsonp([0],[
 
 	var React = __webpack_require__(1);
 	var THREE = __webpack_require__(2);
-	var FasterGeometry = __webpack_require__(87);
+	var FasterGeometry = __webpack_require__(150);
 
 	                                 
-	                                                   
+	                                                                            
 	              
 	                                    
 	                                                            
@@ -1175,95 +1385,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
 
-	/* @flow */
-	"use strict";
-
-	                                 
-	                                                   
-	               
-	                        
-	                 
-	  
-
-	var $__0=     __webpack_require__(27),add=$__0.add,scale=$__0.scale,classify=$__0.classify,classTransform=$__0.classTransform;
-
-	/*
-	The Perceptron training algorithm cycles through each training
-	example (xn) in turn and,
-
-	if the example is correctly classified no change is made,
-
-	otherwise the example’s vector is added or subtracted
-	(depending on its class label) from the current weight
-	vector.
-	*/
-
-	/**
-	Given some data and a start weight, return a list of vectors w such that describes
-	the algorithm's progression.  First w is the start weight, last w is the result of the algorithm
-
-	Maximum list length = 300 (for non-terminating stuff)
-	*/
-
-	module.exports = {
-
-	  objective: function(w    , pointGroups                 )         {
-	    for (var k = 0; k < pointGroups.length; k = k + 1) {
-	      var $__0=   pointGroups[k],points=$__0.points,label=$__0.label;
-	      if (points.some(function(p)  {return classify(p, w) !== label;})) {
-	        return 0; // there was a misclassification
-	      }
-	    }
-
-	    return 0.3;
-	  },
-
-	  optimise: function(startWeight    , pointGroups                 , $__0         )            {var PERCEPTRON_NU=$__0.PERCEPTRON_NU,EPOCHS=$__0.EPOCHS;
-	    var w = startWeight;
-	    var stops = [w];
-
-	    for (var k = 0; k < pointGroups.length * EPOCHS; k = k + 1) {
-	      var $__1=   pointGroups[k % pointGroups.length],points=$__1.points,label=$__1.label;
-	      for (var i = 0, maxi = points.length; i < maxi; i = i + 1) {
-	        if (classify(w, points[i]) !== label) {
-	          // there was a classification error, so we should add or subtract the points[i].
-	          w = add(w)(scale(-1 * PERCEPTRON_NU * classTransform(label))( points[i] ));
-	          stops.push(w);
-	        }
-	      }
-	    }
-	    return stops;
-	  },
-	  /*
-	  The value of nu is interesting to observe.
-
-	  <0.05 - often doesn't reach optimal (runs out of data points)
-	  0.1 - almost always reaches the optimum. Occasionally stops just shy of optimal.
-	  0.5 - seems to work pretty fast.  Occasionally overshoots a bit.
-	  >0.75 - seems to work, but ends up with a large w.
-	  */
-
-	  DEFAULT_PARAMS: {
-	    PERCEPTRON_NU: 0.1,
-	    EPOCHS: 2,
-	  },
-
-	  paramOptions: function(paramName        )                {
-	    var PARAM_OPTIONS = {
-	      PERCEPTRON_NU: [0.05, 0.1, 0.25, 0.5],
-	      EPOCHS: [1, 2, 5, 10],
-	    };
-	    return PARAM_OPTIONS[paramName];
-	  },
-
-	};
-
-
-/***/ },
-/* 32 */
+/***/ 77:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1279,7 +1402,7 @@ webpackJsonp([0],[
 	                                
 	                     
 	 
-	                                                   
+	                                                                            
 	              
 	              
 	                               
@@ -1366,13 +1489,14 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 33 */
+
+/***/ 78:
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(34);
+	var content = __webpack_require__(79);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(85)(content, {});
@@ -1392,26 +1516,30 @@ webpackJsonp([0],[
 	}
 
 /***/ },
-/* 34 */
+
+/***/ 79:
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(86)();
+	exports = module.exports = __webpack_require__(149)();
 	exports.push([module.id, ".minimodel {\n  cursor: pointer;\n  opacity: 0.2;\n  -webkit-transition: 200ms all;\n  transition: 200ms all;\n}\n\n.minimodel:hover {\n  opacity: 0.5;\n}\n\n.minimodel-focussed, .minimodel-focussed:hover {\n  opacity: 1;\n}\n\n.slide-down {\n  background: rgba(255, 255, 255, 0.4);\n  transition-property: all;\n  transition-duration: .5s;\n  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);\n  overflow-y: hidden;\n  max-height: 0;\n}\n\n.slide-down.slide-down-show {\n  max-height: 500px;\n}", ""]);
 
 /***/ },
-/* 35 */
+
+/***/ 80:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
 	"use strict";
 
-	var LogisticRegression = __webpack_require__(6);
+	var LogisticRegression = __webpack_require__(18);
 	var React = __webpack_require__(1);
 
 	var LRParamChooser = React.createClass({displayName: "LRParamChooser",
 	  propTypes: {
 	    params: React.PropTypes.object.isRequired,
 	    updateParams: React.PropTypes.func.isRequired,
+	    model: React.PropTypes.object.isRequired,
+	    paramKeys: React.PropTypes.array.isRequired,
 	  },
 
 	  updateParam: function(paramName        , newValue        )             {
@@ -1423,7 +1551,7 @@ webpackJsonp([0],[
 	  },
 
 	  makeButtons: function(paramName        )                      {
-	    return LogisticRegression.paramOptions(paramName).map(function(paramValue) 
+	    return this.props.model.paramOptions(paramName).map(function(paramValue) 
 	              {return React.createElement("button", {disabled: this.props.params[paramName] === paramValue, 
 	                onClick: this.updateParam(paramName, paramValue)}, 
 	                paramValue
@@ -1433,8 +1561,8 @@ webpackJsonp([0],[
 	  render: function()                {
 	    return (
 	      React.createElement("div", {style: {padding: "30px"}}, 
-	        React.createElement("h2", null, "Logistic Regression"), 
-	         ["NU", "ACCEPTING_GRAD", "MAX_STOPS"].map(function(paramName) 
+	         this.props.children, 
+	         this.props.paramKeys.map(function(paramName) 
 	            {return React.createElement("div", null, 
 	              React.createElement("p", null, paramName), 
 	              React.createElement("p", null,  this.makeButtons(paramName))
@@ -1449,7 +1577,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 36 */
+
+/***/ 81:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1459,7 +1588,7 @@ webpackJsonp([0],[
 	var THREE = __webpack_require__(2);
 
 	                                 
-	                                                   
+	                                                                            
 	              
 	                   
 	                               
@@ -1517,7 +1646,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 37 */
+
+/***/ 82:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1538,7 +1668,7 @@ webpackJsonp([0],[
 	                     
 	                      
 	 
-	                                                   
+	                                                                            
 	              
 	              
 	                          
@@ -1719,7 +1849,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 38 */
+
+/***/ 83:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1730,7 +1861,7 @@ webpackJsonp([0],[
 
 
 	                                 
-	                                                   
+	                                                                            
 	              
 	                      
 	                               
@@ -1797,14 +1928,15 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 39 */
+
+/***/ 84:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
 	"use strict";
 
 	                                 
-	                                                   
+	                                                                            
 	                                                        
 	              
 	                               
@@ -1820,11 +1952,11 @@ webpackJsonp([0],[
 	                 
 	 
 
-	var FasterGeometry = __webpack_require__(87);
-	var LogisticRegression = __webpack_require__(6);
+	var FasterGeometry = __webpack_require__(150);
+	var LogisticRegression = __webpack_require__(18);
 	var React = __webpack_require__(1);
 	var THREE = __webpack_require__(2);
-	var WorkerBridge = __webpack_require__(88);
+	var WorkerBridge = __webpack_require__(151);
 
 
 
@@ -1951,8 +2083,8 @@ webpackJsonp([0],[
 
 	      WorkerBridge.abort();
 
-	      var mouseDown = nextProps.pointGroups.some(function(pg)  {return pg.mouseDownDiff;});
-	      if (!mouseDown) {
+	      var editingInProgress = nextProps.pointGroups.some(function(pg)  {return pg.editingInProgress;});
+	      if (!editingInProgress) {
 	        this.refreshGeometryZValues(nextProps, this.state.graph.geometry);
 	        this.asyncRequestColouring(nextProps);
 	      }
@@ -1994,52 +2126,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */,
-/* 53 */,
-/* 54 */,
-/* 55 */,
-/* 56 */,
-/* 57 */,
-/* 58 */,
-/* 59 */,
-/* 60 */,
-/* 61 */,
-/* 62 */,
-/* 63 */,
-/* 64 */,
-/* 65 */,
-/* 66 */,
-/* 67 */,
-/* 68 */,
-/* 69 */,
-/* 70 */,
-/* 71 */,
-/* 72 */,
-/* 73 */,
-/* 74 */,
-/* 75 */,
-/* 76 */,
-/* 77 */,
-/* 78 */,
-/* 79 */,
-/* 80 */,
-/* 81 */,
-/* 82 */,
-/* 83 */,
-/* 84 */,
-/* 85 */
+
+/***/ 85:
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -2264,7 +2352,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 86 */
+
+/***/ 149:
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -2320,7 +2409,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 87 */
+
+/***/ 150:
 /***/ function(module, exports, __webpack_require__) {
 
 	var THREE = __webpack_require__(2);
@@ -2357,7 +2447,8 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 88 */
+
+/***/ 151:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -2365,7 +2456,7 @@ webpackJsonp([0],[
 	                           
 	                                 
 
-	                                                   
+	                                                                            
 	                
 	                          
 	                      
@@ -2393,96 +2484,6 @@ webpackJsonp([0],[
 	};
 
 
-/***/ },
-/* 89 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* @flow */
-	"use strict";
-
-	var React = __webpack_require__(1);
-	var $__0=  __webpack_require__(1).addons,PureRenderMixin=$__0.PureRenderMixin;
-	var $__1=       __webpack_require__(27),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
-
-
-	// my stackoverflow explanation: http: //stackoverflow.com/a/24392281/1941552
-	function lambdaGamma (arg1, arg2, arg3, arg4) {
-	  var $__0=   arg1,a=$__0[0],b=$__0[1];
-	  var $__1=   arg2,c=$__1[0],d=$__1[1];
-	  var $__2=   arg3,p=$__2[0],q=$__2[1];
-	  var $__3=   arg4,r=$__3[0],s=$__3[1];
-
-	  var det = (c - a) * (s - q) - (r - p) * (d - b);
-	  if (det === 0) {
-	    return null; // colinear
-	  } else {
-	    var lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
-	    var gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
-	    return [lambda, gamma];
-	  }
-	}
-
-
-	var Line = React.createClass({displayName: "Line",
-	  propTypes: {
-	    w: React.PropTypes.shape({
-	      x: React.PropTypes.number.isRequired,
-	      y: React.PropTypes.number.isRequired
-	    }).isRequired,
-	    dim: React.PropTypes.number.isRequired
-	  },
-
-	  mixins: [PureRenderMixin],
-
-	  findBorderIntersection: function(v                       )                    {
-	    var dim = this.props.dim;
-	    var top = [[-dim / 2, dim / 2], [dim / 2, dim / 2]];
-	    var right = [[dim / 2, dim / 2], [dim / 2, -dim / 2]];
-	    var bottom = [[dim / 2, -dim / 2], [-dim / 2, -dim / 2]];
-	    var left = [[-dim / 2, -dim / 2], [-dim / 2, dim / 2]];
-
-	    // we construct vectors for the edge of the viewport, then intersection test them.
-	    // this yields the lambda that we need to multiply v by to reach the edge.
-	    var intersections = [top, right, bottom, left]
-	      .map(function(arg)  {return lambdaGamma([0, 0], [v.x, v.y], arg[0], arg[1]);})
-	      .filter( function(lg) {
-	        if (typeof lg !== "undefined" && lg !== null) {
-	          var $__0=   lg,lambda=$__0[0],gamma=$__0[1];
-	          return 0 < lambda && 0 < gamma && gamma <= 1; // not conventional intersection
-	        } else {
-	          return false;
-	        }
-	      });
-	    return intersections[0];
-	  },
-
-	  render: function()                {
-	    var boundaryPoint = {
-	      x: 0,
-	      y: 0
-	    };
-	    if (!lineEq({x: 0, y: 0}, this.props.w)) {
-	      var v = rot90(this.props.w); // v is now the direction of the line
-	      var first = this.findBorderIntersection(v);
-	      if (typeof first !== "undefined" && first !== null) {
-	        var lambda = first[0];
-	        boundaryPoint = scale(lambda)(v);
-	      } else {
-	        throw new Error();
-	      }
-	    }
-
-	    return (
-	      React.createElement("path", {d: ("M " + (-boundaryPoint.x) + " " + (-boundaryPoint.y) + " L " + boundaryPoint.x + " " + boundaryPoint.y), 
-	        strokeWidth: "1.5", 
-	        stroke: "rgba(30, 30, 30, 0.3)", 
-	        style: this.props.style})
-	    );
-	  }
-	});
-
-	module.exports = Line;
-
-
 /***/ }
-]);
+
+});
