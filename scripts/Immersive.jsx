@@ -63,7 +63,7 @@ var Immersive = React.createClass({
       var assignment = {};
       clearTimeout(this.state.serializationTimer);
       assignment[name] = value;
-      assignment.serializationTimer = setTimeout(this.serializeState.bind(this), 200);
+      assignment.serializationTimer = setTimeout(this.serializeState, 200);
       this.setState(assignment);
     };
   },
