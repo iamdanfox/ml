@@ -9,7 +9,8 @@ type PointGrp = {
     center: P2;
     params: {l: number; theta: number};
   };
-  mouseDownDiff: ?P2
+  mouseDownDiff: ?P2;
+  editingInProgress: bool;
 };
 type Props = {
   dim: number;
@@ -77,11 +78,13 @@ var AwesomeDataComponent = React.createClass({
     var extras = {
       onMouseDown: (e) => {
         pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
+        pg.editingInProgress = true;
         this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
       },
 
       onMouseUp: () => {
         pg.mouseDownDiff = null;
+        pg.editingInProgress = false;
         this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
       },
 
@@ -89,6 +92,11 @@ var AwesomeDataComponent = React.createClass({
 
       updatePoints: (newPoints) => {
         pg.points = newPoints;
+        this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
+      },
+
+      setEditingInProgress: (editingInProgress) => {
+        pg.editingInProgress = editingInProgress;
         this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
       },
 

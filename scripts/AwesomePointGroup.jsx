@@ -25,6 +25,7 @@ var AwesomePointGroup = React.createClass({
     getMouseXY: React.PropTypes.func.isRequired,
     updateParams: React.PropTypes.func.isRequired,
     dim: React.PropTypes.number.isRequired,
+    setEditingInProgress: React.PropTypes.func.isRequired,
   },
 
   mixins: [PureRenderMixin],
@@ -99,6 +100,12 @@ var AwesomePointGroup = React.createClass({
     e.preventDefault();
     var {l, theta} = this.props.generatedBy.params;
     this.setState({paramsAtHandleMouseDown: {l, theta}});
+    this.props.setEditingInProgress(true);
+  },
+
+  onHandleMouseUp: function() {
+    this.props.setEditingInProgress(false);
+    this.setState({paramsAtHandleMouseDown: null});
   },
 
   render: function(): ?ReactElement {
@@ -133,7 +140,7 @@ var AwesomePointGroup = React.createClass({
         {this.state.mouseOver &&
           <circle cx={paramHandle.x} cy={paramHandle.y} r={0.07} fill="white"
             onMouseDown={this.onHandleMouseDown}
-            onMouseUp={() => this.setState({paramsAtHandleMouseDown: null})}
+            onMouseUp={this.onHandleMouseUp}
             style={{cursor: "ew-resize"}} /> }
 
         {this.state.mouseOver &&

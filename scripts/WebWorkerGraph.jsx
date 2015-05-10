@@ -149,8 +149,8 @@ var WebWorkerGraph = React.createClass({
 
       WorkerBridge.abort();
 
-      var mouseDown = nextProps.pointGroups.some((pg) => pg.mouseDownDiff);
-      if (!mouseDown) {
+      var editingInProgress = nextProps.pointGroups.some((pg) => pg.editingInProgress);
+      if (!editingInProgress) {
         this.refreshGeometryZValues(nextProps, this.state.graph.geometry);
         this.asyncRequestColouring(nextProps);
       }
