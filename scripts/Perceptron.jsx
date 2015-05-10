@@ -30,6 +30,8 @@ Maximum list length = 300 (for non-terminating stuff)
 
 module.exports = {
 
+  name: "Perceptron",
+
   objective: function(w: P2, pointGroups: Array<PointGrp>): number {
     for (var k = 0; k < pointGroups.length; k = k + 1) {
       var {points, label} = pointGroups[k];

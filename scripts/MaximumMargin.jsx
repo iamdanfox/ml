@@ -26,6 +26,7 @@ function objective(w: P2, pointGroups: Array<PointGrp>): number {
 }
 
 module.exports = {
+  name: "Support Vector Machine",
   objective,
   DEFAULT_PARAMS: {},
   paramOptions: function(): Array<number> {

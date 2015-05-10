@@ -74,37 +74,38 @@ var AwesomeDataComponent = React.createClass({
   },
 
   buildAwesomePointGroup: function(pg: PointGrp): AwesomePointGroup {
-    var onMouseDown = (e) => {
-      pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
-      this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
-    };
+    var extras = {
+      onMouseDown: (e) => {
+        pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
+        this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
+      },
 
-    var onMouseUp = () => {
-      pg.mouseDownDiff = null;
-      this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
-    };
+      onMouseUp: () => {
+        pg.mouseDownDiff = null;
+        this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
+      },
 
-    var isMouseDown = typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null;
+      isMouseDown: typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null,
 
-    var updatePoints = (newPoints) => {
-      pg.points = newPoints;
-      this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
-    };
+      updatePoints: (newPoints) => {
+        pg.points = newPoints;
+        this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
+      },
 
-    var updateParams = (params) => {
-      var center = pg.generatedBy.center;
-      pg.generatedBy = {center, params};
-      this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
-    };
+      updateParams: (params) => {
+        var center = pg.generatedBy.center;
+        pg.generatedBy = {center, params};
+        this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
+      },
 
-    var destroy = () => {
-      this.props.updatePointGroups(this.props.pointGroups.filter((v) => v !== pg));
-    };
+      destroy: () => {
+        this.props.updatePointGroups(this.props.pointGroups.filter((v) => v !== pg));
+      },
+    }
 
-    return <AwesomePointGroup {...pg} dim={this.props.dim}
-      updatePoints={updatePoints} updateParams={updateParams} destroy={destroy}
-      onMouseDown={onMouseDown} isMouseDown={isMouseDown} onMouseUp={onMouseUp}
-      getMouseXY={this.getMouseXY} />;
+    return <AwesomePointGroup
+      dim={this.props.dim} getMouseXY={this.getMouseXY}
+      {...pg} {...extras} />;
   },
 
   render: function(): ?ReactElement {

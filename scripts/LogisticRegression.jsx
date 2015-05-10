@@ -117,6 +117,7 @@ function fastOptimise(smallStartW: P2, pointGroups: Array<PointGrp>, {NU, ACCEPT
 
 
 module.exports = {
+  name: "Logistic Regression",
   objective,
   optimise,
   fastOptimise,

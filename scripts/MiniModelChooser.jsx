@@ -60,7 +60,7 @@ var MiniModelChooser = React.createClass({
         <div style={{display: "flex"}}>
         { models.map((model) =>
             <div className={model === focussedModel ? "minimodel minimodel-focussed" : "minimodel"}
-              onClick={() => this.props.focusModel(model)}>
+              onClick={() => this.props.focusModel(model)} key={model.name}>
               <ThreeScene dim={dim} pointGroups={this.props.pointGroups} angle={this.props.angle}
                   objective={model.objective} highlightW={function() {}}>
                 <ParametricGraph thetaResolution={30} rResolution={6}
