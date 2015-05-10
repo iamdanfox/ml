@@ -24,6 +24,8 @@ type State = {
 
 var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
+var Perceptron = require("./Perceptron.jsx");
+var MaximumMargin = require("./MaximumMargin.jsx");
 var MiniModelChooser = require("./MiniModelChooser.jsx");
 var ModelSwitcherVis = require("./ModelSwitcherVis.jsx");
 var React = require("react/addons");
@@ -39,19 +41,40 @@ var Immersive = React.createClass({
       angle: 0,
       focussedModel: LogisticRegression,
       focussedModelParams: LogisticRegression.DEFAULT_PARAMS,
+      serializationTimer: null,
     };
+  },
+
+  serializeState: function() {
+    var {pointGroups, angle, focussedModel, focussedModelParams} = this.state;
+    var serializable = {pointGroups, angle, focussedModelParams, focussedModel: focussedModel.name};
+    window.location.hash = "#" + btoa(JSON.stringify(serializable));
+  },
+
+  deserializeState: function(stateString: string) {
+    var state = JSON.parse(stateString);
+    state.focussedModel = [LogisticRegression, MaximumMargin, Perceptron]
+      .filter((m) => m.name === state.focussedModel)[0];
+    this.setState(state);
   },
 
   setStateCallback: function(name: string): (v: any) => void {
     return (value) => {
       var assignment = {};
+      clearTimeout(this.state.serializationTimer);
       assignment[name] = value;
+      assignment.serializationTimer = setTimeout(this.serializeState.bind(this), 200);
       this.setState(assignment);
     };
   },
 
   componentDidMount: function() {
     window.addEventListener('resize', this.updateWindowSize);
+    window.shareLink = this.serializeState.bind(this);
+    try {
+      var stateString = atob(window.location.hash.slice(1));
+      this.deserializeState(stateString);
+    } catch (e) {}
   },
 
   componentWillUnmount: function() {
