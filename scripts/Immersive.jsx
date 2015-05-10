@@ -74,6 +74,7 @@ var Immersive = React.createClass({
       <div style={{position: "relative"}}>
         <div className="awesome-data-container">
           <AwesomeDataComponent dim={450} highlightedW={highlightedW}
+            highlightW={this.setStateCallback("highlightedW")}
             updatePointGroups={this.setStateCallback("pointGroups")} pointGroups={pointGroups} />
         </div>
 

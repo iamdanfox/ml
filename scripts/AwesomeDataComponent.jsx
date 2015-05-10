@@ -49,6 +49,8 @@ var AwesomeDataComponent = React.createClass({
         return pg;
       });
       this.props.updatePointGroups(pointGroups);
+    } else {
+      this.props.highlightW(this.getMouseXY(e));
     }
   },
 
