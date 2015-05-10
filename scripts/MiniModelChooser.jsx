@@ -10,6 +10,7 @@ type PointGrp = {
     params: {l: number; theta: number};
   };
   mouseDownDiff: ?P2;
+  editingInProgress: bool;
 };
 
 var LogisticRegression = require("./LogisticRegression.jsx");
@@ -60,7 +61,7 @@ var MiniModelChooser = React.createClass({
         <div style={{display: "flex"}}>
         { models.map((model) =>
             <div className={model === focussedModel ? "minimodel minimodel-focussed" : "minimodel"}
-              onClick={() => this.props.focusModel(model)}>
+              onClick={() => this.props.focusModel(model)} key={model.name}>
               <ThreeScene dim={dim} pointGroups={this.props.pointGroups} angle={this.props.angle}
                   objective={model.objective} highlightW={function() {}}>
                 <ParametricGraph thetaResolution={30} rResolution={6}
@@ -72,14 +73,18 @@ var MiniModelChooser = React.createClass({
 
         <div className={focussedModel === Perceptron && this.state.hover ?
             "slide-down slide-down-show" : "slide-down"}>
-          <h2>Perceptron</h2>
-          <p>Epochs = 2</p>
+          <LRParamChooser params={this.props.focussedModelParams} model={Perceptron}
+            updateParams={this.props.updateModelParams} paramKeys={["PERCEPTRON_NU", "EPOCHS"]}>
+            <h2>Perceptron</h2>
+          </LRParamChooser>
         </div>
 
         <div className={focussedModel === LogisticRegression && this.state.hover ?
             "slide-down slide-down-show" : "slide-down"}>
-          <LRParamChooser params={this.props.focussedModelParams}
-            updateParams={this.props.updateModelParams} />
+          <LRParamChooser params={this.props.focussedModelParams} model={LogisticRegression}
+            updateParams={this.props.updateModelParams} paramKeys={["NU", "ACCEPTING_GRAD", "MAX_STOPS"]}>
+            <h2>Logistic Regression</h2>
+          </LRParamChooser>
         </div>
 
       </div>

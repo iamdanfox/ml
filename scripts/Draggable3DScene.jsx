@@ -16,7 +16,7 @@ type State = {
   scene: THREE.Scene;
   startAngle: ?number;
 }
-type PointGrp = {label: number; points: Array<P2>};
+type PointGrp = {label: number; points: Array<P2>; editingInProgress: bool};
 type Props = {
   dim: number;
   highlightW: F<P2, void>;

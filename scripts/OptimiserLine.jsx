@@ -6,7 +6,7 @@ var THREE = require("three");
 
 
 type P2 = {x: number; y: number};
-type PointGrp = {label: number; points: Array<P2>};
+type PointGrp = {label: number; points: Array<P2>; editingInProgress: bool};
 type Props = {
   vertices: Array<P2>;
   pointGroups: Array<PointGrp>;

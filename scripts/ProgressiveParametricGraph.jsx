@@ -7,7 +7,7 @@ var FasterGeometry = require("./FasterGeometry.js");
 
 type F<U,V> = (x: U) => V;
 type P2 = {x: number; y: number};
-type PointGrp = {label: number; points: Array<P2>};
+type PointGrp = {label: number; points: Array<P2>; editingInProgress: bool};
 type Props = {
   colourFunction: (boundingBox: any,
     v1: THREE.Vector3, v2: THREE.Vector3, v3: THREE.Vector3,

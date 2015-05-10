@@ -2,7 +2,7 @@
 "use strict";
 
 type P2 = {x: number; y: number};
-type PointGrp = {label: number; points: Array<P2>};
+type PointGrp = {label: number; points: Array<P2>; editingInProgress: bool};
 type Params = {
   PERCEPTRON_NU: number;
   EPOCHS: number;
@@ -29,6 +29,8 @@ Maximum list length = 300 (for non-terminating stuff)
 */
 
 module.exports = {
+
+  name: "Perceptron",
 
   objective: function(w: P2, pointGroups: Array<PointGrp>): number {
     for (var k = 0; k < pointGroups.length; k = k + 1) {
@@ -73,8 +75,8 @@ module.exports = {
 
   paramOptions: function(paramName: string): Array<number> {
     var PARAM_OPTIONS = {
-      PERCEPTRON_NU: [0.05, 0.1, 0.25, 0.5],
-      EPOCHS: [1, 2, 5, 10],
+      PERCEPTRON_NU: [0.01, 0.1, 0.25, 0.5, 1],
+      EPOCHS: [1, 2, 5],
     };
     return PARAM_OPTIONS[paramName];
   },

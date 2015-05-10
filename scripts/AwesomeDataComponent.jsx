@@ -9,7 +9,8 @@ type PointGrp = {
     center: P2;
     params: {l: number; theta: number};
   };
-  mouseDownDiff: ?P2
+  mouseDownDiff: ?P2;
+  editingInProgress: bool;
 };
 type Props = {
   dim: number;
@@ -19,7 +20,7 @@ type Props = {
 }
 var React = require("react/addons");
 var AwesomePointGroup = require("./AwesomePointGroup.jsx");
-var Hyperplane = require("./article/Hyperplane.jsx");
+var Line = require("./article/Line.jsx");
 var {add, subtract} = require("./VectorUtils.jsx");
 var {generatePoints} = require("./AwesomePointUtilities.jsx");
 var {PureRenderMixin} = require("react/addons").addons;
@@ -49,6 +50,8 @@ var AwesomeDataComponent = React.createClass({
         return pg;
       });
       this.props.updatePointGroups(pointGroups);
+    } else {
+      this.props.highlightW(this.getMouseXY(e));
     }
   },
 
@@ -72,37 +75,45 @@ var AwesomeDataComponent = React.createClass({
   },
 
   buildAwesomePointGroup: function(pg: PointGrp): AwesomePointGroup {
-    var onMouseDown = (e) => {
-      pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
-      this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
-    };
+    var extras = {
+      onMouseDown: (e) => {
+        pg.mouseDownDiff = subtract(this.getMouseXY(e))(pg.generatedBy.center);
+        pg.editingInProgress = true;
+        this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
+      },
 
-    var onMouseUp = () => {
-      pg.mouseDownDiff = null;
-      this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
-    };
+      onMouseUp: () => {
+        pg.mouseDownDiff = null;
+        pg.editingInProgress = false;
+        this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
+      },
 
-    var isMouseDown = typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null;
+      isMouseDown: typeof pg.mouseDownDiff !== "undefined" && pg.mouseDownDiff !== null,
 
-    var updatePoints = (newPoints) => {
-      pg.points = newPoints;
-      this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
-    };
+      updatePoints: (newPoints) => {
+        pg.points = newPoints;
+        this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
+      },
 
-    var updateParams = (params) => {
-      var center = pg.generatedBy.center;
-      pg.generatedBy = {center, params};
-      this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
-    };
+      setEditingInProgress: (editingInProgress) => {
+        pg.editingInProgress = editingInProgress;
+        this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
+      },
 
-    var destroy = () => {
-      this.props.updatePointGroups(this.props.pointGroups.filter((v) => v !== pg));
-    };
+      updateParams: (params) => {
+        var center = pg.generatedBy.center;
+        pg.generatedBy = {center, params};
+        this.props.updatePointGroups(this.props.pointGroups.map((v) => v));
+      },
 
-    return <AwesomePointGroup {...pg} dim={this.props.dim}
-      updatePoints={updatePoints} updateParams={updateParams} destroy={destroy}
-      onMouseDown={onMouseDown} isMouseDown={isMouseDown} onMouseUp={onMouseUp}
-      getMouseXY={this.getMouseXY} />;
+      destroy: () => {
+        this.props.updatePointGroups(this.props.pointGroups.filter((v) => v !== pg));
+      },
+    }
+
+    return <AwesomePointGroup
+      dim={this.props.dim} getMouseXY={this.getMouseXY}
+      {...pg} {...extras} />;
   },
 
   render: function(): ?ReactElement {
@@ -118,7 +129,7 @@ var AwesomeDataComponent = React.createClass({
             <line x1="0.5" y1="7.5" x2="0.5" y2="-6.5" style={{stroke: "#555", strokeWidth: 1}} />
             <line x1="-6.5" y1="0.5" x2="7.5" y2="0.5" style={{stroke: "#555", strokeWidth: 1}} />
 
-            <Hyperplane w={this.props.highlightedW} dim={this.props.dim} />
+            <Line w={this.props.highlightedW} dim={this.props.dim} />
           </g>
 
 

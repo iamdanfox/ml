@@ -1,6 +1,6 @@
 /* @flow */
 type P2 = {x: number; y: number};
-type PointGrp = {label: number; points: Array<P2>};
+type PointGrp = {label: number; points: Array<P2>; editingInProgress: bool};
 
 "use strict";
 
@@ -26,6 +26,7 @@ function objective(w: P2, pointGroups: Array<PointGrp>): number {
 }
 
 module.exports = {
+  name: "Support Vector Machine",
   objective,
   DEFAULT_PARAMS: {},
   paramOptions: function(): Array<number> {

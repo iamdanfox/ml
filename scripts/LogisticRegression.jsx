@@ -1,7 +1,7 @@
 /* @flow */
 type P2 = {x: number; y: number};
 type P2t = {x: number; y: number; t: number};
-type PointGrp = {label: number; points: Array<P2>};
+type PointGrp = {label: number; points: Array<P2>; editingInProgress: bool};
 type Params = {
   NU: number;
   ACCEPTING_GRAD: number;
@@ -117,6 +117,7 @@ function fastOptimise(smallStartW: P2, pointGroups: Array<PointGrp>, {NU, ACCEPT
 
 
 module.exports = {
+  name: "Logistic Regression",
   objective,
   optimise,
   fastOptimise,

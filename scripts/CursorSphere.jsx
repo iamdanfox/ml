@@ -5,7 +5,7 @@ var React = require("react/addons");
 var THREE = require("three");
 
 type P2 = {x: number; y: number};
-type PointGrp = {label: number; points: Array<P2>};
+type PointGrp = {label: number; points: Array<P2>; editingInProgress: bool};
 type Props = {
   highlightedW: P2;
   pointGroups: Array<PointGrp>;
