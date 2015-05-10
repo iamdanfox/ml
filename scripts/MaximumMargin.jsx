@@ -1,6 +1,6 @@
 /* @flow */
 type P2 = {x: number; y: number};
-type PointGrp = {label: number; points: Array<P2>};
+type PointGrp = {label: number; points: Array<P2>; editingInProgress: bool};
 
 "use strict";
 

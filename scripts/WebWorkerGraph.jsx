@@ -2,7 +2,7 @@
 "use strict";
 
 type P2 = {x: number; y: number};
-type PointGrp = {label: number; points: Array<P2>};
+type PointGrp = {label: number; points: Array<P2>; editingInProgress: bool};
 type Result = {faces: Array<any>; vertices: Array<any>};
 type Props = {
   pointGroups: Array<PointGrp>;

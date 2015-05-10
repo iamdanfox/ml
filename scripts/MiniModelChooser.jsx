@@ -10,6 +10,7 @@ type PointGrp = {
     params: {l: number; theta: number};
   };
   mouseDownDiff: ?P2;
+  editingInProgress: bool;
 };
 
 var LogisticRegression = require("./LogisticRegression.jsx");

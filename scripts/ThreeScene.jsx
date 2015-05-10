@@ -11,7 +11,7 @@ type State = {
   renderer: THREE.WebGLRenderer;
   scene: THREE.Scene;
 }
-type PointGrp = {label: number; points: Array<P2>};
+type PointGrp = {label: number; points: Array<P2>; editingInProgress: bool};
 type Props = {
   dim: number;
   pointGroups: Array<PointGrp>;
