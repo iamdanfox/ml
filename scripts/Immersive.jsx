@@ -25,6 +25,7 @@ type State = {
 var AwesomeDataComponent = require("./AwesomeDataComponent.jsx");
 var LogisticRegression = require("./LogisticRegression.jsx");
 var Perceptron = require("./Perceptron.jsx");
+var AveragedPerceptron = require("./AveragedPerceptron.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 var MiniModelChooser = require("./MiniModelChooser.jsx");
 var ModelSwitcherVis = require("./ModelSwitcherVis.jsx");
@@ -53,7 +54,7 @@ var Immersive = React.createClass({
 
   deserializeState: function(stateString: string) {
     var state = JSON.parse(stateString);
-    state.focussedModel = [LogisticRegression, MaximumMargin, Perceptron]
+    state.focussedModel = [LogisticRegression, MaximumMargin, Perceptron, AveragedPerceptron]
       .filter((m) => m.name === state.focussedModel)[0];
     this.setState(state);
   },

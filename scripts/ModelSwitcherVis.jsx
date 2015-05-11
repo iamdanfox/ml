@@ -26,6 +26,7 @@ var MaximumMargin = require("./MaximumMargin.jsx");
 var OptimiserLine = require("./OptimiserLine.jsx");
 var ParametricGraph = require("./ParametricGraph.jsx");
 var Perceptron = require("./Perceptron.jsx");
+var AveragedPerceptron = require("./AveragedPerceptron.jsx");
 var React = require("react/addons");
 var WebWorkerGraph = require("./WebWorkerGraph.jsx");
 
@@ -50,6 +51,12 @@ var ModelSwitcherVis = React.createClass({
           colourFunction={ParametricGraph.COLOUR_FUNCTION}
           objective={Perceptron.objective} pointGroups={this.props.pointGroups} />
       );
+    } else if (this.props.focussedModel === AveragedPerceptron) {
+        return (
+          <ParametricGraph thetaResolution={96} rResolution={50}
+            colourFunction={ParametricGraph.COLOUR_FUNCTION}
+            objective={AveragedPerceptron.objective} pointGroups={this.props.pointGroups} />
+        );
     } else if (this.props.focussedModel === LogisticRegression) {
       return (
         <WebWorkerGraph thetaResolution={252} rResolution={84}
@@ -57,7 +64,7 @@ var ModelSwitcherVis = React.createClass({
           focussedModelParams={this.props.focussedModelParams} />
       );
     } else {
-      console.assert(this.props.focussedModel === MaximumMargin);
+      console.assert(this.props.focussedModel === MaximumMargin, "Unknown model");
       return (
         <ParametricGraph thetaResolution={96} rResolution={50}
           colourFunction={ParametricGraph.COLOUR_FUNCTION}

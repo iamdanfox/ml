@@ -17,6 +17,7 @@ var LogisticRegression = require("./LogisticRegression.jsx");
 var MaximumMargin = require("./MaximumMargin.jsx");
 var ParametricGraph = require("./ParametricGraph.jsx");
 var Perceptron = require("./Perceptron.jsx");
+var AveragedPerceptron = require("./AveragedPerceptron.jsx");
 var React = require("react/addons");
 var ThreeScene = require("./ThreeScene.jsx");
 require("./MiniModelChooser.css");
@@ -54,7 +55,7 @@ var MiniModelChooser = React.createClass({
 
     var {focussedModel} = this.props;
 
-    var models = [Perceptron, LogisticRegression, MaximumMargin];
+    var models = [Perceptron, AveragedPerceptron, LogisticRegression, MaximumMargin];
 
     return (
       <div onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
