@@ -117,6 +117,15 @@ var AwesomeDataComponent = React.createClass({
   },
 
   render: function(): ?ReactElement {
+    var optimiserResult;
+    if (typeof this.props.focussedModel.optimise !== "undefined" &&
+        this.props.focussedModel.optimise !== null) {
+      var optimiserLine = this.props.focussedModel.optimise(this.props.highlightedW,
+        this.props.pointGroups, this.props.focussedModelParams);
+      optimiserResult = <Line w={optimiserLine[optimiserLine.length - 1]} dim={this.props.dim}
+        style={{stroke: "green"}} />
+    }
+
     return <svg
       ref="canvas"
       width={this.props.dim} height={this.props.dim}
@@ -130,6 +139,8 @@ var AwesomeDataComponent = React.createClass({
             <line x1="-6.5" y1="0.5" x2="7.5" y2="0.5" style={{stroke: "#555", strokeWidth: 1}} />
 
             <Line w={this.props.highlightedW} dim={this.props.dim} />
+
+            {optimiserResult}
           </g>
 
 

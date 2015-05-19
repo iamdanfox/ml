@@ -63,7 +63,7 @@ var Immersive = React.createClass({
       var assignment = {};
       clearTimeout(this.state.serializationTimer);
       assignment[name] = value;
-      assignment.serializationTimer = setTimeout(this.serializeState.bind(this), 200);
+      assignment.serializationTimer = setTimeout(this.serializeState, 200);
       this.setState(assignment);
     };
   },
@@ -99,6 +99,7 @@ var Immersive = React.createClass({
         <div className="awesome-data-container">
           <AwesomeDataComponent dim={450} highlightedW={highlightedW}
             highlightW={this.setStateCallback("highlightedW")}
+            focussedModel={focussedModel} focussedModelParams={focussedModelParams}
             updatePointGroups={this.setStateCallback("pointGroups")} pointGroups={pointGroups} />
         </div>
 
