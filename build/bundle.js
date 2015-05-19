@@ -11,7 +11,6 @@ webpackJsonp([0],{
 
 	window.React = React;
 
-	React.initializeTouchEvents(true);
 	React.render(React.createElement(Immersive, null), document.body);
 
 
@@ -51,7 +50,7 @@ webpackJsonp([0],{
 	var MiniModelChooser = __webpack_require__(21);
 	var ModelSwitcherVis = __webpack_require__(22);
 	var React = __webpack_require__(1);
-	__webpack_require__(70);
+	__webpack_require__(25);
 
 
 	var Immersive = React.createClass({displayName: "Immersive",
@@ -85,7 +84,7 @@ webpackJsonp([0],{
 	      var assignment = {};
 	      clearTimeout(this.state.serializationTimer);
 	      assignment[name] = value;
-	      assignment.serializationTimer = setTimeout(this.serializeState.bind(this), 200);
+	      assignment.serializationTimer = setTimeout(this.serializeState, 200);
 	      this.setState(assignment);
 	    }.bind(this);
 	  },
@@ -121,6 +120,7 @@ webpackJsonp([0],{
 	        React.createElement("div", {className: "awesome-data-container"}, 
 	          React.createElement(AwesomeDataComponent, {dim: 450, highlightedW: highlightedW, 
 	            highlightW: this.setStateCallback("highlightedW"), 
+	            focussedModel: focussedModel, focussedModelParams: focussedModelParams, 
 	            updatePointGroups: this.setStateCallback("pointGroups"), pointGroups: pointGroups})
 	        ), 
 
@@ -170,10 +170,10 @@ webpackJsonp([0],{
 	                                                    
 	 
 	var React = __webpack_require__(1);
-	var AwesomePointGroup = __webpack_require__(72);
-	var Line = __webpack_require__(73);
-	var $__0=   __webpack_require__(74),add=$__0.add,subtract=$__0.subtract;
-	var $__1=  __webpack_require__(75),generatePoints=$__1.generatePoints;
+	var AwesomePointGroup = __webpack_require__(61);
+	var Line = __webpack_require__(62);
+	var $__0=   __webpack_require__(63),add=$__0.add,subtract=$__0.subtract;
+	var $__1=  __webpack_require__(64),generatePoints=$__1.generatePoints;
 	var $__2=  __webpack_require__(1).addons,PureRenderMixin=$__2.PureRenderMixin;
 
 
@@ -268,6 +268,15 @@ webpackJsonp([0],{
 	  },
 
 	  render: function()                {
+	    var optimiserResult;
+	    if (typeof this.props.focussedModel.optimise !== "undefined" &&
+	        this.props.focussedModel.optimise !== null) {
+	      var optimiserLine = this.props.focussedModel.optimise(this.props.highlightedW,
+	        this.props.pointGroups, this.props.focussedModelParams);
+	      optimiserResult = React.createElement(Line, {w: optimiserLine[optimiserLine.length - 1], dim: this.props.dim, 
+	        style: {stroke: "green"}})
+	    }
+
 	    return React.createElement("svg", {
 	      ref: "canvas", 
 	      width: this.props.dim, height: this.props.dim, 
@@ -280,7 +289,9 @@ webpackJsonp([0],{
 	            React.createElement("line", {x1: "0.5", y1: "7.5", x2: "0.5", y2: "-6.5", style: {stroke: "#555", strokeWidth: 1}}), 
 	            React.createElement("line", {x1: "-6.5", y1: "0.5", x2: "7.5", y2: "0.5", style: {stroke: "#555", strokeWidth: 1}}), 
 
-	            React.createElement(Line, {w: this.props.highlightedW, dim: this.props.dim})
+	            React.createElement(Line, {w: this.props.highlightedW, dim: this.props.dim}), 
+
+	            optimiserResult
 	          ), 
 
 
@@ -316,7 +327,7 @@ webpackJsonp([0],{
 
 	"use strict";
 
-	var $__0=    __webpack_require__(74),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
+	var $__0=    __webpack_require__(63),scale=$__0.scale,add=$__0.add,modulus=$__0.modulus;
 
 	function sigmoid(wx)         {
 	  return 1 / (1 + Math.exp(-wx));
@@ -449,7 +460,7 @@ webpackJsonp([0],{
 	                 
 	  
 
-	var $__0=     __webpack_require__(74),add=$__0.add,scale=$__0.scale,classify=$__0.classify,classTransform=$__0.classTransform;
+	var $__0=     __webpack_require__(63),add=$__0.add,scale=$__0.scale,classify=$__0.classify,classTransform=$__0.classTransform;
 
 	/*
 	The Perceptron training algorithm cycles through each training
@@ -536,7 +547,7 @@ webpackJsonp([0],{
 
 	"use strict";
 
-	var $__0=   __webpack_require__(74),modulus=$__0.modulus,classTransform=$__0.classTransform;
+	var $__0=   __webpack_require__(63),modulus=$__0.modulus,classTransform=$__0.classTransform;
 
 
 	// the objective function is used to generate the surface
@@ -799,13 +810,13 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 70:
+/***/ 25:
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(71);
+	var content = __webpack_require__(26);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(85)(content, {});
@@ -826,15 +837,15 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 71:
+/***/ 26:
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(149)();
+	exports = module.exports = __webpack_require__(86)();
 	exports.push([module.id, ".awesome-data-container {\n  position: absolute;\n  top: 0;\n  left: 0;\n  background: rgba(255, 255, 255, 0.6);\n  opacity: 0.5;\n  transform: translate3d(-50%, -50%, 0) scale3d(0.4, 0.4, 1) translate3d(50%, 50%, 0);\n  transition: 200ms all;\n  transition-delay: 3000ms;\n}\n\n.awesome-data-container:hover {\n  opacity: 1;\n  transform: scale3d(1, 1, 1);\n  transition-delay: 0ms;\n}\n", ""]);
 
 /***/ },
 
-/***/ 72:
+/***/ 61:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -848,8 +859,8 @@ webpackJsonp([0],{
 	  
 
 	var React = __webpack_require__(1);
-	var $__0=       __webpack_require__(74),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
-	var $__1=    __webpack_require__(75),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
+	var $__0=       __webpack_require__(63),add=$__0.add,subtract=$__0.subtract,scale=$__0.scale,rotate=$__0.rotate,modulus=$__0.modulus,dotProduct=$__0.dotProduct;
+	var $__1=    __webpack_require__(64),generatePoints=$__1.generatePoints,ELLIPSE_FIXED_RADIUS=$__1.ELLIPSE_FIXED_RADIUS,labelToColour=$__1.labelToColour;
 	var $__2=  __webpack_require__(1).addons,PureRenderMixin=$__2.PureRenderMixin;
 
 
@@ -999,7 +1010,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 73:
+/***/ 62:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1007,7 +1018,7 @@ webpackJsonp([0],{
 
 	var React = __webpack_require__(1);
 	var $__0=  __webpack_require__(1).addons,PureRenderMixin=$__0.PureRenderMixin;
-	var $__1=       __webpack_require__(74),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
+	var $__1=       __webpack_require__(63),rot90=$__1.rot90,lineEq=$__1.lineEq,scale=$__1.scale;
 
 
 	// my stackoverflow explanation: http: //stackoverflow.com/a/24392281/1941552
@@ -1091,7 +1102,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 74:
+/***/ 63:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1197,7 +1208,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 75:
+/***/ 64:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* @flow */
@@ -1210,7 +1221,7 @@ webpackJsonp([0],{
 	                                     
 	  
 
-	var $__0=   __webpack_require__(74),add=$__0.add,rotate=$__0.rotate;
+	var $__0=   __webpack_require__(63),add=$__0.add,rotate=$__0.rotate;
 
 
 
@@ -1520,7 +1531,7 @@ webpackJsonp([0],{
 /***/ 79:
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(149)();
+	exports = module.exports = __webpack_require__(86)();
 	exports.push([module.id, ".minimodel {\n  cursor: pointer;\n  opacity: 0.2;\n  -webkit-transition: 200ms all;\n  transition: 200ms all;\n}\n\n.minimodel:hover {\n  opacity: 0.5;\n}\n\n.minimodel-focussed, .minimodel-focussed:hover {\n  opacity: 1;\n}\n\n.slide-down {\n  background: rgba(255, 255, 255, 0.4);\n  transition-property: all;\n  transition-duration: .5s;\n  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);\n  overflow-y: hidden;\n  max-height: 0;\n}\n\n.slide-down.slide-down-show {\n  max-height: 500px;\n}", ""]);
 
 /***/ },
@@ -2353,7 +2364,7 @@ webpackJsonp([0],{
 
 /***/ },
 
-/***/ 149:
+/***/ 86:
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
